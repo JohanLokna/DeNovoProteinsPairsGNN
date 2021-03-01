@@ -4,4 +4,4 @@ Bachelor Thesis Project
 
 Author:         J. Lokna <br />
 Supervisors:    C. Zhang and T. Lemmin <br />
-Objective:      To a framework for de novo generation of interacting protein pairs using graphical neural networks.
+Objective:      To create a framework for de novo generation of interacting protein pairs using graphical neural networks.
