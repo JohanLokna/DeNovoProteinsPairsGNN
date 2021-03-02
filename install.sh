@@ -1,6 +1,7 @@
 pip install --upgrade pip
 
 # Install normal requirements
+echo pwd
 pip install -r ./requirements.txt
 
 # Install torch geometric requirements
