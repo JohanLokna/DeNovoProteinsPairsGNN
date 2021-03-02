@@ -1,8 +1,8 @@
 pip install --upgrade pip
 
 # Install normal requirements
-echo pwd
-pip install -r ./requirements.txt
+echo ${PWD}
+#pip install -r ./requirements.txt
 
 # Install torch geometric requirements
 # version=$(python get_pytorch_geometric_version.py)
