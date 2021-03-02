@@ -13,6 +13,7 @@ setup(
     author="Johan Lokna",
     author_email="jlokna@math.ethz.ch",
     url="https://github.com/JohanLokna/DeNovoProteinsPairsGNN",
+    packages=find_packages(),
     classifiers=[
         "Natural Language :: English",
         "Programming Language :: Python :: 3.7",
