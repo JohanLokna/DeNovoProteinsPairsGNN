@@ -1,11 +1,13 @@
-from torch_geometric.data import Data, Dataset, InMemoryDataset
-from typing import Iterator, List, Mapping, Union
 import os
-import torch_geometric.transforms as T
-import shutil
-from urllib.request import urlopen
 import pyarrow.parquet as pq
 from pathlib import Path
+import shutil
+from typing import Iterator, List, Mapping, Union
+from urllib.request import urlopen
+
+import torch
+from torch_geometric.data import Data, Dataset, InMemoryDataset
+import torch_geometric.transforms as T
 
 
 #: Location of training and validation data
