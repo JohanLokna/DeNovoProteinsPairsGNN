@@ -1,3 +1,3 @@
-__all__ = [".nn", ".models"]
+__all__ = ["nn", "models"]
 
 from . import *
