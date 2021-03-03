@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from ProteinPairsGenerator.utils import seq_to_tensor
 import pyarrow.parquet as pq
 from pathlib import Path
