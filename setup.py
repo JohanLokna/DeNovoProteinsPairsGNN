@@ -22,7 +22,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     install_requires=[
-      "torch=={}".format(TORCH),
+      "torch>={}".format(TORCH),
       "torch-scatter",
       "torch-sparse",
       "torch-geometric==1.4.3"
