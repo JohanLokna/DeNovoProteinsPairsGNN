@@ -4,10 +4,13 @@ def read_md(file):
     with open(file) as fin:
         return fin.read()
 
+# Requrements for project
+TORCH="1.7.0"
+CUDA="cu102"
 
 setup(
     name="DeNovoProteinsPairsGNN",
-    version="0.1.1",
+    version="0.0.1",
     description="Create a framework for de novo generation of interacting protein pairs using graphical neural networks.",
     long_description=read_md("README.md"),
     author="Johan Lokna",
@@ -17,5 +20,11 @@ setup(
     classifiers=[
         "Natural Language :: English",
         "Programming Language :: Python :: 3.7",
+    ],
+    install_requires=[
+      "torch>={TORCH}",
+      "torch-scatter -f https://pytorch-geometric.com/whl/torch-${TORCH}+{CUDA}.html",
+      "torch-sparse -f https://pytorch-geometric.com/whl/torch-${version}+{CUDA}.html",
+      "torch-geometric==1.4.3"
     ]
 )
