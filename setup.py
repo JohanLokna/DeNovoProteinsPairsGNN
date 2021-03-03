@@ -6,7 +6,7 @@ def read_md(file):
 
 # Requrements for project
 TORCH="1.7.0"
-CUDA="cu102"
+CUDA="cu101"
 
 setup(
     name="DeNovoProteinsPairsGNN",
