@@ -1,3 +1,1 @@
-__all__ = ['nn', 'models']
-
-from . import *
+from nn import *
