@@ -1,1 +1,1 @@
-from .in_memory import InMemoryDataset
+from .in_memory import ProteinInMemoryDataset
