@@ -22,9 +22,12 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     install_requires=[
-      "torch>={TORCH}",
-      "torch-scatter -f https://pytorch-geometric.com/whl/torch-${TORCH}+{CUDA}.html",
-      "torch-sparse -f https://pytorch-geometric.com/whl/torch-${version}+{CUDA}.html",
+      "torch=={TORCH}",
+      "torch-scatter",
+      "torch-sparse",
       "torch-geometric==1.4.3"
+    ],
+    dependency_links=[
+      "https://pytorch-geometric.com/whl/torch-${TORCH}+{CUDA}.html"
     ]
 )
