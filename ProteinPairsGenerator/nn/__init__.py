@@ -1,3 +1,1 @@
-__all__ = ['edge_conv_mod']
-
-from . import *
+from .edge_conv_mod import *

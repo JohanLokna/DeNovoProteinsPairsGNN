@@ -1,3 +1,1 @@
-__all__ = ['model']
-
-from . import *
+from .model import Net
