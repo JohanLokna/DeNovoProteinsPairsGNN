@@ -5,9 +5,22 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.container import ModuleList
 
+from ProteinPairsGenerator.nn import EdgeConvBatch, EdgeConvMod
+
 
 def _get_clones(module, N):
     return ModuleList([copy.deepcopy(module) for i in range(N)])
+
+
+def get_graph_conv_layer(input_size, hidden_size, output_size):
+    mlp = nn.Sequential(
+        nn.Linear(input_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, output_size),
+    )
+    gnn = EdgeConvMod(nn=mlp, aggr="add")
+    graph_conv = EdgeConvBatch(gnn, output_size, batch_norm=True, dropout=0.2)
+    return graph_conv
 
 
 class Net(nn.Module):

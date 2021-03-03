@@ -57,14 +57,3 @@ class EdgeConvBatch(nn.Module):
         x = self.x_postprocess(x)
         edge_attr = self.edge_attr_postprocess(edge_attr)
         return x, edge_attr
-
-
-def get_graph_conv_layer(input_size, hidden_size, output_size):
-    mlp = nn.Sequential(
-        nn.Linear(input_size, hidden_size),
-        nn.ReLU(),
-        nn.Linear(hidden_size, output_size),
-    )
-    gnn = EdgeConvMod(nn=mlp, aggr="add")
-    graph_conv = EdgeConvBatch(gnn, output_size, batch_norm=True, dropout=0.2)
-    return graph_conv
