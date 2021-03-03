@@ -1,0 +1,60 @@
+import copy
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.nn.modules.container import ModuleList
+
+
+def _get_clones(module, N):
+    return ModuleList([copy.deepcopy(module) for i in range(N)])
+
+
+class Net(nn.Module):
+    def __init__(self, x_input_size, adj_input_size, hidden_size, output_size):
+        super().__init__()
+
+        self.embed_x = nn.Sequential(
+            nn.Embedding(x_input_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.LayerNorm(hidden_size),
+        )
+        self.embed_adj = (
+            nn.Sequential(
+                nn.Linear(adj_input_size, hidden_size),
+                nn.ReLU(),
+                nn.Linear(hidden_size, hidden_size),
+                nn.LayerNorm(hidden_size),
+            )
+            if adj_input_size
+            else None
+        )
+        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size)) * hidden_size, 2 * hidden_size, hidden_size)
+
+        N = 3
+        graph_conv = get_graph_conv_layer(3 * hidden_size, 2 * hidden_size, hidden_size)
+        self.graph_conv = _get_clones(graph_conv, N)
+
+        self.linear_out = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x, edge_index, edge_attr):
+
+        x = self.embed_x(x)
+        #         edge_index, _ = add_self_loops(edge_index)  # We should remove self loops in this case!
+        edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
+
+        x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
+        x = x + x_out
+        edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
+
+        for i in range(3):
+            x = F.relu(x)
+            edge_attr = F.relu(edge_attr)
+            x_out, edge_attr_out = self.graph_conv[i](x, edge_index, edge_attr)
+            x = x + x_out
+            edge_attr = edge_attr + edge_attr_out
+
+        x = self.linear_out(x)
+
+        return x
