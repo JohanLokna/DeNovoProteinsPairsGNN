@@ -1,1 +1,1 @@
-print("KO")
+from nn import *
