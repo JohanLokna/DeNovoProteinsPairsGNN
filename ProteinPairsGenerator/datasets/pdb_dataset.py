@@ -47,8 +47,19 @@ class ProteinInMemoryDataset(InMemoryDataset):
         for data_pdb in parsePDB(self.pdb_list_):
 
             seq = data_pdb.getSequence()
-            print(seq, "OK")
 
-            # edge_index, edge_attr = remove_nans(edge_index, edge_attr)
-            # data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
-            # data = data.coalesce()
+            coords = data_pdb.getCoords()[source]
+
+            print(type(seq), type(coords))
+
+        #     edge_index, edge_attr = remove_nans(edge_index, edge_attr)
+        #     if self.pre_transform is not None:
+        #         data = self.pre_transform(data)
+        #     if data is not None:
+        #         data_list.append(data)
+        # data, slices = self.collate(data_list)
+        # torch.save((data, slices), self.processed_paths[0])
+
+
+
+
