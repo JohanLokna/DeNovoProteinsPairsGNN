@@ -1,1 +1,1 @@
-from .in_memory import ProteinInMemoryDataset
+from .pdb_memory import ProteinInMemoryDataset

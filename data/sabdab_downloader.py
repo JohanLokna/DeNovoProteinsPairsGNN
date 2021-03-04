@@ -54,7 +54,7 @@ Copyright (C) 2013 James Dunbar
 """
 
 
-import argparse, sys, os, urllib
+import argparse, sys, os, requests
 
 def getpdb(pdb_entry, out_path):
     """
@@ -62,11 +62,12 @@ def getpdb(pdb_entry, out_path):
     Check that it has successfully downloaded.
     """
     out_file = os.path.join( out_path, "%s.pdb"%pdb_entry)
-    urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/structure/%s.pdb"%(pdb_entry,pdb_entry), out_file)
+    r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/structure/%s.pdb"%(pdb_entry,pdb_entry))
+    open(out_file, "wb").write(r.content)
     if os.path.isfile(out_file):
         Retrieved = open(out_file).read()
         if not Retrieved.count("ATOM"):
-            print "Failed to retrieve PDB file from SAbDab"
+            print("Failed to retrieve PDB file from SAbDab")
             os.remove(out_file)
             return False
         else:
@@ -81,11 +82,12 @@ def getchothpdb(pdb_entry, out_path):
     Check that it has successfully downloaded.
     """
     out_file = os.path.join( out_path, "%s.pdb"%pdb_entry)
-    urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/structure/chothia/%s.pdb"%(pdb_entry,pdb_entry), out_file)
+    r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/structure/chothia/%s.pdb"%(pdb_entry,pdb_entry))
+    open(out_file, "wb").write(r.content)
     if os.path.isfile(out_file):
         Retrieved = open(out_file).read()
         if not Retrieved.count("ATOM"):
-            print "Failed to retrieve PDB file from SAbDab"
+            print("Failed to retrieve PDB file from SAbDab")
             os.remove(out_file)
             return False
         else:
@@ -101,11 +103,12 @@ def getsequence(entry, fab_list, out_path):
     """
     
     out_file = os.path.join( out_path, "%s_raw.pdb"%entry)
-    urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/sequences/%s_raw.fa"%(entry,entry), out_file)
+    r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/sequences/%s_raw.fa"%(entry,entry))
+    open(out_file, "wb").write(r.content)
     if os.path.isfile(out_file):
         Retrieved = open(out_file).read()
         if not Retrieved.count(">%s"%entry):
-            print "Failed to retrieve sequence file from SAbDab."
+            print("Failed to retrieve sequence file from SAbDab.")
             os.remove(out_file)
             return False
     else:
@@ -115,11 +118,12 @@ def getsequence(entry, fab_list, out_path):
         Hchain = fab[1]
         if Hchain!="NA":
             out_file = os.path.join( out_path, "%s_%s_VH.fa"%(entry,Hchain) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/sequences/%s_%s_VH.fa"%(entry,entry,Hchain), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/sequences/%s_%s_VH.fa"%(entry,entry,Hchain))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count(">%s"%entry):
-                    print "Failed to retrieve sequence file from SAbDab."
+                    print("Failed to retrieve sequence file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -128,11 +132,12 @@ def getsequence(entry, fab_list, out_path):
         Lchain = fab[2]
         if Lchain!="NA":
             out_file = os.path.join( out_path, "%s_%s_VL.fa"%(entry,Lchain) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/sequences/%s_%s_VL.fa"%(entry,entry,Lchain), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/sequences/%s_%s_VL.fa"%(entry,entry,Lchain))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count(">%s"%entry):
-                    print "Failed to retrieve sequence file from SAbDab."
+                    print("Failed to retrieve sequence file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -149,11 +154,12 @@ def getannotation(entry, fab_list, out_path):
         Hchain = fab[1]
         if Hchain!="NA":
             out_file = os.path.join( out_path, "%s_%s_VH.ann"%(entry,Hchain) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/annotation/%s_%s_VH.ann"%(entry,entry,Hchain), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/annotation/%s_%s_VH.ann"%(entry,entry,Hchain))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count("H3"):
-                    print "Failed to retrieve annotation file from SAbDab."
+                    print("Failed to retrieve annotation file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -162,11 +168,12 @@ def getannotation(entry, fab_list, out_path):
         Lchain = fab[2]
         if Lchain!="NA":
             out_file = os.path.join( out_path, "%s_%s_VL.ann"%(entry,Lchain) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/annotation/%s_%s_VL.ann"%(entry,entry,Lchain), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/annotation/%s_%s_VL.ann"%(entry,entry,Lchain))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count("L3"):
-                    print "Failed to retrieve annotation file from SAbDab."
+                    print("Failed to retrieve annotation file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -184,11 +191,12 @@ def getabangle(entry, fab_list, out_path):
             continue
         else:
             out_file = os.path.join( out_path, "%s.abangle"%(entry) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/abangle/%s.abangle"%(entry,entry), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/abangle/%s.abangle"%(entry,entry))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count(entry):
-                    print "Failed to retrieve abangle file from SAbDab."
+                    print("Failed to retrieve abangle file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -205,11 +213,12 @@ def getimgt(entry, fab_list, out_path):
         Hchain = fab[1]
         if Hchain!="NA":
             out_file = os.path.join( out_path, "%s_%s_H.ann"%(entry,Hchain) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/imgt/%s_%s_H.imgt"%(entry,entry,Hchain), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/imgt/%s_%s_H.imgt"%(entry,entry,Hchain))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count("gene_type"):
-                    print "Failed to retrieve imgt file from SAbDab."
+                    print("Failed to retrieve imgt file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -218,11 +227,12 @@ def getimgt(entry, fab_list, out_path):
         Lchain = fab[2]
         if Lchain!="NA":
             out_file = os.path.join( out_path, "%s_%s_L.ann"%(entry,Lchain) )
-            urllib.urlretrieve("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/imgt/%s_%s_L.imgt"%(entry,entry,Lchain), out_file)
+            r = requests.get("http://opig.stats.ox.ac.uk/webapps/abdb/web_front/data/entries/%s/imgt/%s_%s_L.imgt"%(entry,entry,Lchain))
+            open(out_file, "wb").write(r.content)
             if os.path.isfile(out_file):
                 Retrieved = open(out_file).read()
                 if not Retrieved.count("gene_type"):
-                    print "Failed to retrieve imgt file from SAbDab."
+                    print("Failed to retrieve imgt file from SAbDab.")
                     os.remove(out_file)
                     return False
             else:
@@ -254,25 +264,25 @@ if __name__ == "__main__":
 
 
     if not args.summary_file:
-        print >> sys.stderr, "No summary file found."
+        print(sys.stderr, "No summary file found.")
         sys.exit(1)
     if not args.output_path:
-        print >> sys.stderr, "No output path given."
+        print(sys.stderr, "No output path given.")
         sys.exit(1)
 
     if not (args.original_pdb or args.chothia_pdb or args.sequence or args.annotation or args.abangle or args.imgt):
-        print >> sys.stderr, "No requested data type given. Please choose at least one."
+        print(sys.stderr, "No requested data type given. Please choose at least one.")
 
     if not os.path.exists(args.output_path):
-        print >> sys.stderr, "Output path does not exist."
+        print(sys.stderr, "Output path does not exist.")
         sys.exit(1)
 
     if not os.path.isdir(args.output_path):
-        print >> sys.stderr, "Output path is not a directory."
+        print(sys.stderr, "Output path is not a directory.")
         sys.exit(1)
 
     if not os.access(args.output_path, os.W_OK):
-        print >> sys.stderr, "Output path is not writable."
+        print(sys.stderr, "Output path is not writable.")
         sys.exit(1)
 
     # Set up output directory
@@ -280,7 +290,7 @@ if __name__ == "__main__":
     try:
         os.mkdir(output_path)
     except OSError:
-        print >> sys.stderr, "A 'sabdab_dataset' already exists in the output directory. Please rename it or provide a new output directory."
+        print(sys.stderr, "A 'sabdab_dataset' already exists in the output directory. Please rename it or provide a new output directory.")
         sys.exit(1)
 
     # Get the summary data    
@@ -301,15 +311,15 @@ if __name__ == "__main__":
                 except KeyError:
                     data[entry[0].lower()] = [entry]
     except IOError:
-        print >> sys.stderr, "Could not open summary file."
+        print(sys.stderr, "Could not open summary file.")
         sys.exit(1)
     except IndexError:
-        print >> sys.stderr, "Summary file in incorrect format."
+        print(sys.stderr, "Summary file in incorrect format.")
         sys.exit(1)
         
     
     for pdb_entry in data:
-        print "Getting data for %s"%pdb_entry
+        print("Getting data for %s"%pdb_entry)
         got_data=False
         pdb_entry_dir = os.path.join(output_path, pdb_entry) 
         os.mkdir(pdb_entry_dir)
