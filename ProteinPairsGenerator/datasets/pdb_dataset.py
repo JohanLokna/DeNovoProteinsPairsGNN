@@ -24,7 +24,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
     ) -> None:
 
         # Set up PDB
-        # pathPDBFolder(folder=root, divided=False)
+        pathPDBFolder(folder=root, divided=False)
         self.pdb_list_ = pdb_list
 
         transform = T.Compose(
