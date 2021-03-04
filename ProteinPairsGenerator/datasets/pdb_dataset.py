@@ -1,10 +1,15 @@
 from pathlib import Path
-from prody import fetchPDB, pathPDBFolder
+from prody import fetchPDB, pathPDBFolder, parsePDB
 from typing import Iterator, List, Mapping, Union
 
 import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
+
+
+def transform_edge_attr(data):
+    return data
+
 
 class ProteinInMemoryDataset(InMemoryDataset):
 
@@ -19,7 +24,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
     ) -> None:
 
         # Set up PDB
-        pathPDBFolder(path=root, divided=False)
+        pathPDBFolder(folder=root, divided=False)
         self.pdb_list_ = pdb_list
 
         transform = T.Compose(
