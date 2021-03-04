@@ -1,5 +1,5 @@
 from pathlib import Path
-from prody import fetchPDB, pathPDBFolder, parsePDB
+from prody import fetchPDB, pathPDBFolder, parsePDB, AtomGroup
 from typing import Iterator, List, Mapping, Union
 
 import torch
@@ -7,8 +7,8 @@ from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
 
-def transform_edge_attr(data):
-    return data
+def base(data: AtomGroup) -> (torch.Tensor, torch.Tensor):
+    return torch.ones(1), torch.ones(1)
 
 
 class ProteinInMemoryDataset(InMemoryDataset):
@@ -19,7 +19,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         pdb_list : List[str],
         device : str = "cpu",
         transform = None,
-        pre_transform = None,
+        pre_transform : Mapping[AtomGroup, (torch.Tensor, torch.Tensor)] = base,
         pre_filter = None,
     ) -> None:
 
@@ -28,7 +28,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         self.pdb_list_ = pdb_list
 
         transform = T.Compose(
-            [transform_edge_attr] + ([transform] if transform is not None else [])
+            ([transform] if transform is not None else [])
         )
         super().__init__(root, transform, pre_transform, pre_filter)
 
@@ -47,10 +47,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         for data_pdb in parsePDB(self.pdb_list_):
 
             seq = data_pdb.getSequence()
-
-            coords = data_pdb.getCoords()
-
-            print(type(seq), type(coords))
+            edge_index, edge_attr = self.edge_extracter(data_pdb)
 
         #     edge_index, edge_attr = remove_nans(edge_index, edge_attr)
         #     if self.pre_transform is not None:
