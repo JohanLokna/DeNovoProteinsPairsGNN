@@ -48,7 +48,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
 
             seq = data_pdb.getSequence()
 
-            coords = data_pdb.getCoords()[source]
+            coords = data_pdb.getCoords()
 
             print(type(seq), type(coords))
 
