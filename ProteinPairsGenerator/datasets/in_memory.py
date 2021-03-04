@@ -10,7 +10,7 @@ import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
-from ProteinPairsGenerator.utils import seq_to_tensor, 
+from ProteinPairsGenerator.utils import seq_to_tensor
 from ProteinPairsGenerator.datasets import transform_edge_attr
 
 #: Location of training and validation data
