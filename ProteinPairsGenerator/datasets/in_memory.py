@@ -10,7 +10,8 @@ import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
-from ProteinPairsGenerator.utils import seq_to_tensor, transform_edge_attr
+from ProteinPairsGenerator.utils import seq_to_tensor, 
+from ProteinPairsGenerator.datasets import transform_edge_attr
 
 #: Location of training and validation data
 data_url = os.getenv("DATAPKG_DATA_DIR", "https://storage.googleapis.com")
