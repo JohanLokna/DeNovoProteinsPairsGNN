@@ -26,7 +26,8 @@ setup(
       "torch-scatter",
       "torch-sparse",
       "torch-geometric==1.4.3",
-      "mmtf-python==1.1.2"
+      "mmtf-python==1.1.2",
+      "prody"
     ],
     dependency_links=[
       "https://pytorch-geometric.com/whl/torch-${}+{}.html".format(TORCH[:-1] + "0", CUDA) # Torch specification must be X.X.0
