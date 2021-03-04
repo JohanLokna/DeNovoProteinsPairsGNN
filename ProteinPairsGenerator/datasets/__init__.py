@@ -1,4 +1,6 @@
-__all__ = ["utils", "pdb_dataset", "in_dataset"]
+__all__ = ["utils", "pdb_dataset", "in_memory"]
 
-from .pdb_dataset import ProteinInMemoryDataset as PDBDataset
-from .in_memory import ProteinInMemoryDataset as OldDataset
+from . import *
+
+# from .pdb_dataset import ProteinInMemoryDataset as PDBDataset
+# from .in_memory import ProteinInMemoryDataset as OldDataset
