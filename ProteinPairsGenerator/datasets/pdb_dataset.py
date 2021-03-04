@@ -44,4 +44,11 @@ class ProteinInMemoryDataset(InMemoryDataset):
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
-        parsePDB(self.pdb_list_)
+        for data_pdb in parsePDB(self.pdb_list_):
+
+            seq = data_pdb.getSequence()
+            print(seq)
+
+            edge_index, edge_attr = remove_nans(edge_index, edge_attr)
+            data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
+            data = data.coalesce()
