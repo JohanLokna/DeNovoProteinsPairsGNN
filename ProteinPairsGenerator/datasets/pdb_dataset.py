@@ -44,4 +44,4 @@ class ProteinInMemoryDataset(InMemoryDataset):
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
-        print(parsePDB(self.pdb_list_))
+        parsePDB(self.pdb_list_)
