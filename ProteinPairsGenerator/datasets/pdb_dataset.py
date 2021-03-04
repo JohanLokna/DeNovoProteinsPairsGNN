@@ -47,7 +47,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         for data_pdb in parsePDB(self.pdb_list_):
 
             seq = data_pdb.getSequence()
-            edge_attr = self.edge_extracter(data_pdb)
+            edge_attr = self.pre_transform(data_pdb)
 
         #     edge_index, edge_attr = remove_nans(edge_index, edge_attr)
         #     if self.pre_transform is not None:
