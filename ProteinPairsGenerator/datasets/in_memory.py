@@ -1,6 +1,5 @@
 import os
 import numpy as np
-from ProteinPairsGenerator.utils import seq_to_tensor
 import pyarrow.parquet as pq
 from pathlib import Path
 import shutil
@@ -11,7 +10,7 @@ import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
-from .utils import transform_edge_attr
+from ProteinPairsGenerator.utils import seq_to_tensor, transform_edge_attr
 
 #: Location of training and validation data
 data_url = os.getenv("DATAPKG_DATA_DIR", "https://storage.googleapis.com")
