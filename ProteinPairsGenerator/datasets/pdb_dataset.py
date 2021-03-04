@@ -1,13 +1,13 @@
 from pathlib import Path
 from prody import fetchPDB, pathPDBFolder, parsePDB, AtomGroup
-from typing import Iterator, List, Mapping, Union
+from typing import List, Mapping, Tuple
 
 import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
 
-def base(data: AtomGroup) -> torch.Tensor:
+def base(data: AtomGroup) -> Tuple[torch.Tensor, torch.Tensor]:
     return torch.ones(1), torch.ones(1)
 
 
@@ -19,7 +19,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         pdb_list : List[str],
         device : str = "cpu",
         transform = None,
-        pre_transform : Mapping[AtomGroup, torch.Tensor] = base,
+        pre_transform : Mapping[AtomGroup, Tuple[torch.Tensor, torch.Tensor]] = base,
         pre_filter = None,
     ) -> None:
 
