@@ -7,7 +7,7 @@ from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
 
-def base(data: AtomGroup) -> (torch.Tensor, torch.Tensor):
+def base(data: AtomGroup) -> torch.Tensor:
     return torch.ones(1), torch.ones(1)
 
 
@@ -19,7 +19,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         pdb_list : List[str],
         device : str = "cpu",
         transform = None,
-        pre_transform : Mapping[AtomGroup, (torch.Tensor, torch.Tensor)] = base,
+        pre_transform : Mapping[AtomGroup, torch.Tensor] = base,
         pre_filter = None,
     ) -> None:
 
@@ -47,7 +47,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         for data_pdb in parsePDB(self.pdb_list_):
 
             seq = data_pdb.getSequence()
-            edge_index, edge_attr = self.edge_extracter(data_pdb)
+            edge_attr = self.edge_extracter(data_pdb)
 
         #     edge_index, edge_attr = remove_nans(edge_index, edge_attr)
         #     if self.pre_transform is not None:
