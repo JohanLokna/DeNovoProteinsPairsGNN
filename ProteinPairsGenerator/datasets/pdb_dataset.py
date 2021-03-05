@@ -24,12 +24,12 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Mask and put in correct shape
     mask = (cart_distances < 12)
-    edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()])
+    edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
 
     print(edge_attr.shape)
 
     print(list(torch.where(mask))[0].shape)
-    edge_index = torch.stack(list(torch.where(mask)), dim=-1)
+    edge_index = torch.stack(list(torch.where(mask)), dim=0)
 
     print(edge_index.shape)
 
