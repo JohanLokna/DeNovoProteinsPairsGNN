@@ -5,28 +5,29 @@ import torch
 from numba import njit
 
 # List of amino acids (symbol)
-AMINO_ACIDS = [
-    "G",
-    "V",
-    "A",
-    "L",
-    "I",
-    "C",
-    "M",
-    "F",
-    "W",
-    "P",
-    "D",
-    "E",
-    "S",
-    "T",
-    "Y",
-    "Q",
-    "N",
-    "K",
-    "R",
-    "H",
-]
+def getAminoAcids() -> List[str]:
+    return [
+        "G",
+        "V",
+        "A",
+        "L",
+        "I",
+        "C",
+        "M",
+        "F",
+        "W",
+        "P",
+        "D",
+        "E",
+        "S",
+        "T",
+        "Y",
+        "Q",
+        "N",
+        "K",
+        "R",
+        "H",
+    ]
 
 # List  of amino acids (ordinal representation)
 AMINO_ACIDS_ORD: List[int] = [
@@ -75,13 +76,12 @@ def seq_to_tensor(seq: bytes) -> np.ndarray:
 def seq_to_torch(seq: str) -> torch.Tensor:
     out = np.ones(len(seq)) * 20
     for i, aa in enumerate(seq):
-        for aa_ref in AMINO_ACIDS:
-            break
-    #         if aa == aa_ref:
-    #             out[i] = j
-    #             break
+        for j, aa_ref in enumerate(getAminoAcids()):
+            if aa == aa_ref:
+                out[i] = j
+                break
     return out
 
 def array_to_seq(array: np.ndarray) -> str:
-    seq = "".join(AMINO_ACIDS[i] for i in array)
+    seq = "".join(getAminoAcids()[i] for i in array)
     return seq
