@@ -26,8 +26,9 @@ def base(data_pdb: AtomGroup) -> Data:
     # Compute caresian distances
     k = 50
     coords = torch.from_numpy(data_pdb.getCoordsets())
-    print(n, '\n', data_pdb.getCoordsets().shape)
-    cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0))
+    cart_distances = torch.cdist(coords, coords)
+    print(n, '\n', cart_distances.shape)
+    exit()
 
     # Mask and put in correct shape
     mask = (cart_distances < 12) & ~torch.eye(k, dtype=torch.bool)
