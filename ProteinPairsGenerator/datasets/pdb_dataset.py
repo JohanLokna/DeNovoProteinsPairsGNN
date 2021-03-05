@@ -25,7 +25,7 @@ def base(data_pdb: AtomGroup) -> Data:
     coords = torch.from_numpy(data_pdb.getCoords())
     cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0)).squeeze(0)
 
-    print((cart_distances < 0).any())
+    print(cart_distances)
 
     # Mask and put in correct shape
     mask = (cart_distances < 12) & ~torch.eye(n, dtype=torch.bool)
