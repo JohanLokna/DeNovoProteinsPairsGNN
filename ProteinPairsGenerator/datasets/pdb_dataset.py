@@ -10,10 +10,12 @@ import torch_geometric.transforms as T
 def base(data_pdb: AtomGroup) -> Data:
     
     # Get sequence
-    seq = data_pdb.getSequence()
+    seq = torch.tensor(
+        seq_to_tensor(data_pdb.getSequence().encode("ascii")), dtype=torch.long
+    )
 
     # Find intersequence distance
-    n = len(seq)
+    n = seq.size
 
     ids = torch.arange(0, n, dtype=torch.float32).unsqueeze(-1).unsqueeze(0)
     seq_distances = torch.cdist(ids, ids).flatten()
