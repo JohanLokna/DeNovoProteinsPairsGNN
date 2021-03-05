@@ -37,12 +37,8 @@ def base(data_pdb: AtomGroup) -> Data:
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
 
     torch.set_printoptions(edgeitems=100)
-
-    print(edge_attr)
-    print(edge_index)
-
     edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
-    print(n, edge_index_t != edge_index_t, sep='\n\n\n')
+    print(n, (edge_index_t != edge_index_t).any)(), sep='\n\n\n')
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
