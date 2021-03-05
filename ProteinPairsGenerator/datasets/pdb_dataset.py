@@ -29,7 +29,7 @@ def base(data_pdb: AtomGroup) -> Data:
     mask = (cart_distances < 1000) & ~torch.eye(n, dtype=torch.bool)
     # edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
     # edge_attr = edge_attr[mask.flatten(), :]
-    edge_attr = torch.zeros((n, n))[mask].reshape((-1, 1))
+    edge_attr = torch.zeros_like(mask)[mask].reshape((-1, 1))
 
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
 
