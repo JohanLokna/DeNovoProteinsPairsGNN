@@ -72,7 +72,7 @@ def seq_to_tensor(seq: bytes) -> np.ndarray:
 
 
 @njit
-def seq_to_torch(seq: bytes) -> torch.Tensor:
+def seq_to_torch(seq: str) -> torch.Tensor:
     out = np.ones(len(seq)) * 20
     for i, aa in enumerate(seq):
         for j, aa_ref in enumerate(AMINO_ACIDS):
