@@ -17,6 +17,7 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Find intersequence distance
     n = seq.size
+    print(n, type(n))
 
     ids = torch.arange(0, n, dtype=torch.float32).unsqueeze(-1).unsqueeze(0)
     seq_distances = torch.cdist(ids, ids).flatten()
