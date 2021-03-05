@@ -26,8 +26,7 @@ def base(data_pdb: AtomGroup) -> Data:
     cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0)).squeeze(0)
 
     # Mask and put in correct shape
-    mask = (cart_distances < 12)
-    maks.diagonal() = torch.zeros(n, dtype=torch.bool)
+    mask = (cart_distances < 12) & ~torch.eye(n)
     edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
     edge_attr = edge_attr[mask.flatten(), :]
 
