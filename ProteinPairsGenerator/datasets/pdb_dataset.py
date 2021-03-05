@@ -7,8 +7,35 @@ from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
 
-def base(data: AtomGroup) -> Tuple[torch.Tensor, torch.Tensor]:
-    return torch.ones(1), torch.ones(1)
+def base(data_pdb: AtomGroup) -> Data:
+    
+    # Get sequence
+    seq = data_pdb.getSequence()
+
+    # Find intersequence distance
+    n = len(seq)
+    ids = torch.arange(0, n).unsqueeze(0).unsqueeze(0)
+    seq_distances = torch.cdist(ids, ids).squeeze(0).squeeze(0)
+
+    # Compute caresian distances
+    coords = torch.from_numpy(data_pdb.getCoords())
+    cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0)).squeeze(0)
+
+    # Mask and put in correct shape
+    mask = (cart_distances < 12).flatten()
+    edge_index = torch.cat([cart_distances.flatten(), seq_distances.flatten()], dim=1)[mask]
+    edge_attr = torch.stack(torch.where(mask))
+
+    # Create data point
+    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
+    data = data.coalesce()
+
+    # Assertions
+    assert not data.contains_self_loops()
+    assert data.is_coalesced()
+    assert data.is_undirected()
+
+    return data
 
 
 class ProteinInMemoryDataset(InMemoryDataset):
@@ -19,7 +46,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         pdb_list : List[str],
         device : str = "cpu",
         transform = None,
-        pre_transform : Mapping[AtomGroup, Tuple[torch.Tensor, torch.Tensor]] = base,
+        pre_transform : Mapping[AtomGroup, Data] = base,
         pre_filter = None,
     ) -> None:
 
@@ -44,19 +71,6 @@ class ProteinInMemoryDataset(InMemoryDataset):
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
-        for data_pdb in parsePDB(self.pdb_list_):
-
-            seq = data_pdb.getSequence()
-            edge_attr = self.pre_transform(data_pdb)
-
-        #     edge_index, edge_attr = remove_nans(edge_index, edge_attr)
-        #     if self.pre_transform is not None:
-        #         data = self.pre_transform(data)
-        #     if data is not None:
-        #         data_list.append(data)
-        # data, slices = self.collate(data_list)
-        # torch.save((data, slices), self.processed_paths[0])
-
-
-
-
+        data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
+        data, slices = self.collate(data_list)
+        torch.save((data, slices), "test")
