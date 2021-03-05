@@ -28,7 +28,7 @@ def base(data_pdb: AtomGroup) -> Data:
 
     print(edge_attr.shape)
 
-    edge_index = torch.stack(torch.where(mask))
+    edge_index = torch.stack(list(torch.where(mask)), dim=-1)
 
     print(edge_index.shape)
 
