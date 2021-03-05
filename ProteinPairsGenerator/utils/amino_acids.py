@@ -5,7 +5,7 @@ import torch
 from numba import njit
 
 # List of amino acids (symbol)
-AMINO_ACIDS: List[str] = [
+AMINO_ACIDS = [
     "G",
     "V",
     "A",
