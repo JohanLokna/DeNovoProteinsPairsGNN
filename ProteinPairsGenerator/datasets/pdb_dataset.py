@@ -41,7 +41,7 @@ def base(data_pdb: AtomGroup) -> Data:
     print(n, (edge_index_t != edge_index_t).any(), sep='\n\n\n')
 
     # Create data point
-    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr_t)
+    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
     data = data.coalesce()
 
     # Assertions
