@@ -39,7 +39,7 @@ def base(data_pdb: AtomGroup) -> Data:
     data = data.coalesce()
 
     edge_index, edge_attr = data.edge_index, data.edge_attr
-    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
+    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=False)
     print((edge_index == edge_index_t).all(), (edge_attr == edge_attr_t).all(), sep='\n\n\n')
 
     # Assertions
