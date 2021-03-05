@@ -24,7 +24,6 @@ def base(data_pdb: AtomGroup) -> Data:
     seq_distances = torch.cdist(ids, ids).flatten()
 
     # Compute caresian distances
-    k = 50
     coords = torch.from_numpy(data_pdb.getCoordsets())
     cart_distances = torch.cdist(coords, coords).squeeze(0)
 
@@ -32,17 +31,16 @@ def base(data_pdb: AtomGroup) -> Data:
     mask = (cart_distances < 12) & ~torch.eye(n, dtype=torch.bool)
     # edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
     # edge_attr = edge_attr[mask.flatten(), :]
-    print(cart_distances.shape)
     edge_attr = cart_distances[mask].reshape((-1, 1))
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
-
-    torch.set_printoptions(edgeitems=100)
-    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=False)
-    print(n, (edge_attr == edge_attr_t).all(), sep='\n\n\n')
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
     data = data.coalesce()
+
+    edge_index, edge_attr = data.edge_index, data.edge_attr
+    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
+    print((edge_index == edge_index_t).all(), (edge_attr == edge_attr_t).all(), sep='\n\n\n')
 
     # Assertions
     assert not data.contains_self_loops()
