@@ -24,11 +24,12 @@ def base(data_pdb: AtomGroup) -> Data:
     seq_distances = torch.cdist(ids, ids).flatten()
 
     # Compute caresian distances
-    coords = torch.from_numpy(data_pdb.getCoordsets())
+    k = 10
+    coords = torch.from_numpy(data_pdb.getCoordsets()[0:k])
     cart_distances = torch.cdist(coords, coords).squeeze(0)
 
     # Mask and put in correct shape
-    mask = (cart_distances < 12) & ~torch.eye(n, dtype=torch.bool)
+    mask = (cart_distances < 2) & ~torch.eye(n, dtype=torch.bool)
     # edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
     # edge_attr = edge_attr[mask.flatten(), :]
     edge_attr = cart_distances[mask].reshape((-1, 1))
