@@ -28,7 +28,28 @@ def getAminoAcids():
         "R",
         "H",
     ]
-AMINO_ACIDS = getAminoAcids()
+AMINO_ACIDS = [
+    "G",
+    "V",
+    "A",
+    "L",
+    "I",
+    "C",
+    "M",
+    "F",
+    "W",
+    "P",
+    "D",
+    "E",
+    "S",
+    "T",
+    "Y",
+    "Q",
+    "N",
+    "K",
+    "R",
+    "H",
+]
 
 
 # List  of amino acids (ordinal representation)
@@ -77,6 +98,7 @@ def seq_to_tensor(seq: bytes) -> np.ndarray:
 @njit
 def seq_to_torch(seq: str) -> torch.Tensor:
     out = np.ones(len(seq)) * 20
+    getAminoAcids()
     for i, aa in enumerate(seq):
         for j, aa_ref in enumerate(getAminoAcids()):
             if aa == aa_ref:
