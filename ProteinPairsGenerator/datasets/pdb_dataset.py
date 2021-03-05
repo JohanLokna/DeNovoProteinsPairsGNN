@@ -26,16 +26,11 @@ def base(data_pdb: AtomGroup) -> Data:
     cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0)).squeeze(0)
 
     # Mask and put in correct shape
-    mask = (cart_distances < 1000) & ~torch.eye(n, dtype=torch.bool)
+    mask = (cart_distances < 12) & ~torch.eye(n, dtype=torch.bool)
     # edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
     # edge_attr = edge_attr[mask.flatten(), :]
     edge_attr = torch.zeros_like(mask)[mask].reshape((-1, 1))
-
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
-
-    print(edge_index)
-
-    print(edge_attr.shape, edge_index.shape)
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
