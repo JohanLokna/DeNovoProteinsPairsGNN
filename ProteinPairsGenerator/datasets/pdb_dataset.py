@@ -18,7 +18,7 @@ def base(data_pdb: AtomGroup) -> Data:
     seq_distances = torch.cdist(ids, ids).squeeze(0).squeeze(0)
 
     # Compute caresian distances
-    coords = torch.from_numpy(data_pdb.getCoords(), dtype=torch.float32)
+    coords = torch.from_numpy(data_pdb.getCoords())
     cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0)).squeeze(0)
 
     # Mask and put in correct shape
