@@ -25,7 +25,7 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Compute caresian distances
     k = 50
-    coords = torch.from_numpy(data_pdb.getCoords())[0:k]
+    coords = torch.from_numpy(data_pdb.getCoords())
     print(coords.shape)
     cart_distances = torch.cdist(coords.unsqueeze(0), coords.unsqueeze(0))
 
