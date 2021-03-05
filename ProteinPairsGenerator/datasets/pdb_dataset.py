@@ -36,10 +36,10 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
-    # data = data.coalesce()
+    data = data.coalesce()
 
     # edge_index, edge_attr = data.edge_index, data.edge_attr
-    edge_index_t, edge_attr_t = coalesce(edge_index, edge_attr, n, n)
+    edge_index_t, edge_attr_t = data.edge_index, data.edge_attr
     print((edge_index == edge_index_t).all(), (edge_attr == edge_attr_t).all(), sep='\n\n\n')
 
     # Assertions
