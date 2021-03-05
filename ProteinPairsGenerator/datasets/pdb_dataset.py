@@ -31,11 +31,11 @@ def base(data_pdb: AtomGroup) -> Data:
     mask = (cart_distances < 12) & ~torch.eye(n, dtype=torch.bool)
     # edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
     # edge_attr = edge_attr[mask.flatten(), :]
-    edge_attr = cart_distances[mask].reshape((1, -1))
+    edge_attr = cart_distances[mask].reshape((-1, 1))
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
 
     edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
-    print(torch.where(edge_attr == edge_attr_t))
+    print(n, torch.where(edge_attr == edge_attr_t), sep='\n')
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
