@@ -6,12 +6,13 @@ import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
+from ProteinPairsGenerator.utils import seq_to_torch
 
 def base(data_pdb: AtomGroup) -> Data:
     
     # Get sequence
     seq = torch.tensor(
-        seq_to_tensor(data_pdb.getSequence().encode("ascii")), dtype=torch.long
+        seq_to_torch(data_pdb.getSequence()), dtype=torch.long
     )
 
     # Find intersequence distance
