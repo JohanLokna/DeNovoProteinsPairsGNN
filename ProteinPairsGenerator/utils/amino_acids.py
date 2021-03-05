@@ -28,7 +28,7 @@ def getAminoAcids() -> List[str]:
         "R",
         "H",
     ]
-AMINO_ACIDS_ORD = getAminoAcids()
+AMINO_ACIDS = getAminoAcids()
 
 
 # List  of amino acids (ordinal representation)
