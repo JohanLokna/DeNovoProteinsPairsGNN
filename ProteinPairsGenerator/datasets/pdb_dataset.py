@@ -6,6 +6,8 @@ import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
+from torch_sparse import transpose
+
 from ProteinPairsGenerator.utils import seq_to_torch
 
 def base(data_pdb: AtomGroup) -> Data:
@@ -31,6 +33,9 @@ def base(data_pdb: AtomGroup) -> Data:
     # edge_attr = edge_attr[mask.flatten(), :]
     edge_attr = cart_distances[mask].reshape((-1, 1))
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
+
+    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
+    print(torch.where(edge_attr == edge_attr_t))
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
