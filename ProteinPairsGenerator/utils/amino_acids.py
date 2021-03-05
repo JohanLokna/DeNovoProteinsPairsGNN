@@ -53,7 +53,7 @@ AMINO_ACIDS_ORD: List[int] = [
     72,
 ]
 
-assert all(ord(AMINO_ACIDS[i]) == AMINO_ACIDS_ORD[i] for i in range(len(AMINO_ACIDS)))
+# assert all(ord(AMINO_ACIDS[i]) == AMINO_ACIDS_ORD[i] for i in range(len(AMINO_ACIDS)))
 
 
 AMINO_ACID_TO_IDX = {aa: i for i, aa in enumerate(AMINO_ACIDS + ["-"])}
