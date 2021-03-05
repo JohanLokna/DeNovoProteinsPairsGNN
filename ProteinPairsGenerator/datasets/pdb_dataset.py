@@ -3,12 +3,12 @@ from prody import fetchPDB, pathPDBFolder, parsePDB, AtomGroup
 from typing import List, Mapping, Tuple
 
 import torch
-from torch_geometric.data import Data, Dataset, InMemoryDataset
+from torch_geometric.data import Data, InMemoryDataset
+from torch_geometric.utils import remove_self_loops
 import torch_geometric.transforms as T
 
-from torch_sparse import transpose, coalesce
-
 from ProteinPairsGenerator.utils import seq_to_torch
+from .utils import transform_edge_attr
 
 def base(data_pdb: AtomGroup) -> Data:
     
@@ -24,26 +24,25 @@ def base(data_pdb: AtomGroup) -> Data:
     seq_distances = torch.cdist(ids, ids).flatten()
 
     # Compute caresian distances
-    k = 10
-    coords = torch.from_numpy(data_pdb.getCoordsets()[0:k])
+    coords = torch.from_numpy(data_pdb.getCoordsets())
     cart_distances = torch.cdist(coords, coords).squeeze(0)
 
-    # Mask and put in correct shape
-    mask = (cart_distances < 2) & ~torch.eye(n, dtype=torch.bool)
-    # edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()], dim=1)
-    # edge_attr = edge_attr[mask.flatten(), :]
-    edge_attr = cart_distances[mask].reshape((-1, 1))
+    # Have to aggregate due to implementation of Data in torch_geometric
+    # One uses == instead of epsilon equality
+    cart_distances = 0.5 * (cart_distances + cart_distances.transpose(0, 1))
+
+    # Compute edges and their atributes
+    mask = cart_distances < 12
+    edge_attr = torch.stack(
+      [cart_distances.flatten(), seq_distances.flatten()], dim=1
+    )
+    edge_attr = transform_edge_attr(edge_attr[mask.flatten(), :])
     edge_index = torch.stack(torch.where(mask), dim=0)
+    edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
     data = data.coalesce()
-
-    # edge_index, edge_attr = data.edge_index, data.edge_attr
-    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
-    index_symmetric = torch.all(edge_index == edge_index_t)
-    attr_symmetric = torch.all(edge_attr == edge_attr_t)
-    print(index_symmetric, attr_symmetric)
 
     # Assertions
     assert not data.contains_self_loops()
@@ -73,14 +72,15 @@ class ProteinInMemoryDataset(InMemoryDataset):
             ([transform] if transform is not None else [])
         )
         super().__init__(root, transform, pre_transform, pre_filter)
+        self.data, self.slices = torch.load(self.processed_paths[0])
 
     @property
     def raw_file_names(self):
-        return [pdb + ".pdb" for pdb in self.pdb_list_]
+        return [self.root.joinpath(pdb + ".pdb") for pdb in self.pdb_list_]
 
     @property
     def processed_file_names(self):
-        return [pdb + "_processed.pdb" for pdb in self.pdb_list_]
+        return [self.root.joinpath("processed_pdb")]
 
     def download(self):
         fetchPDB(self.pdb_list_, compressed=True)
@@ -88,4 +88,4 @@ class ProteinInMemoryDataset(InMemoryDataset):
     def process(self):
         data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
         data, slices = self.collate(data_list)
-        torch.save((data, slices), "test")
+        torch.save((data, slices), self.processed_file_names[0])
