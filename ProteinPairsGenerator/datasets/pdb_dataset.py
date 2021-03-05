@@ -15,11 +15,8 @@ def base(data_pdb: AtomGroup) -> Data:
     # Find intersequence distance
     n = len(seq)
 
-    ids = torch.arange(0, n, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
-    print(ids)
+    ids = torch.arange(0, n, dtype=torch.float32).unsqueeze(-1).unsqueeze(0)
     seq_distances = torch.cdist(ids, ids).flatten()
-
-    print(seq_distances)
 
     # Compute caresian distances
     coords = torch.from_numpy(data_pdb.getCoords())
