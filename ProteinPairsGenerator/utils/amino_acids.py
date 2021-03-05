@@ -5,7 +5,7 @@ import torch
 from numba import njit
 
 # List of amino acids (symbol)
-def getAminoAcids() -> List[str]:
+def getAminoAcids():
     return [
         "G",
         "V",
