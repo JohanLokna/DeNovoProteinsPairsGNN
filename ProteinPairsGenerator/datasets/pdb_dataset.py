@@ -39,8 +39,10 @@ def base(data_pdb: AtomGroup) -> Data:
     data = data.coalesce()
 
     # edge_index, edge_attr = data.edge_index, data.edge_attr
-    edge_index_t, edge_attr_t = data.edge_index, data.edge_attr
-    print((edge_index == edge_index_t).all(), (edge_attr == edge_attr_t).all(), sep='\n\n\n')
+    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=True)
+    index_symmetric = torch.all(edge_index == edge_index_t)
+    attr_symmetric = torch.all(edge_attr == edge_attr_t)
+    print(index_symmetric, attr_symmetric)
 
     # Assertions
     assert not data.contains_self_loops()
