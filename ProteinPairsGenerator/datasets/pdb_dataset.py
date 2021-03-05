@@ -29,6 +29,8 @@ def base(data_pdb: AtomGroup) -> Data:
 
     edge_index = torch.stack(list(torch.where(mask)), dim=0)
 
+    print(edge_attr.shape, edge_index.shape)
+
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
     data = data.coalesce()
