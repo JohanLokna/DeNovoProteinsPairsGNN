@@ -6,7 +6,7 @@ import torch
 from torch_geometric.data import Data, Dataset, InMemoryDataset
 import torch_geometric.transforms as T
 
-from torch_sparse import transpose
+from torch_sparse import transpose, coalesce
 
 from ProteinPairsGenerator.utils import seq_to_torch
 
@@ -38,8 +38,8 @@ def base(data_pdb: AtomGroup) -> Data:
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
     data = data.coalesce()
 
-    edge_index, edge_attr = data.edge_index, data.edge_attr
-    edge_index_t, edge_attr_t = transpose(edge_index, edge_attr, n, n, coalesced=False)
+    # edge_index, edge_attr = data.edge_index, data.edge_attr
+    edge_index_t, edge_attr_t = coalesce(edge_index, edge_attr, n, n)
     print((edge_index == edge_index_t).all(), (edge_attr == edge_attr_t).all(), sep='\n\n\n')
 
     # Assertions
