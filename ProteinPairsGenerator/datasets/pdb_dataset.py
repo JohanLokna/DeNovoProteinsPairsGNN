@@ -23,8 +23,13 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Mask and put in correct shape
     mask = (cart_distances < 12).flatten()
-    edge_index = torch.cat([cart_distances.flatten(), seq_distances.flatten()], dim=1)[mask]
-    edge_attr = torch.stack(torch.where(mask))
+    edge_attr = torch.stack([cart_distances.flatten(), seq_distances.flatten()])
+
+    print(edge_index.shape)
+
+    edge_index = torch.stack(torch.where(mask))
+
+    print(edge_attr.shape)
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
