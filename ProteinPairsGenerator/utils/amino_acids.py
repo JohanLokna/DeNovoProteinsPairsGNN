@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+import torch
 from numba import njit
 
 # List of amino acids (symbol)
@@ -69,6 +70,16 @@ def seq_to_tensor(seq: bytes) -> np.ndarray:
                 break
     return out
 
+
+@njit
+def seq_to_torch(seq: bytes) -> torch.Tensor:
+    out = np.ones(len(seq)) * 20
+    for i, aa in enumerate(seq):
+        for j, aa_ref in enumerate(AMINO_ACIDS):
+            if aa == aa_ref:
+                out[i] = j
+                break
+    return out
 
 def array_to_seq(array: np.ndarray) -> str:
     seq = "".join(AMINO_ACIDS[i] for i in array)
