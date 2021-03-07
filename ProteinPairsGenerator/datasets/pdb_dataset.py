@@ -40,8 +40,7 @@ def base(data_pdb: AtomGroup) -> Data:
     )
     edge_attr = edge_attr[mask.flatten(), :]
     edge_index = torch.stack(torch.where(mask), dim=0)
-    print(edge_attr.shape, edge_index.shape)
-    #edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
+    edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
