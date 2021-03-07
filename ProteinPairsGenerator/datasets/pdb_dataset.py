@@ -17,6 +17,8 @@ def base(data_pdb: AtomGroup) -> Data:
         seq_to_torch(data_pdb.getSequence()), dtype=torch.long
     )
 
+    print(data_pdb.getSecindices())
+
     # Find intersequence distance
     n = seq.shape[0]
 
