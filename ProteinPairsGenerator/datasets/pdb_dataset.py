@@ -63,8 +63,6 @@ class ProteinInMemoryDataset(InMemoryDataset):
         pre_filter = None,
     ) -> None:
 
-        print("OK")
-
         # Set up PDB
         pathPDBFolder(folder=root, divided=False)
         self.pdb_list_ = pdb_list
@@ -84,10 +82,10 @@ class ProteinInMemoryDataset(InMemoryDataset):
         return [self.root.joinpath("processed_pdb")]
 
     def download(self):
+        print("OK")
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
         data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
-        print("OK")
