@@ -13,6 +13,8 @@ from .utils import transform_edge_attr
 def base(data_pdb: AtomGroup) -> Data:
 
     set_pdb = data_pdb.select("name CA")
+    print(set_pdb)
+    print(set_pdb.numAtoms)
     
     # Get sequence
     seq = torch.tensor(
