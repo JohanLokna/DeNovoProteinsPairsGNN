@@ -84,6 +84,8 @@ class ProteinInMemoryDataset(InMemoryDataset):
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
-        data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
-        data, slices = self.collate(data_list)
-        torch.save((data, slices), self.processed_file_names[0])
+        # data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
+        # data, slices = self.collate(data_list)
+        # torch.save((data, slices), self.processed_file_names[0])
+        print(parsePDB(self.pdb_list_, chain="E").getSequence())
+        print(parsePDB(self.pdb_list_, chain="D").getSequence())
