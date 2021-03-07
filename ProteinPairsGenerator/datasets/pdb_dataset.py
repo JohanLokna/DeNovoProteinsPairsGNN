@@ -12,7 +12,7 @@ from .utils import transform_edge_attr
 
 def base(data_pdb: AtomGroup) -> Data:
 
-    set_pdb = data_pdb.select("name CA chain H")
+    set_pdb = data_pdb.select("name CA chain L")
     print(set_pdb.getSequence())
     
     # Get sequence
