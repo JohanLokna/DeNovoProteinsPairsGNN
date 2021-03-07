@@ -12,10 +12,7 @@ from .utils import transform_edge_attr
 
 def base(data_pdb: AtomGroup) -> Data:
 
-    print(data_pdb.numAtoms)
-    set_pdb = data_pdb.select("name CA")
-    print(set_pdb)
-    print(set_pdb.numAtoms)
+    set_pdb = data_pdb.select("name CA chain H")
     
     # Get sequence
     seq = torch.tensor(
