@@ -27,10 +27,6 @@ def base(data_pdb: AtomGroup) -> Data:
     coords = torch.from_numpy(data_pdb.getCoordsets())
     cart_distances = torch.cdist(coords, coords).squeeze(0)
 
-    # Have to aggregate due to implementation of Data in torch_geometric
-    # One uses == instead of epsilon equality
-    cart_distances = 0.5 * (cart_distances + cart_distances.transpose(0, 1))
-
     # Compute edges and their atributes
     mask = cart_distances < 12
     edge_attr = torch.stack(
@@ -42,13 +38,12 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
-    # data = transform_edge_attr(data)
+    data = transform_edge_attr(data)
     data = data.coalesce()
 
     # Assertions
     assert not data.contains_self_loops()
     assert data.is_coalesced()
-    assert data.is_undirected()
 
     return data
 
