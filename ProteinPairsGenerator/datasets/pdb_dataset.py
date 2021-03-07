@@ -88,8 +88,8 @@ class ProteinInMemoryDataset(InMemoryDataset):
 
         e = parsePDB(self.pdb_list_, chain="E").select("name CA")
         print(e)
-        print(e.getResnames())
+        print(e.getSequence())
 
         d = parsePDB(self.pdb_list_, chain="D").select("name CA")
         print(d)
-        print(e.getResnames())
+        print(d.getSequence())
