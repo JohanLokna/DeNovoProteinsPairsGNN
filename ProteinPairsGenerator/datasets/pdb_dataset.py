@@ -17,6 +17,7 @@ def base(data_pdb: AtomGroup) -> Data:
         seq_to_torch(data_pdb.getSequence()), dtype=torch.long
     )
 
+    print(hasattr(self, 'getResnames'))
     print(data_pdb.getSequence(), '\n\n')
 
     # Find intersequence distance
