@@ -17,7 +17,6 @@ def base(data_pdb: AtomGroup) -> Data:
         seq_to_torch(data_pdb.getSequence()), dtype=torch.long
     )
 
-    print("OKOKO")
     print(data_pdb.getSequence(), '\n\n')
 
     # Find intersequence distance
@@ -82,11 +81,9 @@ class ProteinInMemoryDataset(InMemoryDataset):
         return [self.root.joinpath("processed_pdb")]
 
     def download(self):
-        print("OK")
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
-        print("OK")
         data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
