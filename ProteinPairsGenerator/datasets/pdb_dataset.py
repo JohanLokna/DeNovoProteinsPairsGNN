@@ -86,7 +86,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         return [self.root.joinpath("processed_pdb")]
 
     def download(self):
-        fetchPDB(self.pdb_list_, compressed=True)
+        fetchPDB(self.pdb_list_, compressed=False)
 
     def process(self):
         data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
