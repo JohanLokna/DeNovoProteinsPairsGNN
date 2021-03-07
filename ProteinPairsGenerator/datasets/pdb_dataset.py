@@ -14,6 +14,8 @@ def base(data_pdb: AtomGroup) -> Data:
 
     set_pdb = data_pdb.select("name CA chain L")
     print(set_pdb.getSequence())
+    set_pdbH = data_pdb.select("name CA chain H")
+    print(set_pdbH.getSequence())
     
     # Get sequence
     seq = torch.tensor(
