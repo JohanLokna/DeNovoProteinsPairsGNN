@@ -11,10 +11,12 @@ from ProteinPairsGenerator.utils import seq_to_torch
 from .utils import transform_edge_attr
 
 def base(data_pdb: AtomGroup) -> Data:
+
+    set_pdb = data_pdb.select("name CA")
     
     # Get sequence
     seq = torch.tensor(
-        seq_to_torch(data_pdb.getSequence()), dtype=torch.long
+        seq_to_torch(set_pdb.getSequence()), dtype=torch.long
     )
 
     # Find intersequence distance
@@ -24,7 +26,7 @@ def base(data_pdb: AtomGroup) -> Data:
     seq_distances = torch.cdist(ids, ids).flatten()
 
     # Compute caresian distances
-    coords = torch.from_numpy(data_pdb.getCoordsets())
+    coords = torch.from_numpy(set_pdb.getCoordsets())
     cart_distances = torch.cdist(coords, coords).squeeze(0)
 
     # Compute edges and their atributes
@@ -82,14 +84,6 @@ class ProteinInMemoryDataset(InMemoryDataset):
         fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
-        # data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
-        # data, slices = self.collate(data_list)
-        # torch.save((data, slices), self.processed_file_names[0])
-
-        e = parsePDB(self.pdb_list_, chain="E").select("name CA")
-        print(e)
-        print("GFNIKDY" in e.getSequence())
-
-        d = parsePDB(self.pdb_list_, chain="D").select("name CA")
-        print(d)
-        print("KASQDIRKYLN" in d.getSequence())
+        data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
+        data, slices = self.collate(data_list)
+        torch.save((data, slices), self.processed_file_names[0])
