@@ -42,7 +42,7 @@ def base(data_pdb: AtomGroup) -> Data:
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
-    data = transform_edge_attr(data)
+    # data = transform_edge_attr(data)
     data = data.coalesce()
 
     # Assertions
