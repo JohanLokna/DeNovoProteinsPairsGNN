@@ -63,6 +63,8 @@ class ProteinInMemoryDataset(InMemoryDataset):
         pre_filter = None,
     ) -> None:
 
+        print("OK")
+
         # Set up PDB
         pathPDBFolder(folder=root, divided=False)
         self.pdb_list_ = pdb_list
