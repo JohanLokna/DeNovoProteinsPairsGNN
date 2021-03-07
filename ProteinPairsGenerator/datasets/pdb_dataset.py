@@ -16,12 +16,8 @@ def base(data_pdb: AtomGroup) -> Data:
     seq = torch.tensor(
         seq_to_torch(data_pdb.getSequence()), dtype=torch.long
     )
-
-    print(hasattr(data_pdb, 'getResnames'))
-    print(hasattr(data_pdb, 'getResname'))
-    print(data_pdb.getResnames())
+    
     print(data_pdb.numAtoms())
-    print(data_pdb.getSequence(), '\n\n')
 
     # Find intersequence distance
     n = seq.shape[0]
