@@ -19,7 +19,7 @@ def base(data_pdb: AtomGroup) -> Data:
 
     print(hasattr(data_pdb, 'getResnames'))
     print(hasattr(data_pdb, 'getResname'))
-    print(data_pdb.getResname())
+    print(data_pdb.getResnames())
     print(data_pdb.numAtoms())
     print(data_pdb.getSequence(), '\n\n')
 
@@ -86,7 +86,7 @@ class ProteinInMemoryDataset(InMemoryDataset):
         return [self.root.joinpath("processed_pdb")]
 
     def download(self):
-        fetchPDB(self.pdb_list_, compressed=False)
+        fetchPDB(self.pdb_list_, compressed=True)
 
     def process(self):
         data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
