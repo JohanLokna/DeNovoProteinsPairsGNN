@@ -85,5 +85,11 @@ class ProteinInMemoryDataset(InMemoryDataset):
         # data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdb_list_)]
         # data, slices = self.collate(data_list)
         # torch.save((data, slices), self.processed_file_names[0])
-        print(parsePDB(self.pdb_list_, chain="E").getResnames())
-        print(parsePDB(self.pdb_list_, chain="D").getResnames())
+
+        e = parsePDB(self.pdb_list_, chain="E").select("CA")
+        print(e)
+        print(e.getResnames())
+
+        d = parsePDB(self.pdb_list_, chain="D").select("CA")
+        print(d)
+        print(e.getResnames())
