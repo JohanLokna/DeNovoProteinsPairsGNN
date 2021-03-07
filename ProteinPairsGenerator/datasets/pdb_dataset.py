@@ -19,6 +19,7 @@ def base(data_pdb: AtomGroup) -> Data:
 
     print(hasattr(data_pdb, 'getResnames'))
     print(hasattr(data_pdb, 'getResname'))
+    print(data_pdb.getResname())
     print(data_pdb.getSequence(), '\n\n')
 
     # Find intersequence distance
