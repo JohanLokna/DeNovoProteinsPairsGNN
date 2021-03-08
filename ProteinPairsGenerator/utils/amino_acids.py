@@ -5,6 +5,7 @@ import torch
 from numba import njit
 
 # List of amino acids (symbol)
+AMINO_ACID_NULL: str = "X"
 AMINO_ACIDS: List[str] = [
     "G",
     "V",
@@ -26,7 +27,7 @@ AMINO_ACIDS: List[str] = [
     "K",
     "R",
     "H",
-]
+] + [AMINO_ACID_NULL]
 
 
 # List  of amino acids (ordinal representation)
