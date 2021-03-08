@@ -40,4 +40,4 @@ AMINO_ACIDS_MAP.update({i: aa for i, aa in enumerate(AMINO_ACIDS)})
 
 def seq_to_tensor(seq : str) -> torch.Tensor:
     """Mapping between amino acid sequence representations"""
-    return torch.Tensor([AMINO_ACIDS_MAP[aa] for aa in seq], dtype=torch.long))
+    return torch.Tensor([AMINO_ACIDS_MAP[aa] for aa in seq], dtype=torch.long)
