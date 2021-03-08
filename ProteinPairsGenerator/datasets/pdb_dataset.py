@@ -16,7 +16,7 @@ def base(data_pdb: AtomGroup) -> Data:
     set_pdb = data_pdb.select("name CA chain L")
     set_pdbH = data_pdb.select("name CA chain H")
 
-    a = Select().getIndices("name CA chain L")
+    a = Select().getIndices(data_pdb, "name CA chain L")
     print(a, type(a), sep='\n')
     
     # Get sequence
