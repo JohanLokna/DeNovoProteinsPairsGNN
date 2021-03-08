@@ -15,8 +15,8 @@ def base(data_pdb: AtomGroup) -> Data:
 
     set_pdb = data_pdb.select("name CA chain L")
 
-    a = Select().getIndices(data_pdb, "name CA chain L")
-    print(set_pdb.getSequence(), ''.join([data_pdb.getSequence()[x] for x in a]), sep='\n')
+    a = Select().getIndices(set_pdb, "name CA chain L")
+    print(set_pdb.getSequence(), ''.join([set_pdb.getSequence()[x] for x in a]), sep='\n')
     
     # Get sequence
     seq = torch.tensor(
