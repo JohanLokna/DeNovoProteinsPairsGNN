@@ -1,5 +1,6 @@
 from pathlib import Path
 from prody import fetchPDB, pathPDBFolder, parsePDB, AtomGroup
+from prody.atomic.select import Select
 from typing import List, Mapping, Tuple
 
 import torch
@@ -14,9 +15,9 @@ def base(data_pdb: AtomGroup) -> Data:
 
     set_pdb = data_pdb.select("name CA chain L")
     set_pdbH = data_pdb.select("name CA chain H")
-    set_pdbLH = data_pdb.select("name CA chain LH")
-    print(*[type(x) for x in [set_pdb, set_pdbH, set_pdbLH]])
-    print(set_pdb.getSequence() + set_pdbH.getSequence(), set_pdbLH.getSequence(), sep='\n')
+
+    a = Select().getIndices("name CA chain L")
+    print(a, type(a), sep='\n')
     
     # Get sequence
     seq = torch.tensor(
