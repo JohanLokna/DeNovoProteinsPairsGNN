@@ -1,7 +1,7 @@
 from constraint import *
 
 def getLightCDR(seq : str):
-    problem = constraint.Problem()
+    problem = Problem()
     problem.addVariable("L1_start", range(20, 28))
     problem.addVariable("L1_size", range(10, 17 + 1))
     problem.addVariable("L3_size", range(7, 12 + 1))
@@ -55,7 +55,7 @@ def getLightCDR(seq : str):
 
 
 def getHeavyCDR(seq : str):
-    problem = constraint.Problem()
+    problem = Problem()
     problem.addVariable("H1_start", range(22, 30))
     problem.addVariable("H1_size", range(10, 12 + 1))
     problem.addVariable("H2_size", range(16, 19 + 1))
