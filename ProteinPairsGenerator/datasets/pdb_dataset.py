@@ -8,7 +8,7 @@ from torch_geometric.data import Data, InMemoryDataset
 from torch_geometric.utils import remove_self_loops
 import torch_geometric.transforms as T
 
-from ProteinPairsGenerator.utils import seq_to_torch, getLightCDR, getHeavyCDR
+from ProteinPairsGenerator.utils import seq_to_tensor, getLightCDR, getHeavyCDR
 from .utils import transform_edge_attr
 
 
