@@ -45,12 +45,14 @@ def getLightCDR(seq : str):
     # Assert uniqueness
     assert len(solutions) == 1
 
-    L1_start = solutions["L1_start"]
-    L1_end = L1_start + solutions["L1_size"]
+    unique_solution = solutions[0]
+
+    L1_start = unique_solution["L1_start"]
+    L1_end = L1_start + unique_solution["L1_size"]
     L2_start = L1_end + L1_L2_diff
     L2_end = L2_start + L2_size
     L3_start = L2_end + L2_L3_diff
-    L3_end = L3_start + solutions["L3_size"]
+    L3_end = L3_start + unique_solution["L3_size"]
     return slice(L1_start, L1_end) + slice(L2_start, L2_end) + slice(L3_start, L3_end)
 
 
@@ -104,10 +106,12 @@ def getHeavyCDR(seq : str):
     # Assert uniqueness
     assert len(solutions) == 1
 
-    H1_start = solutions["H1_start"]
-    H1_end = H1_start + solutions["H1_size"]
+    unique_solution = solutions[0]
+
+    H1_start = unique_solution["H1_start"]
+    H1_end = H1_start + unique_solution["H1_size"]
     H2_start = H1_end + H1_H2_diff
-    H2_end = H2_start + solutions["H3_size"]
+    H2_end = H2_start + unique_solution["H3_size"]
     H3_start = H2_end + H2_H3_diff
-    H3_end = H3_start + solutions["L3_size"]
+    H3_end = H3_start + unique_solution["L3_size"]
     return slice(H1_start, H1_end) + slice(H2_start, H2_end) + slice(H3_start, H3_end)
