@@ -14,10 +14,9 @@ from .utils import transform_edge_attr
 def base(data_pdb: AtomGroup) -> Data:
 
     set_pdb = data_pdb.select("name CA chain L")
-    set_pdbH = data_pdb.select("name CA chain H")
 
     a = Select().getIndices(data_pdb, "name CA chain L")
-    print(a, type(a), sep='\n')
+    print(set_pdb.getSequence(), ''.join([set_pdb.getSequence()[x] for x in a]), sep='\n')
     
     # Get sequence
     seq = torch.tensor(
