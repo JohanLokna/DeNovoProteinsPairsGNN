@@ -8,20 +8,29 @@ from torch_geometric.data import Data, InMemoryDataset
 from torch_geometric.utils import remove_self_loops
 import torch_geometric.transforms as T
 
-from ProteinPairsGenerator.utils import seq_to_torch
+from ProteinPairsGenerator.utils import seq_to_torch, getLightCDR, getHeavyCDR
 from .utils import transform_edge_attr
 
-def base(data_pdb: AtomGroup) -> Data:
 
-    set_pdb = data_pdb.select("name CA chain L")
+def base(data_pdb: AtomGroup, lChains: List[str] = ["L"], hChains: List[str] = ["H"]) -> Data:
 
-    a = Select().getIndices(set_pdb, "name CA chain L")
-    print(set_pdb.getSequence(), ''.join([set_pdb.getSequence()[x] for x in a]), sep='\n')
+    # Only use alpha C atom for each residue
+    set_pdb = data_pdb.select("name CA")
     
     # Get sequence
-    seq = torch.tensor(
-        seq_to_torch(set_pdb.getSequence()), dtype=torch.long
-    )
+    seq = seq_to_tensor(set_pdb.getSequence())
+
+    # Mask CDR in light chains
+    for c in lChains:
+      idx = Select().getIndices(set_pdb, "chain {}".format(c))
+      cdr = getLightCDR(set_pdb.select("chain {}".format(c)).getSequence())
+      seq[idx[cdr]] = 20
+
+    # Mask CDR in heavy chains
+    for c in hChains:
+      idx = Select().getIndices(set_pdb, "chain {}".format(c))
+      cdr = getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence())
+      seq[idx[cdr]] = 20
 
     # Find intersequence distance
     n = seq.shape[0]
