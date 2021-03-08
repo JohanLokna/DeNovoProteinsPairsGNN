@@ -24,13 +24,13 @@ def base(data_pdb: AtomGroup, lChains: List[str] = ["L"], hChains: List[str] = [
     for c in lChains:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-        seq[idx[cdr]] = AMINO_ACIDS_MAP[NULL_AMINO_ACID]
+        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
     # Mask CDR in heavy chains
     for c in hChains:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-        seq[idx[cdr]] = AMINO_ACIDS_MAP[NULL_AMINO_ACID]
+        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
     # Find intersequence distance
     n = seq.shape[0]
