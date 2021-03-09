@@ -107,6 +107,7 @@ def getHeavyCDR(seq : str):
     solutions = problem.getSolutions()
 
     # Assert uniqueness
+    print(len(solutions))
     assert len(solutions) == 1
 
     unique_solution = solutions[0]
