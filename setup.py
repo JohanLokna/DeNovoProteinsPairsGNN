@@ -6,7 +6,7 @@ def read_md(file):
 
 # Requrements affacting multiple dependencies
 TORCH="1.7.1"
-CUDA="cu102"
+CUDA="cu101"
 
 setup(
     name="DeNovoProteinsPairsGNN",
