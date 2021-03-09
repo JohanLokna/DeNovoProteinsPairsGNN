@@ -64,8 +64,8 @@ def getHeavyCDR(seq : str):
     problem = Problem()
     problem.addVariable("H1_start", range(22, 30))
     problem.addVariable("H1_size", range(6, 8 + 1))
-    problem.addVariable("H2_size", range(9, 12 + 1))
-    problem.addVariable("H3_size", range(2, 25 + 1))
+    problem.addVariable("H2_size", range(5, 12 + 1))
+    problem.addVariable("H3_size", range(3, 25 + 1))
 
     # Add constraints for H1
     H1_start_seq = "C"
