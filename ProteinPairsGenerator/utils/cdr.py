@@ -76,7 +76,7 @@ def getHeavyCDR(seq : str):
 
 
     # Add constraints for H2
-    H1_H2_diff = 14 # 15 - 1
+    H1_H2_diff = 18 # 19 - 1
     H2_end_seq1 = ["K", "I", "V", "F", "T", "S", "A"]
     H2_end_seq2 = ["RL", "AT"]
     problem.addConstraint(lambda x, y, z: 
