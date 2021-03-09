@@ -5,7 +5,7 @@ def read_md(file):
         return fin.read()
 
 # Requrements affacting multiple dependencies
-TORCH="1.7.1"
+TORCH="1.8.0"
 CUDA="cu101"
 
 setup(
@@ -27,7 +27,8 @@ setup(
       "torch-sparse",
       "torch-geometric==1.4.3",
       "mmtf-python==1.1.2",
-      "prody"
+      "prody",
+      "python-constraint"
     ],
     dependency_links=[
       "https://pytorch-geometric.com/whl/torch-${}+{}.html".format(TORCH[:-1] + "0", CUDA) # Torch specification must be X.X.0
