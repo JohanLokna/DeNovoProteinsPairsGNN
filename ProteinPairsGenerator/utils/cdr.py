@@ -61,6 +61,7 @@ def getLightCDR(seq : str):
 
 
 def getHeavyCDR(seq : str):
+    print(seq)
     problem = Problem()
     problem.addVariable("H1_start", range(22, 30))
     problem.addVariable("H1_size", range(6, 8 + 1))
