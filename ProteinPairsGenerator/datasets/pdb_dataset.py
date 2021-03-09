@@ -42,12 +42,14 @@ class PDBInMemoryDataset(InMemoryDataset):
         return [self.root.joinpath("processed_pdb")]
 
     def download(self):
+        print("Download")
         if type(self.pdbs) is list:
             fetchPDB(self.pdbs, compressed=True)
         else:
             fetchPDB(self.pdbs.index.values.tolist(), compressed=True)
 
     def process(self):
+        print("Process")
         data_list = []
         if type(self.pdbs) is list:
             for data_pdb in parsePDB(self.pdbs):
