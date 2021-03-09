@@ -33,6 +33,6 @@ setup(
     ],
     dependency_links=[
       "https://pytorch-geometric.com/whl/torch-${}+{}.html".format(TORCH[:-1] + "0", CUDA), # Torch specification must be X.X.0
-      "https://download.pytorch.org/whl/torch_stable.html"
+      "https://download.pytorch.org/whl/{}/torch_stable.html".format(CUDA)
     ]
 )
