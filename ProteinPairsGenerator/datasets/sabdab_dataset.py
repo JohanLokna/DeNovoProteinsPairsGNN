@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 from prody import AtomGroup
 from prody.atomic.select import Select
-from typing import List
+from typing import List, Mapping
 
 import torch
 from torch_geometric.data import Data
