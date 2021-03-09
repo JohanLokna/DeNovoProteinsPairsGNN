@@ -78,6 +78,6 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         summary = pd.read_csv(summary_file, skiprows=1, usecols=fields, delimiter="\t")
 
         concat = lambda x: x.dropna().tolist()
-        summary = summary.groupby(df["pdb"]).agg({"Hchain": concat, "Lchain": concat})
+        summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
 
-        super().__init__(summary, root=root, pre_transform=pre_transform  **kwargs)
+        super().__init__(root=root, pdbs=summary, pre_transform=pre_transform  **kwargs)
