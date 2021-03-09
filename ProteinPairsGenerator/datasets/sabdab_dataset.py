@@ -75,7 +75,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
     ) -> None:
 
         fields = ["pdb", "Hchain", "Lchain"]
-        summary = pd.read_csv(summary_file, skiprows=1, usecols=fields, delimiter="\t")
+        summary = pd.read_csv(summary_file, usecols=fields, delimiter="\t")
 
         concat = lambda x: x.dropna().tolist()
         summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
