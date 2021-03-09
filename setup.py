@@ -26,7 +26,7 @@ setup(
       "torch-scatter",
       "torch-sparse",
       "torch-geometric==1.4.3",
-      "torchvision == 0.8.2",
+      "torchvision==0.8.2",
       "torchtext==0.8.0",
       "mmtf-python==1.1.2",
       "prody",
