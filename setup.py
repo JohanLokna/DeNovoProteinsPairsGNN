@@ -5,7 +5,7 @@ def read_md(file):
         return fin.read()
 
 # Requrements affacting multiple dependencies
-TORCH="1.7.1"
+TORCH="1.7.0"
 CUDA="cu101"
 
 setup(
