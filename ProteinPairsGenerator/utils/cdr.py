@@ -119,6 +119,6 @@ def getHeavyCDR(seq : str):
     H3_start = H2_end + H2_H3_diff
     H3_end = H3_start + unique_solution["H3_size"]
     
-    yield slice(H1_start, H1_end) 
-    yield slice(H2_start, H2_end) 
+    yield slice(H1_start, H1_end)
+    yield slice(H2_start, H2_end)
     yield slice(H3_start, H3_end)
