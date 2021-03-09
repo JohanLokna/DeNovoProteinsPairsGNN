@@ -13,7 +13,7 @@ from .pdb_dataset import PDBInMemoryDataset
 from .utils import transform_edge_attr
 
 
-def cdr_extracter(data_pdb: AtomGroup, lChains: List[str] = [], hChains: List[str] = []) -> Data:
+def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
 
     # Only use alpha C atom for each residue
     set_pdb = data_pdb.select("name CA")
@@ -22,13 +22,13 @@ def cdr_extracter(data_pdb: AtomGroup, lChains: List[str] = [], hChains: List[st
     seq = seq_to_tensor(set_pdb.getSequence())
 
     # Mask CDR in light chains
-    for c in lChains:
+    for c in Lchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
         seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
     # Mask CDR in heavy chains
-    for c in hChains:
+    for c in Hchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
         seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
