@@ -1,29 +1,31 @@
-from ProteinPairsGenerator.utils import tensor_to_seq
 from anarci import run_anarci
 
 def getCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin/"):
 
     assert scheme in ["chothia"]
 
-    renumbering = run_anarci(seq, ncpu=1, hmmerpath="/usr/bin/", scheme=scheme)[1][0][0][0]
+    renumbering = run_anarci(seq, ncpu=1, hmmerpath=hmmerpath, scheme=scheme)[1][0][0][0]
 
-    renumbered_points = iter([26, 32, 52, 56, 95, 102])
-    seq_points = []
+    if scheme == "chothia":
+        renumberedTransitionPoints = iter([26, 32, 52, 56, 95, 102])
+    else:
+        raise ValueError("{} is not an implemented scheme.".format(scheme))
     
-    pattern = next(renumbered_points)
+    cdrRenumbered = []
+    pattern = next(renumberedTransitionPoints)
     for i, x in enumerate(renumbering):
         if pattern == x[0][0][0][0]:
-            seq_points.append(i)
+            cdrRenumbered.append(i)
             try:
-                pattern = next(renumbered_points)
+                pattern = next(renumberedTransitionPoints)
             except StopIteration:
                 break
 
-    cdr_points = iter(seq_points)
+    cdrSeq = iter(cdrRenumbered)
     while True:
         try:
-            start = next(cdr_points)
-            end = next(cdr_points)
+            start = next(cdrSeq)
+            end = next(cdrSeq)
         except StopIteration:
             break
         
