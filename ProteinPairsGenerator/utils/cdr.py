@@ -16,7 +16,7 @@ def getCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin/"):
     print(list(renumbering))
     for i, x in enumerate(list(renumbering)):
         if pattern == x[0][0]:
-            cdrRenumbered.append([i])
+            cdrRenumbered.append(i)
             try:
                 pattern = next(renumberedTransitionPoints)
             except StopIteration:
