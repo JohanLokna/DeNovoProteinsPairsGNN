@@ -54,7 +54,7 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
     # Create data point
-    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr)
+    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
     data = transform_edge_attr(data)
     data = data.coalesce()
 
