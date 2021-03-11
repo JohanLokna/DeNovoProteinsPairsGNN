@@ -28,6 +28,8 @@ def getHeavyCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin
 
 def getCDR(seq : str, renumberedTransitionPoints : List[int], scheme : str = "chothia",  hmmerpath : str = "/usr/bin/"):
 
+    print(seq)
+
     renumbering = run_anarci(seq, ncpu=1, hmmerpath=hmmerpath, scheme=scheme)[1][0][0][0]
     
     cdrRenumbered = []
