@@ -25,12 +25,14 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     for c in Lchain + Hchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+        print(tensor_to_seq(seq[idx[cdr]]))
         seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
     # Mask CDR in heavy chains
     for c in Hchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+        print(tensor_to_seq(seq[idx[cdr]]))
         seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
     # Find intersequence distance
