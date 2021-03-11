@@ -22,7 +22,7 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     seq = seq_to_tensor(set_pdb.getSequence())
 
     # Mask CDR in light chains
-    for c in Lchain + Hchain:
+    for c in Lchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
         print(tensor_to_seq(seq[idx[cdr]]))
