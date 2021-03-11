@@ -29,5 +29,5 @@ def getCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin/"):
             end = next(cdrSeq)
         except StopIteration:
             break
-        
+        print(start, end)
         yield slice(start, end)
