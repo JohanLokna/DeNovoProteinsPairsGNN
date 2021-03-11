@@ -22,16 +22,9 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     seq = seq_to_tensor(set_pdb.getSequence())
 
     # Mask CDR in light chains
-    for c in Lchain:
+    for c in Lchain + Hchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
-      for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
-
-    # Mask CDR in heavy chains
-    for c in Hchain:
-      idx = Select().getIndices(set_pdb, "chain {}".format(c))
-      print(c)
-      for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+      for cdr in getCDR(set_pdb.select("chain {}".format(c)).getSequence()):
         print(tensor_to_seq(seq[idx[cdr]]))
         seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
