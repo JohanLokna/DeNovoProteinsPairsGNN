@@ -23,7 +23,6 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     y = seq.clone().detach()
 
     # Mask CDR in light chains
-    print(AMINO_ACIDS_MAP[AMINO_ACID_NULL])
     for c in Lchain:
       idx = Select().getIndices(set_pdb, "chain {}".format(c))
       for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
