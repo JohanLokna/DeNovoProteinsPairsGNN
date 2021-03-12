@@ -23,6 +23,7 @@ class PDBInMemoryDataset(InMemoryDataset):
 
         # Set up PDB
         pathPDBFolder(folder=root, divided=False)
+        self.pdb_folder = root
         self.pdbs = pdbs
         assert len(self.pdbs) > 0
 
@@ -44,9 +45,9 @@ class PDBInMemoryDataset(InMemoryDataset):
     def download(self):
         print("Download")
         if type(self.pdbs) is list:
-            fetchPDB(self.pdbs, compressed=True)
+            fetchPDB(self.pdbs, compressed=True, folder=self.pdb_folder)
         else:
-            fetchPDB(self.pdbs.index.values.tolist(), compressed=True)
+            fetchPDB(self.pdbs.index.values.tolist(), compressed=True, , folder=self.pdb_folder)
 
     def process(self):
         print("Process")
