@@ -8,7 +8,7 @@ from torch_geometric.data import Data, InMemoryDataset
 import torch_geometric.transforms as T
 
 def removeNone(x : Data) -> bool:
-    return x is None
+    return not x is None
 
 
 class PDBInMemoryDataset(InMemoryDataset):
