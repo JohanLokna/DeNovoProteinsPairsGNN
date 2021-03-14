@@ -1,6 +1,6 @@
 from pandas import DataFrame 
 from pathlib import Path
-from prody import fetchPDB, pathPDBFolder, parsePDB, AtomGroup
+from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
 from typing import List, Mapping, Union
 
 import torch
