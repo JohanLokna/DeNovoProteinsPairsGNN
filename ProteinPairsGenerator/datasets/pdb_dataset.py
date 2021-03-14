@@ -7,6 +7,9 @@ import torch
 from torch_geometric.data import Data, InMemoryDataset
 import torch_geometric.transforms as T
 
+def removeNone(x : Data) -> bool:
+    return x is None
+
 
 class PDBInMemoryDataset(InMemoryDataset):
 
@@ -17,8 +20,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         pre_transform : Mapping[AtomGroup, Data],
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[Data, Data]] = [],
-        pre_filter = None,
-        meta_data = None
+        pre_filter : Mapping[Data, bool] = removeNone
     ) -> None:
 
         # Set up PDB
@@ -45,13 +47,12 @@ class PDBInMemoryDataset(InMemoryDataset):
     def download(self):
         print("Download")
         if type(self.pdbs) is list:
-            fetchPDB(self.pdbs, compressed=True)
+            fetchPDBviaHTTP(self.pdbs, compressed=True)
         else:
-            fetchPDB(self.pdbs.index.values.tolist(), compressed=True)
+            fetchPDBviaHTTP(self.pdbs.index.values.tolist(), compressed=True)
 
     def process(self):
-        print("Process")
-        
+        print("Process")        
               
         if type(self.pdbs) is list:
             data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdbs)]
