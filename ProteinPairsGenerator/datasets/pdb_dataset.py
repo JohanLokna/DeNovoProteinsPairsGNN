@@ -51,13 +51,15 @@ class PDBInMemoryDataset(InMemoryDataset):
 
     def process(self):
         print("Process")
-        data_list = []
-        if type(self.pdbs) is list:
-            for data_pdb in parsePDB(self.pdbs):
-                data_list.append(self.pre_transform(data_pdb))
-        else:
-            for pdb, meta_data in self.pdbs.iterrows():
-                data_list.append(self.pre_transform(parsePDB(pdb), **meta_data.to_dict()))
         
+              
+        if type(self.pdbs) is list:
+            data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdbs)]
+        else:
+            data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
+                         for pdb, meta_data in self.pdbs.iterrows()]
+        if not self.pre_filter is None:
+            data_list = list(filter(self.pre_filter, data_list))
+
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
