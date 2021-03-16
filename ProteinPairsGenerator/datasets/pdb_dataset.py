@@ -63,4 +63,5 @@ class PDBInMemoryDataset(InMemoryDataset):
             data_list = list(filter(self.pre_filter, data_list))
 
         data, slices = self.collate(data_list)
+        print(data.edge_attr.shape)
         torch.save((data, slices), self.processed_file_names[0])
