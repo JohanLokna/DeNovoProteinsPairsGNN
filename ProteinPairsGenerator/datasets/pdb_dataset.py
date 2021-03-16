@@ -7,50 +7,8 @@ import torch
 from torch_geometric.data import Data, InMemoryDataset
 import torch_geometric.transforms as T
 
-from itertools import repeat, product
-
 def removeNone(x : Data) -> bool:
     return not x is None
-
-def collate(data_list):
-    r"""Collates a python list of data objects to the internal storage
-    format of :class:`torch_geometric.data.InMemoryDataset`."""
-    keys = data_list[0].keys
-    data = data_list[0].__class__()
-
-    for key in keys:
-        data[key] = []
-    slices = {key: [0] for key in keys}
-
-    for item, key in product(data_list, keys):
-        data[key].append(item[key])
-        if torch.is_tensor(item[key]):
-            s = slices[key][-1] + item[key].size(
-                item.__cat_dim__(key, item[key]))
-        else:
-            s = slices[key][-1] + 1
-        slices[key].append(s)
-
-    if hasattr(data_list[0], '__num_nodes__'):
-        data.__num_nodes__ = []
-        for item in data_list:
-            data.__num_nodes__.append(item.num_nodes)
-
-    for key in keys:
-        item = data_list[0][key]
-        if torch.is_tensor(item):
-            data[key] = torch.cat(data[key],
-                                  dim=data.__cat_dim__(key, item))
-            # print(key, "1", data.__cat_dim__(key, item), data[key][0].shape, data_list[0][key].shape, sep=":")
-        elif isinstance(item, int) or isinstance(item, float):
-            data[key] = torch.tensor(data[key])
-            # print(key, "2", sep=":")
-
-        slices[key] = torch.tensor(slices[key], dtype=torch.long)
-
-    # print(type(data))
-
-    return data, slices
 
 
 class PDBInMemoryDataset(InMemoryDataset):
@@ -101,9 +59,8 @@ class PDBInMemoryDataset(InMemoryDataset):
         else:
             data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows()]
-        # print(data_list[0].edge_attr.shape)
         if not self.pre_filter is None:
             data_list = list(filter(self.pre_filter, data_list))
-        # print(data_list[0].edge_attr.shape)
-        data, slices = collate(data_list)
+
+        data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
