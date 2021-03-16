@@ -46,14 +46,20 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
         coords = torch.from_numpy(set_pdb.getCoordsets())
         cart_distances = torch.cdist(coords, coords).squeeze(0)
 
+        print(cart_distances.flatten().shape, seq_distances.flatten().shape)
+
         # Compute edges and their atributes
         mask = cart_distances < 12
         edge_attr = torch.stack(
           [cart_distances.flatten(), seq_distances.flatten()], dim=1
         )
+        print(edge_attr.shape)
         edge_attr = edge_attr[mask.flatten(), :]
+        print(edge_attr.shape)
         edge_index = torch.stack(torch.where(mask), dim=0)
         edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
+
+        print(edge_attr.shape)
 
         # Create data point
         data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
