@@ -38,22 +38,26 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
           for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
-        # Find intersequence distance
-        n = seq.shape[0]
+        # # Find intersequence distance
+        # n = seq.shape[0]
 
-        ids = torch.arange(n, dtype=torch.float32).unsqueeze(-1).unsqueeze(0)
-        seq_distances = torch.cdist(ids, ids).flatten()
+        # ids = torch.arange(n, dtype=torch.float32).unsqueeze(-1).unsqueeze(0)
+        # seq_distances = torch.cdist(ids, ids).flatten()
 
         # Compute caresian distances
         coords = torch.from_numpy(set_pdb.getCoordsets())
         cart_distances = torch.cdist(coords, coords).squeeze(0)
 
         # Compute edges and their atributes
+        # mask = cart_distances < 12
+        # edge_attr = torch.stack(
+        #   [cart_distances.flatten(), seq_distances.flatten()], dim=1
+        # )
+        # edge_attr = edge_attr[mask.flatten(), :]
+        # edge_index = torch.stack(torch.where(mask), dim=0)
+        # edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
         mask = cart_distances < 12
-        edge_attr = torch.stack(
-          [cart_distances.flatten(), seq_distances.flatten()], dim=1
-        )
-        edge_attr = edge_attr[mask.flatten(), :]
+        edge_attr = cart_distances[mask.flatten()]
         edge_index = torch.stack(torch.where(mask), dim=0)
         edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
