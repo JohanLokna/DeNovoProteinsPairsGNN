@@ -15,8 +15,6 @@ from .utils import transform_edge_attr
 
 def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
 
-    print(data_pdb.getTitle())
-
     try:
         # Only use alpha C atom for each residue
         set_pdb = data_pdb.select("name CA")
@@ -49,6 +47,9 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
         edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
         # Create data point
+        seq = seq.type(torch.DoubleTensor)
+        edge_attr = edge_attr.type(torch.DoubleTensor)
+
         data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
         data = transform_edge_attr(data)
         data = data.coalesce()
