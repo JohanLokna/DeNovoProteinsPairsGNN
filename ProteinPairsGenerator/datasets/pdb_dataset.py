@@ -101,8 +101,9 @@ class PDBInMemoryDataset(InMemoryDataset):
         else:
             data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows()]
+        print(data_list[0].edge_attr.shape)
         if not self.pre_filter is None:
             data_list = list(filter(self.pre_filter, data_list))
-
+        print(data_list[0].edge_attr.shape)
         data, slices = collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
