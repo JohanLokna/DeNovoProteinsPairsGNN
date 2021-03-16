@@ -24,7 +24,7 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     y = seq.clone().detach()
 
     print(type(y))
-    print((y == AMINO_ACID_NULL).any())
+    print((y == 20).any())
 
     # Mask CDR in light chains
     for c in Lchain:
