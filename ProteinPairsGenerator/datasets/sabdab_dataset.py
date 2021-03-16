@@ -38,12 +38,6 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
           for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
-        # # Find intersequence distance
-        # n = seq.shape[0]
-
-        # ids = torch.arange(n, dtype=torch.float32).unsqueeze(-1).unsqueeze(0)
-        # seq_distances = torch.cdist(ids, ids).flatten()
-
         # Compute caresian distances
         coords = torch.from_numpy(set_pdb.getCoordsets())
         cart_distances = torch.cdist(coords, coords).squeeze(0)
