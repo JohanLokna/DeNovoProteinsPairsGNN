@@ -15,6 +15,8 @@ from .utils import transform_edge_attr
 
 def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
 
+    print(AtomGroup.getTitle())
+
     try:
         # Only use alpha C atom for each residue
         set_pdb = data_pdb.select("name CA")
