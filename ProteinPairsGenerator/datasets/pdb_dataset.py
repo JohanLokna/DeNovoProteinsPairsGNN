@@ -41,14 +41,14 @@ def collate(data_list):
         if torch.is_tensor(item):
             data[key] = torch.cat(data[key],
                                   dim=data.__cat_dim__(key, item))
-            print(key, "1", data.__cat_dim__(key, item), data[key][0].shape, data_list[0][key].shape, sep=":")
+            # print(key, "1", data.__cat_dim__(key, item), data[key][0].shape, data_list[0][key].shape, sep=":")
         elif isinstance(item, int) or isinstance(item, float):
             data[key] = torch.tensor(data[key])
-            print(key, "2", sep=":")
+            # print(key, "2", sep=":")
 
         slices[key] = torch.tensor(slices[key], dtype=torch.long)
 
-    print(type(data))
+    # print(type(data))
 
     return data, slices
 
@@ -101,9 +101,9 @@ class PDBInMemoryDataset(InMemoryDataset):
         else:
             data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows()]
-        print(data_list[0].edge_attr.shape)
+        # print(data_list[0].edge_attr.shape)
         if not self.pre_filter is None:
             data_list = list(filter(self.pre_filter, data_list))
-        print(data_list[0].edge_attr.shape)
+        # print(data_list[0].edge_attr.shape)
         data, slices = collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
