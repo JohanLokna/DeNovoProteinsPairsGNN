@@ -59,7 +59,8 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
     # edge_index = torch.stack(torch.where(mask), dim=0)
     # edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
     mask = cart_distances < 12
-    edge_attr = cart_distances[mask.flatten()]
+    edge_attr = cart_distances.flatten()[mask.flatten()].unsqueeze(-1)
+    print(cart_distances.shape)
     edge_index = torch.stack(torch.where(mask), dim=0)
     edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
