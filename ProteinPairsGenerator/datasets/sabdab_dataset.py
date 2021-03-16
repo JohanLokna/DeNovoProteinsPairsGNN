@@ -15,57 +15,57 @@ from .utils import transform_edge_attr
 
 def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
 
-    # try:
-    # Only use alpha C atom for each residue
-    set_pdb = data_pdb.select("name CA")
+    try:
+        # Only use alpha C atom for each residue
+        set_pdb = data_pdb.select("name CA")
+        
+        # Get sequence
+        seq = seq_to_tensor(set_pdb.getSequence())
+        y = seq.clone().detach()
+
+        # Only valid sequences are accepted
+        assert not (y == 20).any()
+
+        # Mask CDR in light chains
+        for c in Lchain:
+          idx = Select().getIndices(set_pdb, "chain {}".format(c))
+          for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+            seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+
+
+        # Mask CDR in heavy chains
+        for c in Hchain:
+          idx = Select().getIndices(set_pdb, "chain {}".format(c))
+          for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+            seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+
+        # Compute caresian distances
+        coords = torch.from_numpy(set_pdb.getCoordsets())
+        cart_distances = torch.cdist(coords, coords).squeeze(0)
+
+        # Compute edges and their atributes
+        mask = cart_distances < 12
+        edge_attr = cart_distances.flatten()[mask.flatten()].unsqueeze(-1)
+        edge_index = torch.stack(torch.where(mask), dim=0)
+        edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
+
+        # Create data point
+        seq = seq.type(torch.LongTensor)
+        edge_attr = edge_attr.type(torch.FloatTensor)
+        edge_index = edge_index.type(torch.LongTensor)
+
+        data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
+        data = transform_edge_attr(data)
+        data = data.coalesce()
+
+        # Assertions
+        assert not data.contains_self_loops()
+        assert data.is_coalesced()
+
+        return data
     
-    # Get sequence
-    seq = seq_to_tensor(set_pdb.getSequence())
-    y = seq.clone().detach()
-
-    print(type(y), y.shape)
-    print((y == 20).any())
-
-    # Mask CDR in light chains
-    for c in Lchain:
-      idx = Select().getIndices(set_pdb, "chain {}".format(c))
-      for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
-
-
-    # Mask CDR in heavy chains
-    for c in Hchain:
-      idx = Select().getIndices(set_pdb, "chain {}".format(c))
-      for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
-
-    # Compute caresian distances
-    coords = torch.from_numpy(set_pdb.getCoordsets())
-    cart_distances = torch.cdist(coords, coords).squeeze(0)
-
-    # Compute edges and their atributes
-    mask = cart_distances < 12
-    edge_attr = cart_distances.flatten()[mask.flatten()].unsqueeze(-1)
-    edge_index = torch.stack(torch.where(mask), dim=0)
-    edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
-
-    # Create data point
-    seq = seq.type(torch.LongTensor)
-    edge_attr = edge_attr.type(torch.FloatTensor)
-    edge_index = edge_index.type(torch.LongTensor)
-
-    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
-    data = transform_edge_attr(data)
-    data = data.coalesce()
-
-    # Assertions
-    assert not data.contains_self_loops()
-    assert data.is_coalesced()
-
-    return data
-    
-    # except Exception:
-    #     return
+    except Exception:
+        return
 
 
 class SAbDabInMemoryDataset(PDBInMemoryDataset):
