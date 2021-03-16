@@ -65,6 +65,8 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
         assert not data.contains_self_loops()
         assert data.is_coalesced()
 
+        print(data.edge_attr.shape)
+
         return data
     
     except Exception:
