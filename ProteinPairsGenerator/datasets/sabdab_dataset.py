@@ -48,7 +48,7 @@ def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str]
 
         # Create data point
         seq = seq.type(torch.LongTensor)
-        edge_attr = edge_attr.type(torch.DoubleTensor)
+        edge_attr = edge_attr.type(torch.FloatTensor)
         edge_index = edge_index.type(torch.LongTensor)
 
         data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
