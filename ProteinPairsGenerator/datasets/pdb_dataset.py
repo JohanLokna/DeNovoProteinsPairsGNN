@@ -41,10 +41,14 @@ def collate(data_list):
         if torch.is_tensor(item):
             data[key] = torch.cat(data[key],
                                   dim=data.__cat_dim__(key, item))
+            print(key, "1", sep=":")
         elif isinstance(item, int) or isinstance(item, float):
             data[key] = torch.tensor(data[key])
+            print(key, "2", sep=":")
 
         slices[key] = torch.tensor(slices[key], dtype=torch.long)
+
+    print(type(data))
 
     return data, slices
 
