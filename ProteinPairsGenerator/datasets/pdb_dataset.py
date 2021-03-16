@@ -10,7 +10,7 @@ import torch_geometric.transforms as T
 def removeNone(x : Data) -> bool:
     return not x is None
 
-def collate(self, data_list):
+def collate(data_list):
     r"""Collates a python list of data objects to the internal storage
     format of :class:`torch_geometric.data.InMemoryDataset`."""
     keys = data_list[0].keys
