@@ -4,6 +4,7 @@ from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
 from typing import List, Mapping, Union
 
 import torch
+from torch.utils.data import Subset
 from torch_geometric.data import Data, InMemoryDataset
 import torch_geometric.transforms as T
 
@@ -64,3 +65,21 @@ class PDBInMemoryDataset(InMemoryDataset):
 
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
+
+    def split(self, *sizes):
+        
+        """
+        
+        Description: Splits the dataset into subsets according to sizes
+        Parameters:
+            sizes: Iterable of fractions 
+            
+        Returns:            
+            The three different subsets
+        
+        """
+
+        for idx in self.splitter(self, sizes)
+            return Subset(self, idx)
+
+    

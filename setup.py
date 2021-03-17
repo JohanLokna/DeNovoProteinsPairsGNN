@@ -29,7 +29,8 @@ setup(
       "mmtf-python==1.1.2",
       "prody",
       "python-constraint",
-      "pandas"
+      "pandas",
+      "mlflow"
     ],
     dependency_links=[
       "https://pytorch-geometric.com/whl/torch-${}+{}.html".format(TORCH[:-1] + "0", CUDA), # Torch specification must be X.X.0
