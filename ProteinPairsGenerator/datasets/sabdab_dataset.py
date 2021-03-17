@@ -1,8 +1,10 @@
+
+import editdistance
 import pandas as pd
 from pathlib import Path
 from prody import AtomGroup
 from prody.atomic.select import Select
-from typing import List, Mapping
+from typing import List, Mapping, Union
 
 import torch
 from torch.utils.data import Dataset
@@ -11,17 +13,14 @@ from torch_geometric.utils import remove_self_loops
 
 from ProteinPairsGenerator.utils import *
 from .pdb_dataset import PDBInMemoryDataset
-from .utils import transform_edge_attr
+from .utils import transform_edge_attr, splitDistinctSequences
 
 
-class splitDistinctSequences:
-
-    def __init__(self, dist : Mapping[Data, float]):
-        self.dist = dist
-
-    def __call__(self, datset : Dataset, *sizes):
-        pass
-        
+def dist(x, y):
+    AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+    cdrX = x.x[x.x == AMINO_ACIDS_MAP[AMINO_ACID_NULL]]
+    cdrY = y.x[y.x == AMINO_ACIDS_MAP[AMINO_ACID_NULL]]
+    return editdistance.eval(cdrX, cdrY)
 
 
 def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
@@ -86,6 +85,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         summary_file : Path,
         root : Path,
         pre_transform : Mapping[AtomGroup, Data] = cdrExtracter,
+        splitter : Mapping[Union[Dataset, List[float]], List[List[int]]] = splitDistinctSequences(dist, 15),
         **kwargs
     ) -> None:
 
@@ -95,7 +95,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         concat = lambda x: x.dropna().tolist()
         summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
 
-        super().__init__(root=root, pdbs=summary.head(500), pre_transform=pre_transform, **kwargs)
+        super().__init__(root=root, pdbs=summary.head(3000), pre_transform=pre_transform, **kwargs)
 
     def download(self):
         super().download()
