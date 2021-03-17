@@ -69,17 +69,12 @@ class splitDistinctSequences:
 
         cumsum = np.cumsum(counts)
 
-        print(unique, unique.shape)
-        print(counts, counts.shape)
-        print(cumsum, cumsum.shape)
-
         curr = 0
         nxt = 0
         for s in sizes:
 
             # Compute upper bound
             lower_bound = cumsum[curr] + s * n
-            print(np.argmax(cumsum[curr :] > lower_bound), np.argmax(cumsum[curr :] > lower_bound).shape)
             nxt += np.argmax(cumsum[curr :] > lower_bound) + 1
             assert nxt < n
             
