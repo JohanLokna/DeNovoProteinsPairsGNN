@@ -4,12 +4,11 @@ from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
 from typing import List, Mapping, Union
 
 import torch
-from torch.utils.data import Subset
+from torch.utils.data import Subset, Dataset
 from torch_geometric.data import Data, InMemoryDataset
 import torch_geometric.transforms as T
 
-def removeNone(x : Data) -> bool:
-    return not x is None
+from .utils import removeNone
 
 
 class PDBInMemoryDataset(InMemoryDataset):
@@ -19,6 +18,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         root : Path,
         pdbs : Union[List[str], DataFrame],
         pre_transform : Mapping[AtomGroup, Data],
+        splitter : Mapping[Union[Dataset, List[float]], List[List[int]]],
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[Data, Data]] = [],
         pre_filter : Mapping[Data, bool] = removeNone
