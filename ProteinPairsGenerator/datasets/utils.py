@@ -87,4 +87,4 @@ class splitDistinctSequences:
  
         # Return the rest
         idx = np.where(np.isin(clustering.labels_, unique[curr:]))[0]
-        yield torch.from_numpy(idx).tolist()
+        yield idx.tolist()
