@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 
 import torch
+from torch.utils.data import Dataset
 from torch_geometric.data import Data
 from typing import List, Mapping, Union
 
