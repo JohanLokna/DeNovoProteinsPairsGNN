@@ -82,6 +82,6 @@ class PDBInMemoryDataset(InMemoryDataset):
         """
 
         for idx in self.splitter(self, *sizes):
-            return Subset(self, idx)
+            yield Subset(self, idx)
 
     
