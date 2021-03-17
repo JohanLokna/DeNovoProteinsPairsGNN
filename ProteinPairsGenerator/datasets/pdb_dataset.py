@@ -30,8 +30,10 @@ class PDBInMemoryDataset(InMemoryDataset):
         self.pdbs = pdbs
         assert len(self.pdbs) > 0
 
-        transform = T.Compose(transform_list)
-        super().__init__(root, transform, pre_transform, pre_filter)
+        # Set members
+        self.splitter = splitter
+        
+        super().__init__(root, T.Compose(transform_list), pre_transform, pre_filter)
         self.data, self.slices = torch.load(self.processed_file_names[0])
 
     @property
