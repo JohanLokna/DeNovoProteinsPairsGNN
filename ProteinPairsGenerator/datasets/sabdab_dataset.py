@@ -5,6 +5,7 @@ from prody.atomic.select import Select
 from typing import List, Mapping
 
 import torch
+from torch.utils.data import Dataset
 from torch_geometric.data import Data
 from torch_geometric.utils import remove_self_loops
 
@@ -13,7 +14,17 @@ from .pdb_dataset import PDBInMemoryDataset
 from .utils import transform_edge_attr
 
 
-def cdr_extracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
+class splitDistinctSequences:
+
+    def __init__(self, dist : Mapping[Data, float]):
+        self.dist = dist
+
+    def __call__(self, datset : Dataset, *sizes):
+        pass
+        
+
+
+def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
 
     try:
         # Only use alpha C atom for each residue
@@ -74,7 +85,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         self, 
         summary_file : Path,
         root : Path,
-        pre_transform : Mapping[AtomGroup, Data] = cdr_extracter,
+        pre_transform : Mapping[AtomGroup, Data] = cdrExtracter,
         **kwargs
     ) -> None:
 
