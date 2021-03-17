@@ -38,7 +38,7 @@ class splitDistinctSequences:
         self.dist = dist
         self.threshold = threshold
 
-    def __call__(self, datset : Dataset, *sizes):
+    def __call__(self, dataset : Dataset, *sizes):
 
         n = len(dataset)
         X = torch.zeros(n, n)
