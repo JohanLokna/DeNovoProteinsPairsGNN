@@ -80,7 +80,7 @@ class splitDistinctSequences:
             
             # Return idex set
             idx = np.where(np.isin(clustering.labels_, unique[curr:nxt]))[0]
-            yield torch.from_numpy(idx)
+            yield idx.tolist()
 
             # Set next lower bound
             curr = nxt
