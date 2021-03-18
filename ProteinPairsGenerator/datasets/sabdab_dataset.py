@@ -94,7 +94,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         concat = lambda x: x.dropna().tolist()
         summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
 
-        super().__init__(root=root, pdbs=summary.head(2500), 
+        super().__init__(root=root, pdbs=summary.head(3000), 
                          pre_transform=pre_transform, splitter=splitter,
                          **kwargs)
 
