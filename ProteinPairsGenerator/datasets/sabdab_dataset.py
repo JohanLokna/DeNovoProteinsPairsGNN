@@ -15,7 +15,7 @@ from .pdb_dataset import PDBInMemoryDataset
 from .utils import transform_edge_attr, splitDistinctSequences
 
 
-def dist(x, y):
+def cdrEditdistance(x, y):
     AMINO_ACIDS_MAP[AMINO_ACID_NULL]
     cdrX = x.x[x.x == AMINO_ACIDS_MAP[AMINO_ACID_NULL]]
     cdrY = y.x[y.x == AMINO_ACIDS_MAP[AMINO_ACID_NULL]]
@@ -74,7 +74,7 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
         return data
     
     except Exception:
-        return
+        return None
 
 
 class SAbDabInMemoryDataset(PDBInMemoryDataset):
@@ -84,7 +84,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         summary_file : Path,
         root : Path,
         pre_transform : Mapping[AtomGroup, Data] = cdrExtracter,
-        splitter : Mapping[Union[Dataset, List[float]], List[List[int]]] = splitDistinctSequences(dist, 15),
+        splitter : Mapping[Union[Dataset, List[float]], List[List[int]]] = splitDistinctSequences(cdrEditdistance, 15),
         **kwargs
     ) -> None:
 
