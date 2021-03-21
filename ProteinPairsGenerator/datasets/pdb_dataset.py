@@ -49,6 +49,7 @@ class PDBInMemoryDataset(InMemoryDataset):
 
     def download(self):
         print("Download")
+
         if type(self.pdbs) is list:
             fetchPDBviaHTTP(self.pdbs, compressed=True)
         else:
@@ -62,6 +63,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         else:
             data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows()]
+        
         if not self.pre_filter is None:
             data_list = list(filter(self.pre_filter, data_list))
 
