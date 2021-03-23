@@ -50,7 +50,7 @@ class PDBInMemoryDataset(InMemoryDataset):
 
     def download(self, force=False):
 
-        if not force and all([file.exist() for file in self.processed_file_names]):
+        if not force and all([file.exists() for file in self.processed_file_names]):
             print("Downloading skipped - Processed files exist")
 
         print("Download")
