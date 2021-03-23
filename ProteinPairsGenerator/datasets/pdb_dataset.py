@@ -25,9 +25,9 @@ class PDBInMemoryDataset(InMemoryDataset):
     ) -> None:
 
         # Set up PDB
-        pathPDBFolder(folder=root, divided=False)
-        self.pdb_folder = root
         self.pdbs = pdbs
+        self.pdbFolder = root.joinpath("raw/")
+        pathPDBFolder(folder=self.pdbFolder, divided=False)
         assert len(self.pdbs) > 0
 
         # Set members
@@ -39,25 +39,31 @@ class PDBInMemoryDataset(InMemoryDataset):
     @property
     def raw_file_names(self):
         if type(self.pdbs) is list:
-            return [self.root.joinpath(pdb + ".pdb") for pdb in self.pdbs]
+            return [self.pdbFolder.joinpath(pdb + ".pdb") for pdb in self.pdbs]
         else:
-            return [self.root.joinpath(pdb + ".pdb") for pdb in self.pdbs.index.values.tolist()]
+            return [self.pdbFolder.joinpath(pdb + ".pdb") for pdb in self.pdbs.index.values.tolist()]
 
     @property
     def processed_file_names(self):
         return [self.root.joinpath("processed_pdb")]
 
-    def download(self):
-        print("Download")
+    def download(self, force=False):
 
+        if not force and all([file.exist() for file in self.processed_file_names()]):
+            print("Downloading skipped - Processed files exist")
+
+        print("Download")
         if type(self.pdbs) is list:
             fetchPDBviaHTTP(self.pdbs, compressed=True)
         else:
             fetchPDBviaHTTP(self.pdbs.index.values.tolist(), compressed=True)
 
-    def process(self):
-        print("Process")        
-              
+    def process(self, force=False):
+
+        if not force and all([file.exist() for file in self.processed_file_names()]):
+            print("Processing skipped - Processed files exist")
+
+        print("Process")
         if type(self.pdbs) is list:
             data_list = [self.pre_transform(data_pdb) for data_pdb in parsePDB(self.pdbs)]
         else:
@@ -86,4 +92,6 @@ class PDBInMemoryDataset(InMemoryDataset):
         for idx in self.splitter(self, *sizes):
             yield Subset(self, idx)
 
-    
+    def save(self, path : Path):
+          torch.save((self.data, self.slices), path)
+
