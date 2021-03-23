@@ -27,6 +27,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         # Set up PDB
         self.pdbs = pdbs
         self.pdbFolder = root.joinpath("raw/")
+        self.pdbFolder.mkdir(exist_ok=True)
         pathPDBFolder(folder=self.pdbFolder, divided=False)
         assert len(self.pdbs) > 0
 
