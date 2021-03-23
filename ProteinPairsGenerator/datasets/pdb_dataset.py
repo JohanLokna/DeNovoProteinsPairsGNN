@@ -53,6 +53,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         print([file.exists() for file in self.processed_file_names])
         if not force and all([file.exists() for file in self.processed_file_names]):
             print("Downloading skipped - Processed files exist")
+            return
 
         print("Download")
         if type(self.pdbs) is list:
@@ -64,6 +65,7 @@ class PDBInMemoryDataset(InMemoryDataset):
 
         if not force and all([file.exists() for file in self.processed_file_names]):
             print("Processing skipped - Processed files exist")
+            return
 
         print("Process")
         if type(self.pdbs) is list:
