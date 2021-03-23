@@ -61,7 +61,7 @@ class PDBInMemoryDataset(InMemoryDataset):
 
     def process(self, force=False):
 
-        if not force and all([file.exist() for file in self.processed_file_names()]):
+        if not force and all([file.exists() for file in self.processed_file_names]):
             print("Processing skipped - Processed files exist")
 
         print("Process")
