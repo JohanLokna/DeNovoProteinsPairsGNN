@@ -24,7 +24,7 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
 
 
 class Net(nn.Module):
-    def __init__(self, x_input_size, adj_input_size, hidden_size, output_size):
+    def __init__(self, x_input_size, adj_input_size, x_feat_size, hidden_size, output_size):
         super().__init__()
 
         self.embed_x = nn.Sequential(
@@ -51,14 +51,21 @@ class Net(nn.Module):
 
         self.linear_out = nn.Linear(hidden_size, output_size)
 
-    def forward(self, x, edge_index, edge_attr):
-
-        x = self.embed_x(x)
-        #         edge_index, _ = add_self_loops(edge_index)  # We should remove self loops in this case!
+    def forward(self, x, edge_index, edge_attr, x_feat = None):
+            
         edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
+        x = self.embed_x(x)
+        if not x_feat is None:
+            x = torch.cat([x, x_feat], dim=-1)
+
         x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
-        x = x + x_out
+        
+        if not x_feat is None:
+            x = x[:, 0] + x_out
+        else:
+            x = x + x_out
+        
         edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
 
         for i in range(3):
