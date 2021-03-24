@@ -55,7 +55,9 @@ class Net(nn.Module):
             
         edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
+        print(x.shape, x_feat.shape)
         x = self.embed_x(x)
+        print(x.shape)
         if not x_feat is None:
             x = torch.cat([x, x_feat], dim=-1)
 
