@@ -65,7 +65,7 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
     pdbANM.calcModes(nModes)
     xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
 
-    print(seq.shape, xFeatures.shape, set_pdb.numAtioms(), data_pdb.numAtoms())
+    print(seq.shape, xFeatures.shape, set_pdb.numAtoms(), data_pdb.numAtoms())
 
     # Create data point
     data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
