@@ -44,7 +44,7 @@ class Net(nn.Module):
             if adj_input_size
             else None
         )
-        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size) + 2 * bool(x_feat_size)) * hidden_size, 2 * hidden_size, hidden_size)
+        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size)) * hidden_size  + 2 * x_feat_size, 2 * hidden_size, hidden_size)
 
         N = 3
         graph_conv = get_graph_conv_layer(3 * hidden_size, 2 * hidden_size, hidden_size)
