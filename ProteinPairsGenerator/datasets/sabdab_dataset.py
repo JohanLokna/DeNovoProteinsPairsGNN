@@ -33,7 +33,7 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
     y = seq.clone().detach()
 
     # Only valid sequences are accepted
-    print((y == 20))
+    # print((y == 20))
     assert not (y == 20).any()
 
     # Mask CDR in light chains
