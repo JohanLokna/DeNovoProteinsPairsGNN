@@ -26,7 +26,7 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
 
     try:
         # Only use alpha C atom for each residue
-        set_pdb = data_pdb.select("name CA")
+        set_pdb = data_pdb.ca
         
         # Get sequence
         seq = seq_to_tensor(set_pdb.getSequence())
@@ -64,6 +64,8 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
         pdbANM.buildHessian(set_pdb)
         pdbANM.calcModes(nModes)
         xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
+
+        print(seq.shape, xFeatures.shape)
 
         # Create data point
         data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
