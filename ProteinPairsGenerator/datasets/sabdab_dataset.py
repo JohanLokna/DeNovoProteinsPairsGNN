@@ -22,7 +22,7 @@ def cdrEditdistance(x, y):
     return editdistance.eval(cdrX, cdrY)
 
 
-def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = []) -> Data:
+def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = [], nModes : int = 20) -> Data:
 
     try:
         # Only use alpha C atom for each residue
@@ -62,7 +62,7 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
         # Compute node featues
         pdbANM = ANM(set_pdb)
         pdbANM.buildHessian(set_pdb)
-        pdbANM.calcModes(4)
+        pdbANM.calcModes(nModes)
         xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
 
         # Create data point
@@ -98,7 +98,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         concat = lambda x: x.dropna().tolist()
         summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
 
-        super().__init__(root=root, pdbs=summary.head(100), 
+        super().__init__(root=root, pdbs=summary, 
                          pre_transform=pre_transform, splitter=splitter,
                          **kwargs)
 
