@@ -64,6 +64,8 @@ class Net(nn.Module):
 
     def forward(self, x, edge_index, edge_attr, x_feat = None):
 
+        edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
+
         x = self.embed_x(x)
         if x_feat is not None:
             x_feat = self.embed_feat(x_feat)
@@ -74,8 +76,6 @@ class Net(nn.Module):
         edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
         x = x + x_out
-        
-        edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
 
         for i in range(3):
             x = F.relu(x)
