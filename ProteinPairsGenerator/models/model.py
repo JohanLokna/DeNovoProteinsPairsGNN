@@ -18,6 +18,7 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
         nn.ReLU(),
         nn.Linear(hidden_size, output_size),
     )
+    print("mlp shape: ", input_size)
     gnn = EdgeConvMod(nn=mlp, aggr="add")
     graph_conv = EdgeConvBatch(gnn, output_size, batch_norm=True, dropout=0.2)
     return graph_conv
