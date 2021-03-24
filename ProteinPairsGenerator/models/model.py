@@ -18,7 +18,6 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
         nn.ReLU(),
         nn.Linear(hidden_size, output_size),
     )
-    print("mlp shape: ", input_size)
     gnn = EdgeConvMod(nn=mlp, aggr="add")
     graph_conv = EdgeConvBatch(gnn, output_size, batch_norm=True, dropout=0.2)
     return graph_conv
@@ -44,30 +43,36 @@ class Net(nn.Module):
             if adj_input_size
             else None
         )
-        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size)) * hidden_size  + 2 * x_feat_size, 2 * hidden_size, hidden_size)
+        self.embed_feat = (
+            nn.Sequential(
+                nn.Linear(x_feat_size, hidden_size),
+                nn.ReLU(),
+                nn.Linear(hidden_size, hidden_size),
+                nn.LayerNorm(hidden_size),
+            )
+            if x_feat_size
+            else None
+        )
+        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size) + 2 * bool(x_feat_size)) * hidden_size, 2 * hidden_size, hidden_size)
 
         N = 3
-        graph_conv = get_graph_conv_layer(3 * hidden_size, 2 * hidden_size, hidden_size)
+        graph_conv = get_graph_conv_layer(3 * hidden_size + 2 * bool(x_feat_size), 2 * hidden_size, hidden_size)
         self.graph_conv = _get_clones(graph_conv, N)
 
         self.linear_out = nn.Linear(hidden_size, output_size)
 
     def forward(self, x, edge_index, edge_attr, x_feat = None):
-            
-        edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
-        print(x.shape, x_feat.shape)
         x = self.embed_x(x)
-        print(x.shape)
-        if not x_feat is None:
+        if x_feat is not None:
+            x_feat = self.embed_feat(x_feat)
             x = torch.cat([x, x_feat], dim=-1)
+
+        edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
         x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
         
-        if not x_feat is None:
-            x = x[:, 0] + x_out
-        else:
-            x = x + x_out
+        x = x + x_out
         
         edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
 
