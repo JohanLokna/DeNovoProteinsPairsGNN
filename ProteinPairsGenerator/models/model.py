@@ -56,7 +56,7 @@ class Net(nn.Module):
         self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size) + 2 * bool(x_feat_size)) * hidden_size, 2 * hidden_size, hidden_size)
 
         N = 3
-        graph_conv = get_graph_conv_layer(3 * hidden_size + 2 * bool(x_feat_size), 2 * hidden_size, hidden_size)
+        graph_conv = get_graph_conv_layer(3 * hidden_size, 2 * hidden_size, hidden_size)
         self.graph_conv = _get_clones(graph_conv, N)
 
         self.linear_out = nn.Linear(hidden_size, output_size)
@@ -66,12 +66,12 @@ class Net(nn.Module):
         x = self.embed_x(x)
         if x_feat is not None:
             x_feat = self.embed_feat(x_feat)
-            x = torch.cat([x, x_feat], dim=-1)
+            x_out, edge_attr_out = self.graph_conv_0(torch.cat([x, x_feat], dim=-1), edge_index, edge_attr)
+        else:
+            x_out, edge_attr_out = self.graph_conv_0(x, dim=-1), edge_index, edge_attr)
 
         edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
-        x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
-        
         x = x + x_out
         
         edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
