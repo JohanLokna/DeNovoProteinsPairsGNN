@@ -68,7 +68,7 @@ class Net(nn.Module):
             x_feat = self.embed_feat(x_feat)
             x_out, edge_attr_out = self.graph_conv_0(torch.cat([x, x_feat], dim=-1), edge_index, edge_attr)
         else:
-            x_out, edge_attr_out = self.graph_conv_0(x, dim=-1), edge_index, edge_attr)
+            x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
 
         edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
