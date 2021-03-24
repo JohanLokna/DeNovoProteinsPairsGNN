@@ -60,9 +60,9 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
     edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
     # Compute node featues
-    pdbANM = ANM(set_pdb)
-    pdbANM.buildHessian(set_pdb)
-    pdbANM.calcModes(nModes)
+    pdbANM = ANM(data_pdb.ca)
+    pdbANM.buildHessian(data_pdb.ca)
+    pdbANM.calcModes(1)
     xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
 
     print(seq.shape, xFeatures.shape, set_pdb.numAtoms(), data_pdb.numAtoms())
