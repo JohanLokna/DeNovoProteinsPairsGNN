@@ -23,7 +23,7 @@ class EdgeConvMod(torch.nn.Module):
             out = torch.cat([x[row], x[col]], dim=-1)
         else:
             out = torch.cat([x[row], x[col], edge_attr], dim=-1)
-        print(out.shape)
+        print("Out shape: ", out.shape)
         out = self.nn(out)
         x = scatter_(self.aggr, out, row, dim_size=x.size(0))
 
