@@ -1,7 +1,7 @@
 import editdistance
 import pandas as pd
 from pathlib import Path
-from prody import AtomGroup
+from prody import AtomGroup, ANM
 from prody.atomic.select import Select
 from typing import List, Mapping, Union
 
@@ -50,20 +50,23 @@ def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] 
 
         # Compute caresian distances
         coords = torch.from_numpy(set_pdb.getCoordsets())
-        cart_distances = torch.cdist(coords, coords).squeeze(0)
+        cart_distances = torch.cdist(coords, coords).squeeze(0).type(torch.FloatTensor)
 
         # Compute edges and their atributes
         mask = cart_distances < 12
         edge_attr = cart_distances.flatten()[mask.flatten()].unsqueeze(-1)
-        edge_index = torch.stack(torch.where(mask), dim=0)
+        edge_index = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
         edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
 
-        # Create data point
-        seq = seq.type(torch.LongTensor)
-        edge_attr = edge_attr.type(torch.FloatTensor)
-        edge_index = edge_index.type(torch.LongTensor)
+        # Compute node featues
+        pdbANM = ANM(pdb)
+        pdbANM.buildHessian(pdb)
+        pdbANM.calcModes(4)
+        xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
 
+        # Create data point
         data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
+        data.xFeatures = xFeatures
         data = transform_edge_attr(data)
         data = data.coalesce()
 
@@ -94,7 +97,7 @@ class SAbDabInMemoryDataset(PDBInMemoryDataset):
         concat = lambda x: x.dropna().tolist()
         summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
 
-        super().__init__(root=root, pdbs=summary, 
+        super().__init__(root=root, pdbs=summary.head(100), 
                          pre_transform=pre_transform, splitter=splitter,
                          **kwargs)
 
