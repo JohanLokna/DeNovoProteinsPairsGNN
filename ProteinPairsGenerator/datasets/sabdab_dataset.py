@@ -24,64 +24,64 @@ def cdrEditdistance(x, y):
 
 def cdrExtracter(data_pdb: AtomGroup, Lchain: List[str] = [], Hchain: List[str] = [], nModes : int = 20) -> Data:
 
-    try:
-        # Only use alpha C atom for each residue
-        set_pdb = data_pdb.ca
-        
-        # Get sequence
-        seq = seq_to_tensor(set_pdb.getSequence())
-        y = seq.clone().detach()
-
-        # Only valid sequences are accepted
-        # print((y == 20))
-        assert not (y == 20).any()
-
-        # Mask CDR in light chains
-        for c in Lchain:
-          idx = Select().getIndices(set_pdb, "chain {}".format(c))
-          for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-            seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
-
-
-        # Mask CDR in heavy chains
-        for c in Hchain:
-          idx = Select().getIndices(set_pdb, "chain {}".format(c))
-          for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
-            seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
-
-        # Compute caresian distances
-        coords = torch.from_numpy(set_pdb.getCoordsets())
-        cart_distances = torch.cdist(coords, coords).squeeze(0).type(torch.FloatTensor)
-
-        # Compute edges and their atributes
-        mask = cart_distances < 12
-        edge_attr = cart_distances.flatten()[mask.flatten()].unsqueeze(-1)
-        edge_index = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
-        edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
-
-        # Compute node featues
-        pdbANM = ANM(set_pdb)
-        pdbANM.buildHessian(set_pdb)
-        pdbANM.calcModes(nModes)
-        xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
-        xFeatures = xFeatures.view(seq.size()[0], -1)
-
-        print(seq.shape, xFeatures.shape, set_pdb.numAtioms(), data_pdb.numAtoms())
-
-        # Create data point
-        data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
-        data.xFeatures = xFeatures
-        data = transform_edge_attr(data)
-        data = data.coalesce()
-
-        # Assertions
-        assert not data.contains_self_loops()
-        assert data.is_coalesced()
-
-        return data
+    # try:
+    # Only use alpha C atom for each residue
+    set_pdb = data_pdb.ca
     
-    except Exception:
-        return None
+    # Get sequence
+    seq = seq_to_tensor(set_pdb.getSequence())
+    y = seq.clone().detach()
+
+    # Only valid sequences are accepted
+    # print((y == 20))
+    assert not (y == 20).any()
+
+    # Mask CDR in light chains
+    for c in Lchain:
+      idx = Select().getIndices(set_pdb, "chain {}".format(c))
+      for cdr in getLightCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+
+
+    # Mask CDR in heavy chains
+    for c in Hchain:
+      idx = Select().getIndices(set_pdb, "chain {}".format(c))
+      for cdr in getHeavyCDR(set_pdb.select("chain {}".format(c)).getSequence()):
+        seq[idx[cdr]] = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+
+    # Compute caresian distances
+    coords = torch.from_numpy(set_pdb.getCoordsets())
+    cart_distances = torch.cdist(coords, coords).squeeze(0).type(torch.FloatTensor)
+
+    # Compute edges and their atributes
+    mask = cart_distances < 12
+    edge_attr = cart_distances.flatten()[mask.flatten()].unsqueeze(-1)
+    edge_index = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
+    edge_index, edge_attr = remove_self_loops(edge_index, edge_attr)
+
+    # Compute node featues
+    pdbANM = ANM(set_pdb)
+    pdbANM.buildHessian(set_pdb)
+    pdbANM.calcModes(nModes)
+    xFeatures = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
+    xFeatures = xFeatures.view(seq.size()[0], -1)
+
+    print(seq.shape, xFeatures.shape, set_pdb.numAtioms(), data_pdb.numAtoms())
+
+    # Create data point
+    data = Data(x=seq, edge_index=edge_index, edge_attr=edge_attr, y=y)
+    data.xFeatures = xFeatures
+    data = transform_edge_attr(data)
+    data = data.coalesce()
+
+    # Assertions
+    assert not data.contains_self_loops()
+    assert data.is_coalesced()
+
+    return data
+    
+    # except Exception:
+    #     return None
 
 
 class SAbDabInMemoryDataset(PDBInMemoryDataset):
