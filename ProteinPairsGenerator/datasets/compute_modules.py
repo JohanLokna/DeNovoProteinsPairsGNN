@@ -32,7 +32,7 @@ class ComputeCombine(ComputeModule):
     def __call__(self, *args, **kwargs) -> torch.Tensor:
 
         # Aggregate the results from the modules
-        return self.aggr(torch.stack([test(args, kwargs) for test in self.testModules], dim=-1))
+        return self.aggr(torch.stack([test(*args, **kwargs) for test in self.testModules], dim=-1))
 
 
 # Modules used for computing features
