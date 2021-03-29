@@ -151,6 +151,8 @@ class PDBInMemoryDataset(InMemoryDataset):
         print(len(data_list))
 
         data, slices = self.collate(data_list)
+        print(data[0].__dict__)
+        return
         torch.save((data, slices), self.processed_file_names[0])
 
 
