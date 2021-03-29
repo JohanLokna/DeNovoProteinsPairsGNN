@@ -3,6 +3,8 @@ from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
 
+from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor
+
 # General purpose modules
 
 class ComputeModule:
