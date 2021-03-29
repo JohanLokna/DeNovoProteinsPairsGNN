@@ -70,7 +70,7 @@ class PDBBuilder:
         # Transform to sparse form
         edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
         edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
-        print(edgeIdx)
+        edgeIdx, edgeAttr = remove_self_loops(edgeIdx, edgeAttr)
 
         # Assertions
         data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
