@@ -75,6 +75,8 @@ class PDBBuilder:
 
         print(seq.shape)
         print(y.shape)
+        print(edgeAttr.shape, edgeIdx.shape)
+        print(x.shape)
 
         # Assertions
         data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
