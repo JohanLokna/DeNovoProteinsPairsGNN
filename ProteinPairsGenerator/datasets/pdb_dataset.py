@@ -37,48 +37,52 @@ class PDBBuilder:
         **kwargs
     ) -> PDBData:
         
-        # Only consider alpha Cs
-        pdbCAlpha = pdb.ca
-        n = pdbCAlpha.numAtoms()
+        try:
+            # Only consider alpha Cs
+            pdbCAlpha = pdb.ca
+            n = pdbCAlpha.numAtoms()
 
-        # Extract sequence
-        seq = self.seqExtracter(pdbCAlpha, **kwargs)
+            # Extract sequence
+            seq = self.seqExtracter(pdbCAlpha, **kwargs)
 
-        # Extract y data
-        y = self.yExtracter(pdbCAlpha, **kwargs)
-        
-        # Extract node features
-        if not self.xExtracter is None:
-            x = self.xExtracter(pdbCAlpha, **kwargs)
-        else:
-            x = None
+            # Extract y data
+            y = self.yExtracter(pdbCAlpha, **kwargs)
+            
+            # Extract node features
+            if not self.xExtracter is None:
+                x = self.xExtracter(pdbCAlpha, **kwargs)
+            else:
+                x = None
 
-        # Extract edge features
-        edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
+            # Extract edge features
+            edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
 
-        # Ensure edge feautes have correct shape
-        if len(edgeAttr.size()) == 2:
-            edge_attr = edge_attr.unsqueeze(-1)
-        if len(edgeAttr.size()) != 3:
-            raise Exception
+            # Ensure edge feautes have correct shape
+            if len(edgeAttr.size()) == 2:
+                edge_attr = edge_attr.unsqueeze(-1)
+            if len(edgeAttr.size()) != 3:
+                raise Exception
 
-        # Find valid edges
-        if not self.edgeFilter is None:
-            mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
-        else:
-            mask = torch.ones(n, n, dtype=torch.bool)
+            # Find valid edges
+            if not self.edgeFilter is None:
+                mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
+            else:
+                mask = torch.ones(n, n, dtype=torch.bool)
 
-        # Transform to sparse form
-        edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
-        edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
-        edgeIdx, edgeAttr = remove_self_loops(edgeIdx, edgeAttr)
+            # Transform to sparse form
+            edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
+            edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
+            edgeIdx, edgeAttr = remove_self_loops(edgeIdx, edgeAttr)
 
-        # Assertions
-        data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
-        assert not data.contains_self_loops()
-        assert data.is_coalesced()
+            # Assertions
+            data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
+            assert not data.contains_self_loops()
+            assert data.is_coalesced()
 
-        return data
+            return data
+
+        except Exception:
+            return None
 
 
 class PDBInMemoryDataset(InMemoryDataset):
@@ -87,7 +91,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         self,
         root : Path,
         pdbs : Union[List[str], pd.DataFrame],
-        pre_filter : Mapping[AtomGroup, bool],
+        pre_filter : Mapping[PDBData, bool],
         pre_transform : Mapping[AtomGroup, PDBData],
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[PDBData, PDBData]] = [],
@@ -143,12 +147,13 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            data_list = [self.pre_transform(pdb) for pdb in parsePDB(self.pdbs) if self.pre_filter(pdb)]
+            data_list = [self.pre_transform(pdb) for pdb in parsePDB(self.pdbs)]
         else:
             data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
-                         for pdb, meta_data in self.pdbs.iterrows() if self.pre_filter(pdb)]
+                         for pdb, meta_data in self.pdbs.iterrows()]
 
-        print(len(data_list))
+        if not self.pre_filter is None:
+            data_list = list(filter(self.pre_filter, data_list))
 
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
