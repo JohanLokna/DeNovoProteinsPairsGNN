@@ -102,7 +102,6 @@ class PDBInMemoryDataset(InMemoryDataset):
         # Initialize super class and complete set up
         super().__init__(root, T.Compose(transform_list), pre_transform, pre_filter)
         self.data, self.slices = torch.load(self.processed_file_names[0])
-        print(self[0].__dict__)
 
     @property
     def raw_file_names(self) -> List[Path]:
