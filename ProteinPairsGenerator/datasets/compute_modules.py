@@ -129,6 +129,7 @@ class GetCartesianDistances(ComputeModule):
         except Exception:
             print(dist.shape)
             print(coords.shape)
+            print(pdb.getTitle())
 
         return dist
 
