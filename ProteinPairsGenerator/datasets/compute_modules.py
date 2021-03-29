@@ -1,3 +1,8 @@
+from prody import AtomGroup
+from typing import List, Mapping, Callable, Union, Generator, Any
+
+import torch
+
 # General purpose modules
 
 class ComputeModule:
