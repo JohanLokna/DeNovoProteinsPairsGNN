@@ -152,7 +152,6 @@ class PDBInMemoryDataset(InMemoryDataset):
 
         data, slices = self.collate(data_list)
         print(data[0].__dict__)
-        return
         torch.save((data, slices), self.processed_file_names[0])
 
 
@@ -186,7 +185,7 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
         )
 
         super().__init__(root=root, 
-                         pdbs=summary,
+                         pdbs=summary.head(3),
                          pre_filter=pre_filter,
                          pre_transform=pre_transform,
                          **kwargs)
