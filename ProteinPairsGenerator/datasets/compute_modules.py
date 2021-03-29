@@ -123,7 +123,13 @@ class GetCartesianDistances(ComputeModule):
         # Compute caresian distances
         coords = torch.from_numpy(pdb.getCoordsets())
         dist = torch.cdist(coords, coords).squeeze(0).type(torch.FloatTensor)
-        assert len(dist.shape) == 2
+
+        try:
+            assert len(dist.shape) == 2
+        except Exception:
+            print(dist.shape)
+            print(coords.shape)
+
         return dist
 
 
