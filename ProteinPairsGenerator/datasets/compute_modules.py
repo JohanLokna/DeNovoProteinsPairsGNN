@@ -87,13 +87,13 @@ class GetSequenceCDR(ComputeModule):
 
 class GetModes(ComputeModule):
 
-    def __init__(self) -> None:
+    def __init__(self,  : int) -> None:
+        self.nModes = nModes
         super().__init__()
 
     def __call__(
         self, 
         pdb: AtomGroup,
-        nModes : int,
         *args,
         **kwargs
     ) -> torch.Tensor:
@@ -101,7 +101,7 @@ class GetModes(ComputeModule):
         # ANM set up mode calculations
         pdbANM = ANM(pdb)
         pdbANM.buildHessian(pdb)
-        pdbANM.calcModes(nModes)
+        pdbANM.calcModes(self.nModes)
 
         # Make into array and reshape to [numAtoms, -1]
         modes = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
@@ -165,21 +165,21 @@ class TestChainsPresent(ComputeModule):
 
 class TestUpperBound(ComputeModule):
     
-    def __init__(self, threshold):
+    def __init__(self, threshold, dim: Union[int, type(None)] = None,):
         super().__init__()
         self.threshold = threshold
+        self.dim = dim
 
     def __call__(
         self, 
         pdb: AtomGroup, 
         edgeAttr: torch.Tensor,
-        dim: Union[int, type(None)] = None,
         *args,
         **kwargs
     ) -> torch.BoolTensor:
 
         # Test if bellow theshold
-        if dim is None:
+        if self.dim is None:
             return edgeAttr < self.threshold
         else:
-            return edgeAttr[:, :, dim] < self.threshold
+            return edgeAttr[:, :, self.dim] < self.threshold
