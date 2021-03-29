@@ -155,6 +155,7 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
         self, 
         summary_file : Path,
         root : Path,
+        pre_filter,
         xExtracter = None,
         edgeAttrExtracter = None,
         edgeFilter = None,       
@@ -177,7 +178,9 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
           edgeFilter=edgeFilter
         )
 
-        super().__init__(root=root, pdbs=summary, 
+        super().__init__(root=root, 
+                         pdbs=summary,
+                         pre_filter=pre_filter,
                          pre_transform=pre_transform,
                          **kwargs)
 
