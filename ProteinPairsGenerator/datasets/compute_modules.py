@@ -14,7 +14,7 @@ class ComputeModule:
     def __init__(self):
         pass
 
-    def __call__(self, **kwargs) -> torch.Tensor:
+    def __call__(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
 
 
@@ -121,6 +121,7 @@ class GetCartesianDistances(ComputeModule):
     ) -> torch.FloatTensor:
 
         # Compute caresian distances
+        print(pdb, args)
         coords = torch.from_numpy(pdb.getCoordsets())
         return torch.cdist(coords, coords).squeeze(0).type(torch.FloatTensor)
 
