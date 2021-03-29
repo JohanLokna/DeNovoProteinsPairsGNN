@@ -87,7 +87,7 @@ class GetSequenceCDR(ComputeModule):
 
 class GetModes(ComputeModule):
 
-    def __init__(self,  : int) -> None:
+    def __init__(self, nModes : int) -> None:
         self.nModes = nModes
         super().__init__()
 
