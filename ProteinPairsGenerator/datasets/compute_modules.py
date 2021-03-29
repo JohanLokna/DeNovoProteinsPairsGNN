@@ -1,4 +1,4 @@
-from prody import AtomGroup
+from prody import AtomGroup, ANM
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
