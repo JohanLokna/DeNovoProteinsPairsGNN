@@ -41,19 +41,19 @@ class PDBBuilder:
         n = pdbCAlpha.numAtoms()
 
         # Extract sequence
-        seq = self.seqExtracter(pdb=pdbCAlpha, **kwargs)
+        seq = self.seqExtracter(pdbCAlpha, **kwargs)
 
         # Extract y data
-        y = self.yExtracter(pdb=pdbCAlpha, **kwargs)
+        y = self.yExtracter(pdbCAlpha, **kwargs)
         
         # Extract node features
         if not self.xExtracter is None:
-            x = self.xExtracter(pdb=pdbCAlpha, **kwargs)
+            x = self.xExtracter(pdbCAlpha, **kwargs)
         else:
             x = None
 
         # Extract edge features
-        edgeAttr = self.edgeAttrExtracter(pdb=pdbCAlpha, **kwargs)
+        edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
 
         # Ensure edge feautes have correct shape
         if len(edgeAttr.size()) == 2:
@@ -63,7 +63,7 @@ class PDBBuilder:
 
         # Find valid edges
         if not self.edgeFilter is None:
-            mask = self.edgeFilter(pdb=pdbCAlpha, edgeAttr, **kwargs)
+            mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
         else:
             mask = torch.ones(n, n, dtype=torch.bool)
 
