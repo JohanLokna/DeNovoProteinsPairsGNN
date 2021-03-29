@@ -68,11 +68,11 @@ class PDBBuilder:
             mask = torch.ones(n, n, dtype=torch.bool)
 
         # Transform to sparse form
-        edge_attr = edge_attr[mask, :].view(-1, edge_attr.size()[-1])
-        edge_index = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
+        edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
+        edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
 
         # Assertions
-        data = PDBData(seq=seq, x=x, edge_index=edge_index, edge_attr=edge_attr, y=y)
+        data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
         assert not data.contains_self_loops()
         assert data.is_coalesced()
 
