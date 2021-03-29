@@ -93,7 +93,6 @@ class PDBInMemoryDataset(InMemoryDataset):
 
         # Set up PDB
         self.pdbs = pdbs
-        self.raw_dir.mkdir(exist_ok=True)
         pathPDBFolder(folder=self.raw_dir, divided=False)
         
         # Initialize super class and complete set up
