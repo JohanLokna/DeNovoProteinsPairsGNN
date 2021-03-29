@@ -41,19 +41,19 @@ class PDBBuilder:
         n = pdbCAlpha.numAtoms()
 
         # Extract sequence
-        seq = self.seqExtracter(pdbCAlpha, **kwargs)
+        seq = self.seqExtracter(pdb=pdbCAlpha, **kwargs)
 
         # Extract y data
-        y = self.yExtracter(pdbCAlpha, **kwargs)
+        y = self.yExtracter(pdb=pdbCAlpha, **kwargs)
         
         # Extract node features
         if not self.xExtracter is None:
-            x = self.xExtracter(pdbCAlpha, **kwargs)
+            x = self.xExtracter(pdb=pdbCAlpha, **kwargs)
         else:
             x = None
 
         # Extract edge features
-        edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
+        edgeAttr = self.edgeAttrExtracter(pdb=pdbCAlpha, **kwargs)
 
         # Ensure edge feautes have correct shape
         if len(edgeAttr.size()) == 2:
@@ -63,7 +63,7 @@ class PDBBuilder:
 
         # Find valid edges
         if not self.edgeFilter is None:
-            mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
+            mask = self.edgeFilter(pdb=pdbCAlpha, edgeAttr, **kwargs)
         else:
             mask = torch.ones(n, n, dtype=torch.bool)
 
@@ -141,9 +141,9 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            data_list = [self.pre_transform(pdb=pdb) for pdb in parsePDB(self.pdbs) if self.pre_filter(pdb)]
+            data_list = [self.pre_transform(pdb) for pdb in parsePDB(self.pdbs) if self.pre_filter(pdb)]
         else:
-            data_list = [self.pre_transform(pdb=parsePDB(pdb), **meta_data.to_dict()) \
+            data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows() if self.pre_filter(pdb)]
 
         data, slices = self.collate(data_list)
