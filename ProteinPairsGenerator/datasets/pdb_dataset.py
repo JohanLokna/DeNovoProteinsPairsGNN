@@ -38,6 +38,9 @@ class PDBBuilder:
     ) -> PDBData:
         
         try:
+
+            assert pdb.numAtoms() < 7000
+
             # Only consider alpha Cs
             pdbCAlpha = pdb.ca
             n = pdbCAlpha.numAtoms()
