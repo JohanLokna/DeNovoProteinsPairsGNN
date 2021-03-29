@@ -148,6 +148,8 @@ class PDBInMemoryDataset(InMemoryDataset):
             data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows() if self.pre_filter(pdb)]
 
+        print(len(data_list))
+
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_file_names[0])
 
