@@ -29,10 +29,10 @@ class ComputeCombine(ComputeModule):
         self.testModules = testModules
         self.aggr = aggr
 
-    def __call__(self, **kwargs) -> torch.Tensor:
+    def __call__(self, *args, **kwargs) -> torch.Tensor:
 
         # Aggregate the results from the modules
-        return self.aggr(torch.stack([test(kwargs) for test in self.testModules], dim=-1))
+        return self.aggr(torch.stack([test(args, kwargs) for test in self.testModules], dim=-1))
 
 
 # Modules used for computing features
@@ -45,6 +45,7 @@ class GetSequence(ComputeModule):
     def __call__(
         self, 
         pdb: AtomGroup,
+        *args,
         **kwargs
     ) -> torch.Tensor:
         
@@ -62,6 +63,7 @@ class GetSequenceCDR(ComputeModule):
         pdb: AtomGroup,
         LChains: List[str] = [],
         HChains: List[str] = [],
+        *args,
         **kwargs
     ) -> torch.Tensor:
         
@@ -92,6 +94,7 @@ class GetModes(ComputeModule):
         self, 
         pdb: AtomGroup,
         nModes : int,
+        *args,
         **kwargs
     ) -> torch.Tensor:
 
@@ -113,6 +116,7 @@ class GetCartesianDistances(ComputeModule):
     def __call__(
         self, 
         pdb: AtomGroup,
+        *args,
         **kwargs
     ) -> torch.FloatTensor:
 
@@ -129,6 +133,7 @@ class GetSequenceDistances(ComputeModule):
     def __call__(
         self, 
         pdb: AtomGroup,
+        *args,
         **kwargs
     ) -> torch.FloatTensor:
 
@@ -147,8 +152,9 @@ class TestChainsPresent(ComputeModule):
     def __call__(
         self, 
         pdb: AtomGroup, 
-        Lchains: List[str] = [], 
-        Hchains: List[str] = [], 
+        Lchains: List[str] = [],
+        Hchains: List[str] = [],
+        *args, 
         **kwargs
     ) -> torch.BoolTensor:
 
@@ -168,6 +174,7 @@ class TestUpperBound(ComputeModule):
         pdb: AtomGroup, 
         edgeAttr: torch.Tensor,
         dim: Union[int, type(None)] = None,
+        *args,
         **kwargs
     ) -> torch.BoolTensor:
 
