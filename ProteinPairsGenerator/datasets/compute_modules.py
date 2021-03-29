@@ -3,7 +3,9 @@ from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
 
-from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor
+from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, AMINO_ACIDS_MAP, \
+                                                    CDRS_HEAVY, CDRS_LIGHT
+from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 # General purpose modules
 
@@ -64,7 +66,7 @@ class GetSequenceCDR(ComputeModule):
     ) -> torch.Tensor:
         
         # Get sequence
-        seq_to_tensor(pdb.getSequence())
+        seq = seq_to_tensor(pdb.getSequence())
 
         # Mask CDR in light chains in seq
         for c in LChains:
