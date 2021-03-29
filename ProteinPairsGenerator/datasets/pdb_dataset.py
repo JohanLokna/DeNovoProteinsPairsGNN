@@ -73,6 +73,8 @@ class PDBBuilder:
         edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
         edgeIdx, edgeAttr = remove_self_loops(edgeIdx, edgeAttr)
 
+        print(x.shape)
+
         # Assertions
         data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
         assert not data.contains_self_loops()
