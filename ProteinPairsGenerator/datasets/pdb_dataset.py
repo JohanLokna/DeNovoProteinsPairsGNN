@@ -4,7 +4,8 @@ from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
-from torch_geometric.data import InMemoryDataset, remove_self_loops
+from torch_geometric.data import InMemoryDataset
+from torch_geometric.utils import remove_self_loops
 import torch_geometric.transforms as T
 
 from .utils import removeNone
