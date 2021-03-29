@@ -141,9 +141,9 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            data_list = [self.pre_transform(pdb) for pdb in parsePDB(self.pdbs) if self.pre_filter(pdb)]
+            data_list = [self.pre_transform(pdb=pdb) for pdb in parsePDB(self.pdbs) if self.pre_filter(pdb)]
         else:
-            data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
+            data_list = [self.pre_transform(pdb=parsePDB(pdb), **meta_data.to_dict()) \
                          for pdb, meta_data in self.pdbs.iterrows() if self.pre_filter(pdb)]
 
         data, slices = self.collate(data_list)
