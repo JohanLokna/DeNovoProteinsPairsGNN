@@ -11,11 +11,19 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 class ComputeModule:
 
-    def __init__(self):
-        pass
+    def __init__(self, procs = None ) -> None:
+        self.procs = procs
 
     def __call__(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
+
+    @property
+    def procs(self):
+        return self.__procs
+
+    @procs.setter
+    def procs(self, var):
+        self.__procs = var
 
 
 class ComputeCombine(ComputeModule):
@@ -61,8 +69,8 @@ class GetSequenceCDR(ComputeModule):
     def __call__(
         self,
         pdb: AtomGroup,
-        LChains: List[str] = [],
-        HChains: List[str] = [],
+        Hchain: List[str] = [],
+        Hchain: List[str] = [],
         *args,
         **kwargs
     ) -> torch.Tensor:
@@ -71,13 +79,13 @@ class GetSequenceCDR(ComputeModule):
         seq = seq_to_tensor(pdb.getSequence())
 
         # Mask CDR in light chains in seq
-        for c in LChains:
+        for c in Hchain:
           idx = Select().getIndices(pdb, "chain {}".format(c))
           for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence())):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
 
         # Mask CDR in heavy chains in seq
-        for c in HChains:
+        for c in Hchain:
           idx = Select().getIndices(pdb, "chain {}".format(c))
           for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence())):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
