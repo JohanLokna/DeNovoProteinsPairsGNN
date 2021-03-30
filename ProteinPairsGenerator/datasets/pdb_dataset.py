@@ -184,9 +184,9 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
 
         # Set up pre transform
         pre_transform = PDBBuilder(
-          seqExtracter=GetSequence(),
+          seqExtracter=GetSequenceCDR(),
           xExtracter=xExtracter,
-          yExtracter=GetSequenceCDR(),
+          yExtracter=GetSequence(),
           edgeAttrExtracter=edgeAttrExtracter,
           edgeFilter=edgeFilter
         )
