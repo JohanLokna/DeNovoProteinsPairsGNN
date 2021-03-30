@@ -69,7 +69,7 @@ class GetSequenceCDR(ComputeModule):
     def __call__(
         self,
         pdb: AtomGroup,
-        Hchain: List[str] = [],
+        Lchain: List[str] = [],
         Hchain: List[str] = [],
         *args,
         **kwargs
@@ -79,7 +79,7 @@ class GetSequenceCDR(ComputeModule):
         seq = seq_to_tensor(pdb.getSequence())
 
         # Mask CDR in light chains in seq
-        for c in Hchain:
+        for c in Lchain:
           idx = Select().getIndices(pdb, "chain {}".format(c))
           for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence())):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
