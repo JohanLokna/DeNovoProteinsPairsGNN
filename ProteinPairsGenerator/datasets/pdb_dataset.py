@@ -58,7 +58,10 @@ class PDBBuilder:
             x = None
 
         # Extract edge features
-        edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
+        if not self.edgeAttrExtracter is None:
+            edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
+        else:
+            edgeAttr = None
 
         # Ensure edge feautes have correct shape
         if len(edgeAttr.size()) == 2:
