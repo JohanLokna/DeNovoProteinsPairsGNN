@@ -1,3 +1,4 @@
+from multiprocessing import Pool
 import pandas as pd
 from pathlib import Path
 from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
@@ -103,6 +104,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         pre_transform : Mapping[AtomGroup, PDBData],
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[PDBData, PDBData]] = [],
+        pool: Union[Pool, None] = None
     ) -> None:
 
         # Set up PDB
@@ -110,6 +112,9 @@ class PDBInMemoryDataset(InMemoryDataset):
         self.root = root
         self.raw_dir.mkdir(exist_ok=True)
         pathPDBFolder(folder=self.raw_dir, divided=False)
+
+        # Set up pool
+        self.pool = pool
         
         # Initialize super class and complete set up
         super().__init__(root, T.Compose(transform_list), pre_transform, pre_filter)
@@ -155,15 +160,21 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            data_list = [self.pre_transform(pdb) for pdb in parsePDB(self.pdbs)]
+            kwargsList = self.pdbs
         else:
-            data_list = [self.pre_transform(parsePDB(pdb), **meta_data.to_dict()) \
-                         for pdb, meta_data in self.pdbs.iterrows()]
+            kwargsList = [metaData.to_dict().update("pdb", parsePDB(pdb)) \
+                    for pdb, metaData in self.pdbs.iterrows()]
+
+        if self.pool is None:
+            dataList = [self.pre_transform(**kwargs) for kwargs in kwargsList]
+        else:
+            dataList = self.pool.map(lambda kwargs: self.pre_transform(**kwargs), kwargsList)
+
 
         if not self.pre_filter is None:
-            data_list = list(filter(self.pre_filter, data_list))
+            dataList = list(filter(self.pre_filter, dataList))
 
-        data, slices = self.collate(data_list)
+        data, slices = self.collate(dataList)
         torch.save((data, slices), self.processed_file_names[0])
 
 
