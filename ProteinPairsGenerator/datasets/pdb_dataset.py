@@ -197,7 +197,7 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
         )
 
         super().__init__(root=root, 
-                         pdbs=summary,
+                         pdbs=summary.head(700),
                          pre_filter=pre_filter,
                          pre_transform=pre_transform,
                          **kwargs)
