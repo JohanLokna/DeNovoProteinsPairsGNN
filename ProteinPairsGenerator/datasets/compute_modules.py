@@ -5,7 +5,9 @@ from typing import List, Mapping, Callable, Union, Generator, Any
 import torch
 
 from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, AMINO_ACIDS_MAP, \
-                                                    CDRS_HEAVY, CDRS_LIGHT
+                                                    CDRS_HEAVY, CDRS_LIGHT, \
+                                                    CHAIN_NULL, CHAIN_HEAVY, CHAIN_LIGHT, CHAIN_ANTIGEN, \
+                                                    CHAINS_MAP
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 # General purpose modules
@@ -90,6 +92,42 @@ class GetSequenceCDR(ComputeModule):
           idx = Select().getIndices(pdb, "chain {}".format(c))
           for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence())):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
+
+        return seq
+
+
+class GetChainsDescription(ComputeModule):
+
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def __call__(
+        self,
+        pdb: AtomGroup,
+        Lchain: List[str] = [],
+        Hchain: List[str] = [],
+        antigen_chain: List[str] = [],
+        *args,
+        **kwargs
+    ) -> torch.Tensor:
+        
+        # Get sequence
+        seq = torch.empty(pdb.numAtoms(), dtype=torch.long).fill_(CHAINS_MAP[CHAIN_NULL])
+
+        # Mask light chains in seq
+        for c in Lchain:
+          idx = Select().getIndices(pdb, "chain {}".format(c))
+          seq[idx] = CHAINS_MAP[CHAIN_LIGHT]
+
+        # Mask heavy chains in seq
+        for c in Hchain:
+          idx = Select().getIndices(pdb, "chain {}".format(c))
+          seq[idx] = CHAINS_MAP[CHAIN_HEAVY]
+
+        # Mask antigen chains in seq
+        for c in antigen_chain:
+          idx = Select().getIndices(pdb, "chain {}".format(c))
+          seq[idx] = CHAINS_MAP[CHAIN_ANTIGEN]
 
         return seq
 

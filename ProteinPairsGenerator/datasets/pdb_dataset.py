@@ -11,7 +11,7 @@ import torch_geometric.transforms as T
 
 from .utils import removeNone
 from .pdb_data import PDBData   
-from .compute_modules import GetSequence, GetSequenceCDR
+from .compute_modules import GetSequence, GetSequenceCDR, GetChainsDescription
 
 
 class PDBBuilder:
@@ -83,8 +83,10 @@ class PDBBuilder:
                 edgeAttr = None
                 edgeIdx = None
 
+            meta = {'chains': GetChainsDescription()(pdbCAlpha, **kwargs)}
+
             # Assertions
-            data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y)
+            data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y, meta=meta)
             assert not data.contains_self_loops()
             assert data.is_coalesced()
 
@@ -104,14 +106,20 @@ class PDBInMemoryDataset(InMemoryDataset):
         pre_transform : Mapping[AtomGroup, PDBData],
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[PDBData, PDBData]] = [],
+        pdbFolders : List[Path] = [],
         pool: Union[Pool, None] = None
     ) -> None:
 
-        # Set up PDB
-        self.pdbs = pdbs
+        # Set up root
         self.root = root
-        self.raw_dir.mkdir(exist_ok=True)
-        pathPDBFolder(folder=self.raw_dir, divided=False)
+        self.root.mkdir(exist_ok=True)
+
+        # Set up PDB
+        self.pdbs = pdbs        
+        pdbFolders.append(self.raw_dir)
+        for folder in pdbFolders:
+            folder.mkdir(exist_ok=True)
+            pathPDBFolder(folder=folder, divided=False)
 
         # Set up pool
         self.pool = pool
@@ -187,7 +195,7 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
         pre_filter,
         xExtracter = None,
         edgeAttrExtracter = None,
-        edgeFilter = None,       
+        edgeFilter = None,
         **kwargs
     ) -> None:
 

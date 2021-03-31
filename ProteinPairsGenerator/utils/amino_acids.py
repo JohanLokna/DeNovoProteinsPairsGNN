@@ -2,7 +2,18 @@ from typing import List
 
 import numpy as np
 import torch
-from numba import njit
+
+# Chains
+CHAIN_HEAVY : str = "H"
+CHAIN_LIGHT : str = "L"
+CHAIN_ANTIGEN : str = "A"
+CHAIN_NULL : str = "X"
+CHAINS: List[str] = [CHAIN_HEAVY, CHAIN_LIGHT, CHAIN_ANTIGEN, CHAIN_NULL]
+CHAINS_ORD: List[int] = [ord(c) for c in CHAINS]
+
+# Bijective mapping between numerical and symbolic representation
+CHAINS_MAP = {c: i for i, c in enumerate(CHAINS)}
+CHAINS_MAP.update({i: c for i, c in enumerate(CHAINS)})
 
 # List of amino acids (symbol)
 AMINO_ACID_NULL: str = "X"
@@ -31,10 +42,8 @@ AMINO_ACIDS: List[str] = [
     "H",
 ] + [AMINO_ACID_NULL] + CDRS_HEAVY + CDRS_LIGHT
 
-
 # List  of amino acids (ordinal representation)
 AMINO_ACIDS_ORD: List[int] = [ord(aa) for aa in AMINO_ACIDS]
-
 
 # Bijective mapping between numerical and symbolic representation
 AMINO_ACIDS_MAP = {aa: i for i, aa in enumerate(AMINO_ACIDS)}
