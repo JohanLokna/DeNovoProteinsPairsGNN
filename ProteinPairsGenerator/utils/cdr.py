@@ -11,8 +11,7 @@ def getLightCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin
         renumberedTransitionPoints = iter([24, 34, 50, 56, 89, 97])
     else:
         raise ValueError("{} is not an implemented scheme.".format(scheme))
-    
-    print("Light: " + hmmerpath)
+      
     return getCDR(seq, renumberedTransitionPoints, scheme, hmmerpath)
 
 
@@ -24,14 +23,12 @@ def getHeavyCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin
         renumberedTransitionPoints = iter([26, 32, 52, 56, 95, 102])
     else:
         raise ValueError("{} is not an implemented scheme.".format(scheme))
-    
-    print("Heavy: " + hmmerpath)
+      
     return getCDR(seq, renumberedTransitionPoints, scheme, hmmerpath)
 
 
 def getCDR(seq : str, renumberedTransitionPoints : List[int], scheme : str = "chothia",  hmmerpath : str = "/usr/bin/"):
 
-    print("CDR general: " + hmmerpath)
     renumbering = run_anarci(seq, ncpu=1, hmmerpath=hmmerpath, scheme=scheme)[1][0][0][0]
     
     cdrRenumbered = []
