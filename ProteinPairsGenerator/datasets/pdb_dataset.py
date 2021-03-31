@@ -20,7 +20,7 @@ def worker_init(func):
   global _func
   _func = func
   
-def worker(**kwargs):
+def worker(kwargs):
   return _func(**kwargs)
 
 
