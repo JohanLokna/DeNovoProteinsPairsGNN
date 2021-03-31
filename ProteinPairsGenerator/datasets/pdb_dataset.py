@@ -16,7 +16,9 @@ from .compute_modules import GetSequence, GetSequenceCDR, GetChainsDescription
 
 _func = None
 
-def worker_init(func):
+def worker_init(func, pdbFolders):
+
+  
 
   global _func
   _func = func
@@ -128,8 +130,9 @@ class PDBInMemoryDataset(InMemoryDataset):
         self.root.mkdir(exist_ok=True)
 
         # Set up PDB
-        self.pdbs = pdbs        
-        for folder in pdbFolders + [self.raw_dir]:
+        self.pdbs = pdbs
+        # pdbFolders = pdbFolders + [self.raw_dir]
+        for folder in pdbFolders:
             folder.mkdir(exist_ok=True)
             pathPDBFolder(folder=folder, divided=False)
             print(folder)
