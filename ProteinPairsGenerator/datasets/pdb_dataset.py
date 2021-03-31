@@ -172,10 +172,13 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            kwargsList = self.pdbs
+            kwargsList = [{"pdb": parsePDB(pdb)} for pdb in self.pdbs]
         else:
-            kwargsList = [metaData.to_dict() \
-                    for pdb, metaData in self.pdbs.iterrows()]
+            def helper(pdb, metaData):
+                kwargs = metaData.to_dict()
+                kwargs["pdb"] = parsePDB(pdb)
+                return kwargs
+            kwargsList = [helper(pdb, metaData) for pdb, metaData in self.pdbs.iterrows()]
 
         print(kwargsList)
         exit(0)
