@@ -50,6 +50,8 @@ class PDBBuilder:
         
         # try:
 
+        print("OK {}".format(pdb.title()))
+
         assert pdb.numAtoms() < 7000
 
         # Only consider alpha Cs
