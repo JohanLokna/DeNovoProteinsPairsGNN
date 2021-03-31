@@ -50,9 +50,6 @@ class PDBBuilder:
         
         try:
 
-            print(pdb)
-            # pathPDBFolder(folder="./pdb_download", divided=False)
-
             # Only consider alpha Cs
             pdbCAlpha = parsePDB(pdb).ca
             n = pdbCAlpha.numAtoms()
@@ -118,7 +115,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         pre_transform : Mapping[AtomGroup, PDBData],
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[PDBData, PDBData]] = [],
-        pdbFolders : List[Path] = [],
+        pdbFolder : Union[Path, None] = None,
         poolSize: Union[int, None] = None,
     ) -> None:
 
@@ -128,11 +125,12 @@ class PDBInMemoryDataset(InMemoryDataset):
 
         # Set up PDB
         self.pdbs = pdbs
-        # pdbFolders = pdbFolders + [self.raw_dir]
-        for folder in pdbFolders:
-            folder.mkdir(exist_ok=True)
-            pathPDBFolder(folder=folder, divided=False)
-            print(folder)
+
+        # Set up PDB folders
+        if pdbFolder is None:
+            pdbFolder = self.raw_dir
+        pdbFolder.mkdir(exist_ok=True)
+        pathPDBFolder(folder=pdbFolder, divided=False)
 
         # Set up pool
         self.poolSize = poolSize
