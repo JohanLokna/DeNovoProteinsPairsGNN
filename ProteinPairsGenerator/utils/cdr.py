@@ -5,6 +5,7 @@ from typing import List
 def getLightCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin/"):
 
     assert scheme in ["chothia"]
+    assert hmmerpath != "/usr/bin/"
 
     if scheme == "chothia":
         renumberedTransitionPoints = iter([24, 34, 50, 56, 89, 97])
