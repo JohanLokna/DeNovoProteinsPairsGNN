@@ -16,10 +16,7 @@ from .compute_modules import GetSequence, GetSequenceCDR, GetChainsDescription
 
 _func = None
 
-def worker_init(func, pdbFolders):
-
-  
-
+def worker_init(func):
   global _func
   _func = func
   
