@@ -110,6 +110,8 @@ class GetChainsDescription(ComputeModule):
         *args,
         **kwargs
     ) -> torch.Tensor:
+
+        print("OK")
         
         # Get sequence
         seq = torch.empty(pdb.numAtoms(), dtype=torch.long).fill_(CHAINS_MAP[CHAIN_NULL])
