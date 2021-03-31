@@ -186,8 +186,12 @@ class PDBInMemoryDataset(InMemoryDataset):
             p = Pool(self.poolSize, initializer=worker_init, initargs=(self.pre_transform,))
             dataList = p.map(worker, kwargsList)
 
+        print(len(dataList))
+
         if not self.pre_filter is None:
             dataList = list(filter(self.pre_filter, dataList))
+
+        print(len(dataList))
 
         data, slices = self.collate(dataList)
         torch.save((data, slices), self.processed_file_names[0])
