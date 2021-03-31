@@ -54,25 +54,17 @@ class PDBBuilder:
             pdbCAlpha = parsePDB(pdb).ca
             n = pdbCAlpha.numAtoms()
 
-            print("1")
-
             # Extract sequence
             seq = self.seqExtracter(pdbCAlpha, **kwargs)
 
-            print("2")
-
             # Extract y data
             y = self.yExtracter(pdbCAlpha, **kwargs)
-
-            print("3")
             
             # Extract node features
             if not self.xExtracter is None:
                 x = self.xExtracter(pdbCAlpha, **kwargs)
             else:
                 x = None
-
-            print("4")
 
             # Extract edge features
             if not self.edgeAttrExtracter is None:
@@ -84,15 +76,11 @@ class PDBBuilder:
                 if len(edgeAttr.size()) != 3:
                     raise Exception
 
-                print("5")
-
                 # Find valid edges
                 if not self.edgeFilter is None:
                     mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
                 else:
                     mask = torch.ones(n, n, dtype=torch.bool)
-
-                print("6")
 
                 # Transform to sparse form
                 edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
@@ -103,16 +91,12 @@ class PDBBuilder:
                 edgeAttr = None
                 edgeIdx = None
 
-            print("7")
-
-            meta = None #{'chains': GetChainsDescription()(pdbCAlpha, **kwargs)}
+            meta = GetChainsDescription()(pdbCAlpha, **kwargs)
 
             # Assertions
             data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y, meta=meta)
             assert not data.contains_self_loops()
             assert data.is_coalesced()
-
-            print("8")
 
             return data
 
@@ -203,13 +187,8 @@ class PDBInMemoryDataset(InMemoryDataset):
             p = Pool(self.poolSize, initializer=worker_init, initargs=(self.pre_transform,))
             dataList = p.map(worker, kwargsList)
 
-        print(len(dataList))
-        print(dataList)
-
         if not self.pre_filter is None:
             dataList = list(filter(self.pre_filter, dataList))
-
-        print(len(dataList))
 
         data, slices = self.collate(dataList)
         torch.save((data, slices), self.processed_file_names[0])
