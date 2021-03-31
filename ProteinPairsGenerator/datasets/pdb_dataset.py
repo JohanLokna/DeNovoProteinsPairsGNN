@@ -132,7 +132,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[PDBData, PDBData]] = [],
         pdbFolders : List[Path] = [],
-        poolSize: Union[int, None] = None
+        poolSize: Union[int, None] = None,
     ) -> None:
 
         # Set up root
@@ -225,6 +225,7 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
         xExtracter = None,
         edgeAttrExtracter = None,
         edgeFilter = None,
+        hmmerpath : str = "/usr/bin/",
         **kwargs
     ) -> None:
 
@@ -237,7 +238,7 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
 
         # Set up pre transform
         pre_transform = PDBBuilder(
-          seqExtracter=GetSequenceCDR(),
+          seqExtracter=GetSequenceCDR(hmmerpath=hmmerpath),
           xExtracter=xExtracter,
           yExtracter=GetSequence(),
           edgeAttrExtracter=edgeAttrExtracter,
