@@ -14,8 +14,14 @@ from .pdb_data import PDBData
 from .compute_modules import GetSequence, GetSequenceCDR, GetChainsDescription
 
 
-def wrapper(func, **kwargs):
-    return func(**kwargs)
+_func = None
+
+def worker_init(func):
+  global _func
+  _func = func
+  
+def worker(x):
+  return _func(x)
 
 
 class PDBBuilder:
@@ -111,7 +117,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         device : str = "cuda" if torch.cuda.is_available() else "cpu",
         transform_list : List[Mapping[PDBData, PDBData]] = [],
         pdbFolders : List[Path] = [],
-        pool: Union[Pool, None] = None
+        poolSize: Union[int, None] = None
     ) -> None:
 
         # Set up root
@@ -126,7 +132,7 @@ class PDBInMemoryDataset(InMemoryDataset):
             pathPDBFolder(folder=folder, divided=False)
 
         # Set up pool
-        self.pool = pool
+        self.poolSize = poolSize
         
         # Initialize super class and complete set up
         super().__init__(root, T.Compose(transform_list), pre_transform, pre_filter)
@@ -174,21 +180,13 @@ class PDBInMemoryDataset(InMemoryDataset):
         if type(self.pdbs) is list:
             kwargsList = [{"pdb": parsePDB(pdb)} for pdb in self.pdbs]
         else:
-            def helper(pdb, metaData):
-                kwargs = metaData.to_dict()
-                kwargs["pdb"] = parsePDB(pdb)
-                return kwargs
-            kwargsList = [helper(pdb, metaData) for pdb, metaData in self.pdbs.iterrows()]
+            kwargsList = [{"pdb": parsePDB(pdb), **metaData.to_dict()} for pdb, metaData in self.pdbs.iterrows()]
 
-        if self.pool is None:
+        if self.poolSize is None:
             dataList = [self.pre_transform(**kwargs) for kwargs in kwargsList]
         else:
-            def helper(kwargs):
-                kwargs["func"] = self.pre_transform
-                return kwargs
-            kwargsList = [helper(kwargs) for kwargs in kwargsList]
-            dataList = self.pool.map(wrapper, kwargsList)
-
+            p = Pool(self.poolSize, initializer=worker_init, initargs=(self.pre_transform,))
+            dataList = p.map(worker, kwargsList)
 
         if not self.pre_filter is None:
             dataList = list(filter(self.pre_filter, dataList))
