@@ -66,7 +66,8 @@ class GetSequence(ComputeModule):
 
 class GetSequenceCDR(ComputeModule):
 
-    def __init__(self) -> None:
+    def __init__(self, hmmerpath : str = "/usr/bin/") -> None:
+        self.hmmerpath = hmmerpath
         super().__init__()
     
     def __call__(
@@ -84,13 +85,13 @@ class GetSequenceCDR(ComputeModule):
         # Mask CDR in light chains in seq
         for c in Lchain:
           idx = Select().getIndices(pdb, "chain {}".format(c))
-          for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence())):
+          for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c), hmmerpath=self.hmmerpath).getSequence())):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
 
         # Mask CDR in heavy chains in seq
         for c in Hchain:
           idx = Select().getIndices(pdb, "chain {}".format(c))
-          for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence())):
+          for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c), hmmerpath=self.hmmerpath).getSequence())):
             seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
 
         return seq
