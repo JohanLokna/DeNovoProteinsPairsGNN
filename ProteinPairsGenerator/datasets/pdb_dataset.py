@@ -14,6 +14,10 @@ from .pdb_data import PDBData
 from .compute_modules import GetSequence, GetSequenceCDR, GetChainsDescription
 
 
+def wrapper(func, **kwargs):
+    return func(**kwargs)
+
+
 class PDBBuilder:
 
     def __init__(
@@ -176,7 +180,8 @@ class PDBInMemoryDataset(InMemoryDataset):
         if self.pool is None:
             dataList = [self.pre_transform(**kwargs) for kwargs in kwargsList]
         else:
-            dataList = self.pool.map(lambda kwargs: self.pre_transform(**kwargs), kwargsList)
+            kwargsList = [kwargs.update({"func": self.pre_transform}) for kwargs in kwargsList]
+            dataList = self.pool.map(wrapper, kwargsList)
 
 
         if not self.pre_filter is None:
@@ -200,11 +205,11 @@ class CDRInMemoryDataset(PDBInMemoryDataset):
     ) -> None:
 
         # Extract meta data from description file
-        fields = ["pdb", "Hchain", "Lchain"]
+        fields = ["pdb", "Hchain", "Lchain", "antigen_chain"]
         summary = pd.read_csv(summary_file, usecols=fields, delimiter="\t")
 
         concat = lambda x: x.dropna().tolist()
-        summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat})
+        summary = summary.groupby(summary["pdb"]).agg({"Hchain": concat, "Lchain": concat, "antigen_chain": concat})
 
         # Set up pre transform
         pre_transform = PDBBuilder(
