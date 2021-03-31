@@ -48,62 +48,62 @@ class PDBBuilder:
         **kwargs
     ) -> PDBData:
         
-        try:
+        # try:
 
-            assert pdb.numAtoms() < 7000
+        assert pdb.numAtoms() < 7000
 
-            # Only consider alpha Cs
-            pdbCAlpha = pdb.ca
-            n = pdbCAlpha.numAtoms()
+        # Only consider alpha Cs
+        pdbCAlpha = pdb.ca
+        n = pdbCAlpha.numAtoms()
 
-            # Extract sequence
-            seq = self.seqExtracter(pdbCAlpha, **kwargs)
+        # Extract sequence
+        seq = self.seqExtracter(pdbCAlpha, **kwargs)
 
-            # Extract y data
-            y = self.yExtracter(pdbCAlpha, **kwargs)
-            
-            # Extract node features
-            if not self.xExtracter is None:
-                x = self.xExtracter(pdbCAlpha, **kwargs)
+        # Extract y data
+        y = self.yExtracter(pdbCAlpha, **kwargs)
+        
+        # Extract node features
+        if not self.xExtracter is None:
+            x = self.xExtracter(pdbCAlpha, **kwargs)
+        else:
+            x = None
+
+        # Extract edge features
+        if not self.edgeAttrExtracter is None:
+            edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
+
+            # Ensure edge feautes have correct shape
+            if len(edgeAttr.size()) == 2:
+                edge_attr = edge_attr.unsqueeze(-1)
+            if len(edgeAttr.size()) != 3:
+                raise Exception
+
+            # Find valid edges
+            if not self.edgeFilter is None:
+                mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
             else:
-                x = None
+                mask = torch.ones(n, n, dtype=torch.bool)
 
-            # Extract edge features
-            if not self.edgeAttrExtracter is None:
-                edgeAttr = self.edgeAttrExtracter(pdbCAlpha, **kwargs)
+            # Transform to sparse form
+            edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
+            edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
+            edgeIdx, edgeAttr = remove_self_loops(edgeIdx, edgeAttr)
 
-                # Ensure edge feautes have correct shape
-                if len(edgeAttr.size()) == 2:
-                    edge_attr = edge_attr.unsqueeze(-1)
-                if len(edgeAttr.size()) != 3:
-                    raise Exception
+        else:
+            edgeAttr = None
+            edgeIdx = None
 
-                # Find valid edges
-                if not self.edgeFilter is None:
-                    mask = self.edgeFilter(pdbCAlpha, edgeAttr, **kwargs)
-                else:
-                    mask = torch.ones(n, n, dtype=torch.bool)
+        meta = {'chains': GetChainsDescription()(pdbCAlpha, **kwargs)}
 
-                # Transform to sparse form
-                edgeAttr = edgeAttr[mask, :].view(-1, edgeAttr.size()[-1])
-                edgeIdx = torch.stack(torch.where(mask), dim=0).type(torch.LongTensor)
-                edgeIdx, edgeAttr = remove_self_loops(edgeIdx, edgeAttr)
+        # Assertions
+        data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y, meta=meta)
+        assert not data.contains_self_loops()
+        assert data.is_coalesced()
 
-            else:
-                edgeAttr = None
-                edgeIdx = None
+        return data
 
-            meta = {'chains': GetChainsDescription()(pdbCAlpha, **kwargs)}
-
-            # Assertions
-            data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y, meta=meta)
-            assert not data.contains_self_loops()
-            assert data.is_coalesced()
-
-            return data
-
-        except Exception:
-            return None
+        # except Exception:
+        #     return None
 
 
 class PDBInMemoryDataset(InMemoryDataset):
