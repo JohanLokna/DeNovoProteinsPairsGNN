@@ -177,6 +177,8 @@ class PDBInMemoryDataset(InMemoryDataset):
             kwargsList = [metaData.to_dict().update({"pdb": parsePDB(pdb)}) \
                     for pdb, metaData in self.pdbs.iterrows()]
 
+        print(kwargsList)
+
         if self.pool is None:
             dataList = [self.pre_transform(**kwargs) for kwargs in kwargsList]
         else:
