@@ -11,6 +11,7 @@ def getLightCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin
     else:
         raise ValueError("{} is not an implemented scheme.".format(scheme))
     
+    print("Light: " + hmmerpath)
     return getCDR(seq, renumberedTransitionPoints, scheme, hmmerpath)
 
 
@@ -23,6 +24,7 @@ def getHeavyCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin
     else:
         raise ValueError("{} is not an implemented scheme.".format(scheme))
     
+    print("Heavy: " + hmmerpath)
     return getCDR(seq, renumberedTransitionPoints, scheme, hmmerpath)
 
 
