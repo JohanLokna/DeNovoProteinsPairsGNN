@@ -128,11 +128,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         self.root.mkdir(exist_ok=True)
 
         # Set up PDB
-        print(pdbFolders)
-        self.pdbs = pdbs
-        pdbFolders.append(self.raw_dir)
-        print(pdbFolders)
-        for folder in pdbFolders:
+        for folder in pdbFolders + [self.raw_dir]:
             folder.mkdir(exist_ok=True)
             pathPDBFolder(folder=folder, divided=False)
             print(folder)
