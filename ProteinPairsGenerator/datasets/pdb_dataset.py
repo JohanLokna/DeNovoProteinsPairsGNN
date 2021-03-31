@@ -20,8 +20,8 @@ def worker_init(func):
   global _func
   _func = func
   
-def worker(x):
-  return _func(x)
+def worker(**kwargs):
+  return _func(**kwargs)
 
 
 class PDBBuilder:
