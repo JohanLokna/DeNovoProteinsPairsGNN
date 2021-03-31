@@ -8,7 +8,7 @@ class PDBData(Data):
       def __init__(
           self, 
           seq : Union[torch.LongTensor, None] = None, 
-          meta : Union[dict] = {},
+          meta : Union[torch.LongTensor, None] = None,
           **kwargs
       ) -> None:
           super().__init__(**kwargs)
