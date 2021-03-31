@@ -176,7 +176,7 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            kwargsList = [{"pdb": pdb for pdb in self.pdbs]
+            kwargsList = [{"pdb": pdb} for pdb in self.pdbs]
         else:
             kwargsList = [{"pdb": pdb, **metaData.to_dict()} for pdb, metaData in self.pdbs.iterrows()]
 
