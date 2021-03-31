@@ -188,6 +188,7 @@ class PDBInMemoryDataset(InMemoryDataset):
             dataList = p.map(worker, kwargsList)
 
         print(len(dataList))
+        print(dataList)
 
         if not self.pre_filter is None:
             dataList = list(filter(self.pre_filter, dataList))
