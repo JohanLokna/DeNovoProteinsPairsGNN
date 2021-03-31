@@ -50,6 +50,8 @@ class PDBBuilder:
         
         try:
 
+            assert pdb.numAtoms() < 40000
+
             # Only consider alpha Cs
             pdbCAlpha = parsePDB(pdb).ca
             n = pdbCAlpha.numAtoms()
