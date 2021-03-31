@@ -180,13 +180,13 @@ class PDBInMemoryDataset(InMemoryDataset):
                 return kwargs
             kwargsList = [helper(pdb, metaData) for pdb, metaData in self.pdbs.iterrows()]
 
-        print(kwargsList)
-        exit(0)
-
         if self.pool is None:
             dataList = [self.pre_transform(**kwargs) for kwargs in kwargsList]
         else:
-            kwargsList = [kwargs.update({"func": self.pre_transform}) for kwargs in kwargsList]
+            def helper(kwargs):
+                kwargs["func"] = self.pre_transform
+                return kwargs
+            kwargsList = [helper(kwargs) for kwargs in kwargsList]
             dataList = self.pool.map(wrapper, kwargsList)
 
 
