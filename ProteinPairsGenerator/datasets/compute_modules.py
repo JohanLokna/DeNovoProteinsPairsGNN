@@ -79,10 +79,12 @@ class GetSequenceCDR(ComputeModule):
         **kwargs
     ) -> torch.Tensor:
         
+        print("HAAAAAAAAAAAAALLLLLLLLLLLLLLLLLO")
+
         # Get sequence
         seq = seq_to_tensor(pdb.getSequence())
 
-        print(self.hmmerpath)
+        print("GetSeqCDR: " + self.hmmerpath)
 
         # Mask CDR in light chains in seq
         for c in Lchain:
@@ -113,8 +115,6 @@ class GetChainsDescription(ComputeModule):
         *args,
         **kwargs
     ) -> torch.Tensor:
-
-        print("OK")
         
         # Get sequence
         seq = torch.empty(pdb.numAtoms(), dtype=torch.long).fill_(CHAINS_MAP[CHAIN_NULL])
