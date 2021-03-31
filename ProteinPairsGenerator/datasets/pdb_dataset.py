@@ -91,7 +91,7 @@ class PDBBuilder:
                 edgeAttr = None
                 edgeIdx = None
 
-            meta = {'chains': GetChainsDescription()(pdbCAlpha, **kwargs)}
+            meta = None #{'chains': GetChainsDescription()(pdbCAlpha, **kwargs)}
 
             # Assertions
             data = PDBData(seq=seq, x=x, edge_index=edgeIdx, edge_attr=edgeAttr, y=y, meta=meta)
