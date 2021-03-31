@@ -17,6 +17,7 @@ from .compute_modules import GetSequence, GetSequenceCDR, GetChainsDescription
 _func = None
 
 def worker_init(func):
+
   global _func
   _func = func
   
@@ -49,6 +50,8 @@ class PDBBuilder:
     ) -> PDBData:
         
         try:
+
+            print(pdb.getTitle())
 
             # Only consider alpha Cs
             pdbCAlpha = parsePDB(pdb).ca
