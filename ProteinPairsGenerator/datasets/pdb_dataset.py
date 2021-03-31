@@ -44,14 +44,14 @@ class PDBBuilder:
 
     def __call__(
         self,
-        pdb: AtomGroup,
+        pdb: str,
         **kwargs
     ) -> PDBData:
         
         try:
 
             # Only consider alpha Cs
-            pdbCAlpha = pdb.ca
+            pdbCAlpha = parsePDB(pdb).ca
             n = pdbCAlpha.numAtoms()
 
             # Extract sequence
@@ -176,9 +176,9 @@ class PDBInMemoryDataset(InMemoryDataset):
             return
         
         if type(self.pdbs) is list:
-            kwargsList = [{"pdb": parsePDB(pdb)} for pdb in self.pdbs]
+            kwargsList = [{"pdb": pdb for pdb in self.pdbs]
         else:
-            kwargsList = [{"pdb": parsePDB(pdb), **metaData.to_dict()} for pdb, metaData in self.pdbs.iterrows()]
+            kwargsList = [{"pdb": pdb, **metaData.to_dict()} for pdb, metaData in self.pdbs.iterrows()]
 
         if self.poolSize is None:
             dataList = [self.pre_transform(**kwargs) for kwargs in kwargsList]
