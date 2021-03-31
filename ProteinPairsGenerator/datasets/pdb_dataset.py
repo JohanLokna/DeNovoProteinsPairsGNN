@@ -116,8 +116,8 @@ class PDBBuilder:
 
             return data
 
-        except Exception:
-            print("Nöd OK")
+        except Exception as e:
+            print(e)
             return None
 
 
