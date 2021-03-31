@@ -24,7 +24,7 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
 
 
 class Net(nn.Module):
-    def __init__(self, x_input_size, adj_input_size, x_feat_size, hidden_size, output_size):
+    def __init__(self, x_input_size, adj_input_size, x_feat_size, hidden_size, output_size, N = 3):
         super().__init__()
 
         self.embed_x = nn.Sequential(
@@ -55,7 +55,6 @@ class Net(nn.Module):
         )
         self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size) + 2 * bool(x_feat_size)) * hidden_size, 2 * hidden_size, hidden_size)
 
-        N = 3
         graph_conv = get_graph_conv_layer(3 * hidden_size, 2 * hidden_size, hidden_size)
         self.graph_conv = _get_clones(graph_conv, N)
 
