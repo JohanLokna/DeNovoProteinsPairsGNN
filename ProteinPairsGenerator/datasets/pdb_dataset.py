@@ -51,7 +51,7 @@ class PDBBuilder:
         
         try:
 
-            print(pdb.getTitle())
+            print(pdb)
 
             # Only consider alpha Cs
             pdbCAlpha = parsePDB(pdb).ca
