@@ -50,7 +50,7 @@ class PDBBuilder:
         
         # try:
 
-        print("OK {}".format(pdb.title()))
+        print("OK {}".format(pdb.getTitle()))
 
         assert pdb.numAtoms() < 7000
 
