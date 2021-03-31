@@ -82,6 +82,8 @@ class GetSequenceCDR(ComputeModule):
         # Get sequence
         seq = seq_to_tensor(pdb.getSequence())
 
+        print(self.hmmerpath)
+
         # Mask CDR in light chains in seq
         for c in Lchain:
           idx = Select().getIndices(pdb, "chain {}".format(c))
