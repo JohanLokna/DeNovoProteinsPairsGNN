@@ -52,7 +52,7 @@ class PDBBuilder:
         try:
 
             print(pdb)
-            pathPDBFolder(folder="./pdb_download", divided=False)
+            # pathPDBFolder(folder="./pdb_download", divided=False)
 
             # Only consider alpha Cs
             pdbCAlpha = parsePDB(pdb).ca
@@ -128,6 +128,7 @@ class PDBInMemoryDataset(InMemoryDataset):
         self.root.mkdir(exist_ok=True)
 
         # Set up PDB
+        self.pdbs = pdbs        
         for folder in pdbFolders + [self.raw_dir]:
             folder.mkdir(exist_ok=True)
             pathPDBFolder(folder=folder, divided=False)
