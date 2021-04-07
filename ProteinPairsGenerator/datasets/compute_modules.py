@@ -103,6 +103,8 @@ class GetSequenceCDR(ComputeModule):
                 seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
         except Exception as e:
             print(set(pdb.getSequence()))
+            print(set(AMINO_ACIDS_BASE))
+            print(set(pdb.getSequence()) <= set(AMINO_ACIDS_BASE))
             raise e
 
         return seq
