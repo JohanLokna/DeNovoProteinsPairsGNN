@@ -1,3 +1,4 @@
+from pathlib import Path
 from prody import AtomGroup, ANM
 from prody.atomic.select import Select
 from typing import List, Mapping, Callable, Union, Generator, Any
@@ -14,46 +15,43 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 class ComputeModule:
 
-    def __init__(self, procs = None ) -> None:
-        self.procs = procs
+    def __init__(self, filename : Path, featureName : str) -> None:
+        self.filename = filename
+        self.featureName = featureName
+        self.data = None
 
-    def __call__(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args, **kwargs) -> torch.Tensor:
+        raise NotImplementedError
+
+    def pre_filter(self, *args, **kwargs) -> bool:
         raise NotImplementedError
 
     @property
-    def procs(self):
-        return self.__procs
+    def data(self):
+        raise self.data_
 
-    @procs.setter
-    def procs(self, var):
-        self.__procs = var
+    @data.setter
+    def data(self, value):
+        self.data_ = value
 
+    def save(self, filename : Union[Path, None] = None):
+        torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
-class ComputeCombine(ComputeModule):
-
-    def __init__(
-        self, 
-        testModules : List[ComputeModule], 
-        aggr : Mapping[torch.Tensor, torch.Tensor]
-    ) -> None:
-        super().__init__()
-        self.testModules = testModules
-        self.aggr = aggr
-
-    def __call__(self, *args, **kwargs) -> torch.Tensor:
-
-        # Aggregate the results from the modules
-        return self.aggr(torch.stack([test(*args, **kwargs) for test in self.testModules], dim=-1))
-
+    def __call__(self, argList : List):
+        self.data = torch.stack([self.forward(**x) for x in argList], dim = 0)
 
 # Modules used for computing features
 
 class GetSequence(ComputeModule):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        filename : Path = Path("./seq.pt"), 
+        featureName : str = "seq"
+    ) -> None:
+        super().__init__(filename, featureName)
     
-    def __call__(
+    def forward(
         self, 
         pdb: AtomGroup,
         *args,
@@ -63,14 +61,22 @@ class GetSequence(ComputeModule):
         # Get sequence
         return seq_to_tensor(pdb.getSequence())
 
+    def pre_filter(self, *args, **kwargs) -> bool:
+        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
+
 
 class GetSequenceCDR(ComputeModule):
 
-    def __init__(self, hmmerpath : str = "/usr/bin/") -> None:
+    def __init__(
+        self,
+        filename : Path = Path("./seqCDR.pt"),
+        featureName : str = "seqCDR",
+        hmmerpath : str = "/usr/bin/",
+    ) -> None:
         self.hmmerpath = hmmerpath
-        super().__init__()
+        super().__init__(filename, featureName)
     
-    def __call__(
+    def forward(
         self,
         pdb: AtomGroup,
         Lchain: List[str] = [],
@@ -96,13 +102,24 @@ class GetSequenceCDR(ComputeModule):
 
         return seq
 
+    def pre_filter(self, *args, **kwargs) -> bool:
+        return "pdb" in kwargs \
+           and "Lchains" in kwargs \
+           and "Hchain" in kwargs \
+           and type(kwargs["pdb"]) is AtomGroup \
+           and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids())
+
 
 class GetChainsDescription(ComputeModule):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        filename : Path = Path("./seqChains.pt"),
+        featureName : str = "seqChains"
+    ) -> None:
+        super().__init__(filename, featureName)
     
-    def __call__(
+    def forward(
         self,
         pdb: AtomGroup,
         Lchain: List[str] = [],
@@ -132,14 +149,26 @@ class GetChainsDescription(ComputeModule):
 
         return seq
 
+    def pre_filter(self, *args, **kwargs) -> bool:
+        return "pdb" in kwargs \
+           and "Lchains" in kwargs \
+           and "Hchain" in kwargs \
+           and type(kwargs["pdb"]) is AtomGroup \
+           and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids())
+
 
 class GetModes(ComputeModule):
 
-    def __init__(self, nModes : int) -> None:
+    def __init__(
+        self,
+        filename : Path = Path("./modes.pt"),
+        featureName : str = "modes",
+        nModes : int = 20
+    ) -> None:
         self.nModes = nModes
-        super().__init__()
+        super().__init__(filename, featureName)
 
-    def __call__(
+    def forward(
         self, 
         pdb: AtomGroup,
         *args,
@@ -152,91 +181,58 @@ class GetModes(ComputeModule):
         pdbANM.calcModes(self.nModes)
 
         # Make into array and reshape to [numAtoms, -1]
-        modes = torch.from_numpy(pdbANM.getArray()).type(torch.FloatTensor)
+        modes = torch.from_numpy(pdbANM.getArray())
         return modes.view(pdb.numAtoms(), -1)
+
+    def pre_filter(self, *args, **kwargs) -> bool:
+        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
 
 
 class GetCartesianDistances(ComputeModule):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(
+        self,
+        filename : Path = Path("./cartDist.pt"),
+        featureName : str = "cartDist"
+    ) -> None:
+        super().__init__(filename, featureName)
     
-    def __call__(
+    def forward(
         self, 
         pdb: AtomGroup,
         *args,
         **kwargs
-    ) -> torch.FloatTensor:
+    ) -> torch.Tensor:
 
         # Compute caresian distances
         coords = torch.from_numpy(pdb.getCoordsets())
-        dist = torch.cdist(coords, coords).squeeze(0).type(torch.FloatTensor)
-
-        # try:
-        #     assert len(dist.shape) == 2
-        # except Exception:
-        #     print(dist.shape)
-        #     print(coords.shape)
-        #     print(pdb.getTitle())
+        dist = torch.cdist(coords, coords).squeeze(0)
 
         return dist
+
+    def pre_filter(self, *args, **kwargs) -> bool:
+        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
 
 
 class GetSequenceDistances(ComputeModule):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(
+        self,
+        filename : Path = Path("./seqtDist.pt"),
+        featureName : str = "seqtDist"
+    ) -> None:
+        super().__init__(filename, featureName)
     
-    def __call__(
+    def forward(
         self, 
         pdb: AtomGroup,
         *args,
         **kwargs
-    ) -> torch.FloatTensor:
+    ) -> torch.Tensor:
 
         # Compute sequence distances
         x = torch.arange(pdb.numAtoms()).view(-1, 1).expand(pdb.numAtoms(), 2)
         return x[:, 0] - x[:, 1].view(-1, 1)
 
-
-# Modules used for testing
-
-class TestChainsPresent(ComputeModule):
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    def __call__(
-        self, 
-        pdb: AtomGroup, 
-        Lchains: List[str] = [],
-        Hchains: List[str] = [],
-        *args, 
-        **kwargs
-    ) -> torch.BoolTensor:
-
-        # Test that the L and H chains are contained 
-        # in the set of chains in pdb
-        return torch.BoolTensor(set(Lchains + Hchains) <= set(pdb.getChids()))
-
-
-class TestUpperBound(ComputeModule):
-    
-    def __init__(self, threshold, dim: Union[int, type(None)] = None,):
-        super().__init__()
-        self.threshold = threshold
-        self.dim = dim
-
-    def __call__(
-        self, 
-        pdb: AtomGroup, 
-        edgeAttr: torch.Tensor,
-        *args,
-        **kwargs
-    ) -> torch.BoolTensor:
-
-        # Test if bellow theshold
-        if self.dim is None:
-            return edgeAttr < self.threshold
-        else:
-            return edgeAttr[:, :, self.dim] < self.threshold
+    def pre_filter(self, *args, **kwargs) -> bool:
+        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
