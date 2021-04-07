@@ -28,7 +28,7 @@ class ComputeModule:
 
     @property
     def data(self):
-        raise self.data_
+        return self.data_
 
     @data.setter
     def data(self, value):
