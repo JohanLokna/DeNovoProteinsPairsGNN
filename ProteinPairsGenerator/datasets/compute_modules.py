@@ -89,17 +89,21 @@ class GetSequenceCDR(ComputeModule):
         # Get sequence
         seq = seq_to_tensor(pdb.getSequence())
 
-        # Mask CDR in light chains in seq
-        for c in Lchain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
-            seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
+        try:
+            # Mask CDR in light chains in seq
+            for c in Lchain:
+              idx = Select().getIndices(pdb, "chain {}".format(c))
+              for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
+                seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
 
-        # Mask CDR in heavy chains in seq
-        for c in Hchain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
-            seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
+            # Mask CDR in heavy chains in seq
+            for c in Hchain:
+              idx = Select().getIndices(pdb, "chain {}".format(c))
+              for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
+                seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
+        except Exception as e:
+            print(set(pdb.getSequence()))
+            raise e
 
         return seq
 
