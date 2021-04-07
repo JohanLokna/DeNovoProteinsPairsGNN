@@ -5,7 +5,8 @@ from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
 
-from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, AMINO_ACIDS_MAP, \
+from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
+                                                    AMINO_ACIDS_MAP, AMINO_ACIDS_BASE \
                                                     CDRS_HEAVY, CDRS_LIGHT, \
                                                     CHAIN_NULL, CHAIN_HEAVY, CHAIN_LIGHT, CHAIN_ANTIGEN, \
                                                     CHAINS_MAP
@@ -108,6 +109,7 @@ class GetSequenceCDR(ComputeModule):
            and "Hchain" in kwargs \
            and type(kwargs["pdb"]) is AtomGroup \
            and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids())
+           and set(kwargs["pdb"].getSequence()) <= set(AMINO_ACIDS_BASE)
 
 
 class GetChainsDescription(ComputeModule):
