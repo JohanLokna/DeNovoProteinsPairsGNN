@@ -38,7 +38,7 @@ class ComputeModule:
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
     def __call__(self, argList : List):
-        self.data = torch.stack([self.forward(**x) for x in argList], dim = 0)
+        self.data = {i : self.forward(**x) for i, x in enumerate(argList)}
 
 # Modules used for computing features
 
