@@ -19,7 +19,7 @@ CHAINS_MAP.update({i: c for i, c in enumerate(CHAINS)})
 AMINO_ACID_NULL: str = "X"
 CDRS_HEAVY = ["9", "8", "7"]
 CDRS_LIGHT = ["1", "2", "3"]
-AMINO_ACIDS: List[str] = [
+AMINO_ACIDS_BASE: List[str] = [
     "G",
     "V",
     "A",
@@ -40,7 +40,8 @@ AMINO_ACIDS: List[str] = [
     "K",
     "R",
     "H",
-] + [AMINO_ACID_NULL] + CDRS_HEAVY + CDRS_LIGHT
+]
+AMINO_ACIDS = AMINO_ACIDS_BASE + [AMINO_ACID_NULL] + CDRS_HEAVY + CDRS_LIGHT
 
 # List  of amino acids (ordinal representation)
 AMINO_ACIDS_ORD: List[int] = [ord(aa) for aa in AMINO_ACIDS]
