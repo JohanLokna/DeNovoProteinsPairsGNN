@@ -108,7 +108,7 @@ class GetSequenceCDR(ComputeModule):
            and "Lchains" in kwargs \
            and "Hchain" in kwargs \
            and type(kwargs["pdb"]) is AtomGroup \
-           and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids())
+           and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids()) \
            and set(kwargs["pdb"].getSequence()) <= set(AMINO_ACIDS_BASE)
 
 
