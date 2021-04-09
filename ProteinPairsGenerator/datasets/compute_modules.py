@@ -63,7 +63,7 @@ class GetSequence(ComputeModule):
         return seq_to_tensor(pdb.getSequence())
 
     def pre_filter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
+        return "pdb" in kwargs
 
 
 class GetSequenceCDR(ComputeModule):
@@ -89,32 +89,25 @@ class GetSequenceCDR(ComputeModule):
         # Get sequence
         seq = seq_to_tensor(pdb.getSequence())
 
-        try:
-            # Mask CDR in light chains in seq
-            for c in Lchain:
-              idx = Select().getIndices(pdb, "chain {}".format(c))
-              for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
-                seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
+        # Mask CDR in light chains in seq
+        for c in Lchain:
+          idx = Select().getIndices(pdb, "chain {}".format(c))
+          for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
+            seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
 
-            # Mask CDR in heavy chains in seq
-            for c in Hchain:
-              idx = Select().getIndices(pdb, "chain {}".format(c))
-              for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
-                seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
-        except Exception as e:
-            print(set(pdb.getSequence()))
-            print(set(AMINO_ACIDS_BASE))
-            print(set(pdb.getSequence()) <= set(AMINO_ACIDS_BASE))
-            raise e
+        # Mask CDR in heavy chains in seq
+        for c in Hchain:
+          idx = Select().getIndices(pdb, "chain {}".format(c))
+          for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
+            seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
 
         return seq
 
     def pre_filter(self, *args, **kwargs) -> bool:
         return "pdb" in kwargs \
-           and "Lchains" in kwargs \
+           and "Lchain" in kwargs \
            and "Hchain" in kwargs \
-           and type(kwargs["pdb"]) is AtomGroup \
-           and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids()) \
+           and set(kwargs["Lchain"] + kwargs["Hchain"]) <= set(kwargs["pdb"].getChids()) \
            and set(kwargs["pdb"].getSequence()) <= set(AMINO_ACIDS_BASE)
 
 
@@ -159,10 +152,9 @@ class GetChainsDescription(ComputeModule):
 
     def pre_filter(self, *args, **kwargs) -> bool:
         return "pdb" in kwargs \
-           and "Lchains" in kwargs \
+           and "Lchain" in kwargs \
            and "Hchain" in kwargs \
-           and type(kwargs["pdb"]) is AtomGroup \
-           and set(kwargs["Lchains"] + kwargs["Hchains"]) <= set(kwargs["pdb"].getChids())
+           and set(kwargs["Lchain"] + kwargs["Hchain"]) <= set(kwargs["pdb"].getChids())
 
 
 class GetModes(ComputeModule):
@@ -193,7 +185,7 @@ class GetModes(ComputeModule):
         return modes.view(pdb.numAtoms(), -1)
 
     def pre_filter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
+        return "pdb" in kwargs
 
 
 class GetCartesianDistances(ComputeModule):
@@ -219,7 +211,7 @@ class GetCartesianDistances(ComputeModule):
         return dist
 
     def pre_filter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
+        return "pdb" in kwargs
 
 
 class GetSequenceDistances(ComputeModule):
@@ -243,4 +235,4 @@ class GetSequenceDistances(ComputeModule):
         return x[:, 0] - x[:, 1].view(-1, 1)
 
     def pre_filter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs and type(kwargs["pdb"]) is AtomGroup
+        return "pdb" in kwargs
