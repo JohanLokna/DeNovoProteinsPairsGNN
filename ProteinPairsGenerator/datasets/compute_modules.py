@@ -163,9 +163,11 @@ class GetModes(ComputeModule):
         self,
         filename : Path = Path("./modes.pt"),
         featureName : str = "modes",
-        nModes : int = 20
+        nModes : int = 20,
+        maxNodes : int = 40000
     ) -> None:
         self.nModes = nModes
+        self.maxNodes = maxNodes
         super().__init__(filename, featureName)
 
     def forward(
@@ -185,7 +187,7 @@ class GetModes(ComputeModule):
         return modes.view(pdb.numAtoms(), -1)
 
     def pre_filter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs
+        return "pdb" in kwargs and kwargs["pdb"].numAtoms() <= self.maxNodes
 
 
 class GetCartesianDistances(ComputeModule):
