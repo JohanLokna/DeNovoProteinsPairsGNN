@@ -19,7 +19,7 @@ class StructureDataset():
             lines = f.readlines()
             start = time.time()
             for i, line in enumerate(lines):
-                entry = json.loads(line)
+                entry = json.loads(line.replace("'", '"'))
                 seq = entry['seq']
                 name = entry['name']
 
