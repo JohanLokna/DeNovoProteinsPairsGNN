@@ -2,7 +2,7 @@ from pandas import DataFrame
 import time
 from tqdm.notebook import tqdm
 from typing import List
-from util_mmtf import *
+from .util_mmtf import *
 
 def makeData(
     pdbDf : DataFrame, 
