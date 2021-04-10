@@ -24,7 +24,7 @@ def makeData(
             # Convert raw coords to np arrays
             entry["coords"] = {}
             for atom in coordAtoms:
-                entry["coords"][atom] = pdb.select("name {}".format(atom)).getCoordsets().tolist()
+                entry["coords"][atom] = pdb.select("name {}".format(atom)).getCoordsets()[0].tolist()
 
             data.append(entry)
 
