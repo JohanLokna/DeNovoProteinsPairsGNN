@@ -15,15 +15,15 @@ def makeData(
         for i, (pdb, metaData) in enumerate(tqdm(pdbDf.iterrows())):
 
             for chain in metaData["Hchain"] + metaData["Lchain"] + metaData["antigen_chain"]:
-                try:
+                # try:
 
-                    chain_dict = mmtf_parse(pdb, chain)
-                    chain_name = pdb + '.' + chain
-                    chain_dict['name'] = chain_name
-                    dataset.append(chain_dict)
+                chain_dict = mmtf_parse(pdb, chain)
+                chain_name = pdb + '.' + chain
+                chain_dict['name'] = chain_name
+                data.append(chain_dict)
 
-                except Exception as e:
-                    print(e)
+                # except Exception as e:
+                #     print(e)
 
             if verbose and (i + 1) % 1000 == 0:
                 elapsed = time.time() - start
