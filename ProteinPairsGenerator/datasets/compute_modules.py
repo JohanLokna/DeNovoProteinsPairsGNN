@@ -1,7 +1,7 @@
 from pathlib import Path
 from prody import AtomGroup, ANM
 from prody.atomic.select import Select
-from tqdm import tqdm
+from tqdm.notebook import tqdm
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
