@@ -1,6 +1,7 @@
 from pathlib import Path
 from prody import AtomGroup, ANM
 from prody.atomic.select import Select
+from tqdm import tqdm
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
@@ -19,7 +20,7 @@ class ComputeModule:
     def __init__(self, filename : Path, featureName : str) -> None:
         self.filename = filename
         self.featureName = featureName
-        self.data = None
+        self.data = {}
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
@@ -39,7 +40,12 @@ class ComputeModule:
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
     def __call__(self, argList : List):
-        self.data = {i : self.forward(**x) for i, x in enumerate(argList)}
+        for i, x in tqdm(enumerate(argList)):
+            try:
+                self.data[i] = self.forward(**x)
+            except Exception as e:
+                print(e)
+
 
 # Modules used for computing features
 
@@ -164,7 +170,7 @@ class GetModes(ComputeModule):
         filename : Path = Path("./modes.pt"),
         featureName : str = "modes",
         nModes : int = 20,
-        maxNodes : int = 40000
+        maxNodes : int = 5000
     ) -> None:
         self.nModes = nModes
         self.maxNodes = maxNodes
