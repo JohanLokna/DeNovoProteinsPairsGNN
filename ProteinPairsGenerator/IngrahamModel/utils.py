@@ -3,7 +3,7 @@ from prody import fetchPDBviaHTTP, parsePDB
 import time
 from typing import List
 
-def makeDatas(
+def makeData(
     pdbDf : DataFrame, 
     verbose : bool = True,
     coordAtoms : List[str] = ['N', 'CA', 'C', 'O']
@@ -11,7 +11,7 @@ def makeDatas(
 
         data = []
         start = time.time()
-        for i, (pdbName, _) in pdbDf.iterrows():
+        for i, (pdbName, _) in enumerate(pdbDf.iterrows()):
 
             entry = {}
 
@@ -22,6 +22,7 @@ def makeDatas(
             entry["name"] = pdbName
 
             # Convert raw coords to np arrays
+            entry["coords"] = {}
             for atom in coordAtoms:
                 entry["coords"][atom] = pdb.select("name {}".format(atom)).getCoordsets().tolist()
 
@@ -32,4 +33,3 @@ def makeDatas(
                 print('{} entries ({} loaded) in {:.1f} s'.format(len(data), i + 1, elapsed))
         
         return data
-
