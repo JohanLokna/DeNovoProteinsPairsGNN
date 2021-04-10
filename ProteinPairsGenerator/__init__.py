@@ -1,3 +1,3 @@
-__all__ = ["utils", "datasets"]
+__all__ = ["utils", "datasets", "IngrahamModel"]
 
 from . import *
