@@ -40,7 +40,7 @@ class ComputeModule:
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
     def __call__(self, argList : List):
-        for i, x in tqdm(enumerate(argList)):
+        for i, x in enumerate(tqdm(argList)):
             try:
                 self.data[i] = self.forward(**x)
             except Exception as e:
