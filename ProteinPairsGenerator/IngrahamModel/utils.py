@@ -1,7 +1,8 @@
 from pandas import DataFrame
-from prody import fetchPDBviaHTTP, parsePDB
 import time
+from tqdm.notebook import tqdm
 from typing import List
+from util_mmtf import *
 
 def makeData(
     pdbDf : DataFrame, 
@@ -11,26 +12,18 @@ def makeData(
 
         data = []
         start = time.time()
-        for i, (pdbName, _) in enumerate(pdbDf.iterrows()):
+        for i, (pdb, metaData) in enumerate(tqdm(pdbDf.iterrows())):
 
-            try:
-                entry = {}
+            for chain in metaData["Hchain"] + metaData["Lchain"] + metaData["antigen_chain"]:
+                try:
 
-                fetchPDBviaHTTP(pdbName, compressed=True)
-                pdb = parsePDB(pdbName)
+                    chain_dict = mmtf_parse(pdb, chain)
+                    chain_name = pdb + '.' + chain
+                    chain_dict['name'] = chain_name
+                    dataset.append(chain_dict)
 
-                entry["seq"] = pdb.ca.getSequence()
-                entry["name"] = pdbName
-
-                # Convert raw coords to np arrays
-                entry["coords"] = {}
-                for atom in coordAtoms:
-                    entry["coords"][atom] = pdb.select("name {}".format(atom)).getCoordsets()[0].tolist()
-
-                data.append(entry)
-
-            except Exception as e:
-                print(e)
+                except Exception as e:
+                    print(e)
 
             if verbose and (i + 1) % 1000 == 0:
                 elapsed = time.time() - start
