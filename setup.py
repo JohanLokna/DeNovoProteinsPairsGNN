@@ -30,7 +30,8 @@ setup(
       "prody",
       "python-constraint",
       "pandas",
-      "mlflow"
+      "mlflow",
+      "tqdm"
     ],
     dependency_links=[
       "https://pytorch-geometric.com/whl/torch-${}+{}.html".format(TORCH[:-1] + "0", CUDA), # Torch specification must be X.X.0
