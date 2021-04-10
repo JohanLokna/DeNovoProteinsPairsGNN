@@ -36,6 +36,9 @@ class ComputeModule:
     def data(self, value):
         self.data_ = value
 
+    def clear(self):
+        self.data = {}
+
     def save(self, filename : Union[Path, None] = None):
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
