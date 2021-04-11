@@ -22,9 +22,9 @@ def helperComputeModuledef(argList : List, f, identifier = None):
     for i, x in enumerate(argList):
         try:
             value = f(**x)
-        except Exception as e:
+        except Exception:
             value = None
-        data[i if identifier is None else identifier(x)] = value
+        data[i if identifier is None else x[identifier]] = value
     return data
 
 
