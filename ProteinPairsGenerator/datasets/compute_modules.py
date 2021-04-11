@@ -58,6 +58,7 @@ class ComputeModule:
 
     def __call__(self, argList : List, identifier = None, pool : Union[Pool, None] = None):
       print(dir(self))
+      print(self.forward)
       if pool is None:
           self.data = helperComputeModuledef(argList, identifier)
       else:
