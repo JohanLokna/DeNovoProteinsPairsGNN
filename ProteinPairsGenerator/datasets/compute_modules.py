@@ -62,7 +62,7 @@ class ComputeModule:
       else:
           print(argList)
           helper = partial(helperComputeModuledef, f=self.forward, identifier=identifier)
-          for partialResult in pool.map(helper, argList):
+          for partialResult in pool.map(helper, [(kw,) for kw in argList]):
               self.data.update(partialResult)
 
 
