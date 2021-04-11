@@ -3,7 +3,7 @@ from multiprocessing import Pool
 from pathlib import Path
 from prody import AtomGroup, ANM
 from prody.atomic.select import Select
-from tqdm.notebook import tqdm
+# from tqdm.notebook import tqdm
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 import torch
@@ -19,7 +19,7 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 def helperComputeModuledef(argList : List, f, identifier = None):
     data = {}
-    for i, x in enumerate(tqdm(argList)):
+    for i, x in enumerate(argList):
         try:
             value = f(**x)
         except Exception as e:
