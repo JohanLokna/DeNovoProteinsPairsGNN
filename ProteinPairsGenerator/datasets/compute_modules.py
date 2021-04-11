@@ -24,6 +24,7 @@ def helperComputeModuledef(argList : List, f, identifier = None):
             value = f(**x)
         except Exception:
             value = None
+        print(x.keys(), identifier)
         # data[i if identifier is None else x[identifier]] = value
     return data
 
