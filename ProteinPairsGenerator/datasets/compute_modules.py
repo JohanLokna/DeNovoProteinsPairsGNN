@@ -17,7 +17,7 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 # General purpose modules
 
-def helperComputeModuledef(argList : List, identifier = None, f):
+def helperComputeModuledef(argList : List, f, identifier = None):
     data = {}
     for i, x in enumerate(tqdm(argList)):
         try:
