@@ -60,6 +60,7 @@ class ComputeModule:
       if pool is None:
           self.data = helperComputeModuledef(argList, f = self.forward, identifier=identifier)
       else:
+          print(argList)
           helper = partial(helperComputeModuledef, f=self.forward, identifier=identifier)
           for partialResult in pool.map(helper, argList):
               self.data.update(partialResult)
