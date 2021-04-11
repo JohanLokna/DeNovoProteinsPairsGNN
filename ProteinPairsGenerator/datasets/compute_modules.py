@@ -24,8 +24,7 @@ def helperComputeModuledef(argList : List, f, identifier = None):
             value = f(**x)
         except Exception:
             value = None
-        print(x, identifier)
-        # data[i if identifier is None else x[identifier]] = value
+        data[i if identifier is None else x[identifier]] = value
     return data
 
 
@@ -60,7 +59,6 @@ class ComputeModule:
       if pool is None:
           self.data = helperComputeModuledef(argList, f = self.forward, identifier=identifier)
       else:
-          print(argList)
           helper = partial(helperComputeModuledef, f=self.forward, identifier=identifier)
           for partialResult in pool.map(helper, [(kw,) for kw in argList]):
               self.data.update(partialResult)
