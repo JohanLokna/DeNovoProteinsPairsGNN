@@ -1,3 +1,5 @@
+from functools import partial
+from multiprocessing import Pool
 from pathlib import Path
 from prody import AtomGroup, ANM
 from prody.atomic.select import Select
@@ -14,6 +16,18 @@ from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 # General purpose modules
+
+def helperComputeModuledef(argList : List, identifier = None, f):
+    data = {}
+    for i, x in enumerate(tqdm(argList)):
+        try:
+            value = f(**x)
+        except Exception as e:
+            print(e)
+            value = None
+        data[i if identifier is None else identifier(x)] = value
+    return data
+
 
 class ComputeModule:
 
@@ -42,14 +56,13 @@ class ComputeModule:
     def save(self, filename : Union[Path, None] = None):
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
-    def __call__(self, argList : List, identifier = None):
-        for i, x in enumerate(tqdm(argList)):
-            try:
-                value = self.forward(**x)
-            except Exception as e:
-                print(e)
-                value = None
-            self.data[i if identifier is None else identifier(x)] = value
+    def __call__(self, argList : List, identifier = None, pool : Union[Pool, None] = None):
+      if pool is None:
+          self.data = helperComputeModuledef(argList, identifier)
+      else:
+          helper = partial(helperComputeModuledef, f=self.forward, identifier=identifier)
+          for partialResult in p.map(helper, argList):
+              self.data.update(partialResult)
 
 
 # Modules used for computing features
