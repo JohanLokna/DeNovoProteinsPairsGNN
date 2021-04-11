@@ -19,6 +19,7 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 def helperComputeModuledef(argList : List, f, identifier = None):
     data = {}
+    print(f, identifier)
     for i, x in enumerate(argList):
         try:
             value = f(**x)
