@@ -42,12 +42,14 @@ class ComputeModule:
     def save(self, filename : Union[Path, None] = None):
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
-    def __call__(self, argList : List):
+    def __call__(self, argList : List, identifier = None):
         for i, x in enumerate(tqdm(argList)):
             try:
-                self.data[i] = self.forward(**x)
+                value = self.forward(**x)
             except Exception as e:
                 print(e)
+                value = None
+            self.data[i if identifier is None else identifier(x)] = value
 
 
 # Modules used for computing features
