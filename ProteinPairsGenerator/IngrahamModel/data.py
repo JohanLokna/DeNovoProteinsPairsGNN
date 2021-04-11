@@ -19,28 +19,31 @@ class StructureDataset():
             lines = f.readlines()
             start = time.time()
             for i, line in enumerate(lines):
-                entry = json.loads(line.replace("'", '"'))
-                seq = entry['seq']
-                name = entry['name']
+                try:
+                    entry = json.loads(line.replace("'", '"'))
+                    seq = entry['seq']
+                    name = entry['name']
 
-                # Convert raw coords to np arrays
-                for key, val in entry['coords'].items():
-                    entry['coords'][key] = np.asarray(val)
+                    # Convert raw coords to np arrays
+                    for key, val in entry['coords'].items():
+                        entry['coords'][key] = np.asarray(val)
 
-                # Check if in alphabet
-                bad_chars = set([s for s in seq]).difference(alphabet_set)
-                if len(bad_chars) == 0:
-                    if len(entry['seq']) <= max_length:
-                        self.data.append(entry)
+                    # Check if in alphabet
+                    bad_chars = set([s for s in seq]).difference(alphabet_set)
+                    if len(bad_chars) == 0:
+                        if len(entry['seq']) <= max_length:
+                            self.data.append(entry)
+                        else:
+                            discard_count['too_long'] += 1
                     else:
-                        discard_count['too_long'] += 1
-                else:
-                    print(name, bad_chars, entry['seq'])
-                    discard_count['bad_chars'] += 1
+                        discard_count['bad_chars'] += 1
 
-                # Truncate early
-                if truncate is not None and len(self.data) == truncate:
-                    return
+                    # Truncate early
+                    if truncate is not None and len(self.data) == truncate:
+                        return
+
+                except Exception:
+                    pass
 
                 if verbose and (i + 1) % 1000 == 0:
                     elapsed = time.time() - start
