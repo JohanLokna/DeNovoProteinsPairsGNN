@@ -19,12 +19,10 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 def helperComputeModuledef(argList : List, f, identifier = None):
     data = {}
-    print(f, identifier, sep='\n\n')
     for i, x in enumerate(argList):
         try:
             value = f(**x)
         except Exception as e:
-            print(e)
             value = None
         data[i if identifier is None else identifier(x)] = value
     return data
@@ -58,13 +56,11 @@ class ComputeModule:
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
     def __call__(self, argList : List, identifier = None, pool : Union[Pool, None] = None):
-      print(dir(self))
-      print(self.forward)
       if pool is None:
-          self.data = helperComputeModuledef(argList, identifier)
+          self.data = helperComputeModuledef(argList, f = self.forward, identifier=identifier)
       else:
           helper = partial(helperComputeModuledef, f=self.forward, identifier=identifier)
-          for partialResult in p.map(helper, argList):
+          for partialResult in pool.map(helper, argList):
               self.data.update(partialResult)
 
 
