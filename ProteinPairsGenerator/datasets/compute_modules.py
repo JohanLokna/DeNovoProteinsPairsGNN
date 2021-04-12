@@ -112,7 +112,7 @@ class ComputeModule:
               self.data[name] = value
       else:
           helper = partial(helperComputeModuledef, identifier=identifier, force=force, module=self)
-          for partialResult in pool.map(helper, [(kw,) for kw in argList]):
+          for partialResult in pool.imap(helper, [(kw,) for kw in argList], chunksize=100):
               self.data.update(partialResult)
 
 
