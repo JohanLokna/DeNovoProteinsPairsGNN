@@ -29,7 +29,7 @@ class ComputeModule:
         filename : Path, 
         featureName : str, 
         root : Path = Path("."),
-        submodules : List[ComputeModule] = []
+        submodules : List = []
     ) -> None:
 
         # Set up structure
