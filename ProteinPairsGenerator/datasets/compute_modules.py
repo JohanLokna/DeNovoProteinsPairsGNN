@@ -102,6 +102,7 @@ class ComputeModule:
       if pool is None:
           self.data = {}
           for i, x in enumerate(argList):
+              print(i)
               name = i if identifier is None else x[identifier]
               try:
                   value = self.forward(**x)
