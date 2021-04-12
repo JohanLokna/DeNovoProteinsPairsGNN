@@ -77,7 +77,8 @@ class ComputeModule:
         identifier = None
     ) -> None:
         newModule = copy(self)
-        keys = [i if identifier is None else x[identifier] for i, x in enumerate(argList)]
+        keys = set(i if identifier is None else x[identifier] for i, x in enumerate(argList))
+        keys.intersection_update(set(self.data.keys()))
         newModule.data = {k: self.data[k] for k in keys}
         newModule.submodules = [m.copy() for m in newModule.submodules]
         return newModule
