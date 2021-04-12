@@ -20,7 +20,7 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 def helperComputeModuledef(argList : List, module, identifier, force : bool):
     copiedModule = module.copy(argList, identifier)
-    # copiedModule(argList=argList, identifier=identifier, force=force)
+    copiedModule(argList=argList, identifier=identifier, force=force)
     # return copiedModule.data
 
     # print(len(argList))
