@@ -21,13 +21,7 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 def helperComputeModuledef(argList : List, module, identifier, force : bool):
     copiedModule = module.copy(argList, identifier)
     copiedModule(argList=argList, identifier=identifier, force=force)
-    # return copiedModule.data
-
-    # print(len(argList))
-    # for x in argList:
-    #     x["pdb"] = parsePDB(x["pdb"].ca)
-    #     x["name"] = x["pdb"].getTitle()
-    return {}
+    return copiedModule.data
 
 class ComputeModule:
 
