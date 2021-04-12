@@ -19,8 +19,9 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 # General purpose modules
 
 def helperComputeModuledef(module, argList : List, identifier, force : bool):
-    module(argList=argList, identifier=identifier, force=force)
-    return module.data
+    copiedModule = module.copy(argList, identifier)
+    copiedModule(argList=argList, identifier=identifier, force=force)
+    return copiedModule.data
 
 class ComputeModule:
 
@@ -108,7 +109,7 @@ class ComputeModule:
                   value = None
               self.data[name] = value
       else:
-          helper = partial(helperComputeModuledef, identifier=identifier, force=force, module=deepcopy(self))
+          helper = partial(helperComputeModuledef, identifier=identifier, force=force, module=self)
           for partialResult in pool.map(helper, [(kw,) for kw in argList]):
               self.data.update(partialResult)
 
