@@ -2,7 +2,7 @@ from copy import copy
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from prody import AtomGroup, ANM
+from prody import AtomGroup, ANM, parsePDB
 from prody.atomic.select import Select
 # from tqdm.notebook import tqdm
 from typing import List, Mapping, Callable, Union, Generator, Any
@@ -104,6 +104,8 @@ class ComputeModule:
           for i, x in enumerate(argList):
               name = i if identifier is None else x[identifier]
               try:
+                  x["pdb"] = parsePDB(x["pdb"].ca)
+                  x["name"] = x["pdb"].getTitle()
                   value = self.forward(**x)
               except Exception as e:
                   print("Problem with computing {}: {}".format(name, str(e)))
