@@ -19,9 +19,14 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 # General purpose modules
 
 def helperComputeModuledef(argList : List, module, identifier, force : bool):
-    copiedModule = module.copy(argList, identifier)
-    copiedModule(argList=argList, identifier=identifier, force=force)
-    return copiedModule.data
+    # copiedModule = module.copy(argList, identifier)
+    # copiedModule(argList=argList, identifier=identifier, force=force)
+    # return copiedModule.data
+
+    for kw in argList:
+        x["pdb"] = parsePDB(x["pdb"].ca)
+        x["name"] = x["pdb"].getTitle()
+    return None
 
 class ComputeModule:
 
@@ -104,8 +109,6 @@ class ComputeModule:
           for i, x in enumerate(argList):
               name = i if identifier is None else x[identifier]
               try:
-                  x["pdb"] = parsePDB(x["pdb"].ca)
-                  x["name"] = x["pdb"].getTitle()
                   value = self.forward(**x)
               except Exception as e:
                   print("Problem with computing {}: {}".format(name, str(e)))
