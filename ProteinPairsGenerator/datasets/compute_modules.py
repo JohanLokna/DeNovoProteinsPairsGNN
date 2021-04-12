@@ -1,3 +1,4 @@
+from copy import copy
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
@@ -17,23 +18,27 @@ from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 
 # General purpose modules
 
-def helperComputeModuledef(argList : List, f, identifier = None):
-    data = {}
-    for i, x in enumerate(argList):
-        try:
-            value = f(**x)
-        except Exception:
-            value = None
-        data[i if identifier is None else x[identifier]] = value
-    return data
-
+def helperComputeModuledef(module, argList : List, identifier, force : bool):
+    module(argList=argList, identifier=identifier, force=force)
+    return module.data
 
 class ComputeModule:
 
-    def __init__(self, filename : Path, featureName : str) -> None:
-        self.filename = filename
+    def __init__(
+        self, 
+        filename : Path, 
+        featureName : str, 
+        root : Path = Path("."),
+        submodules : List[ComputeModule] = []
+    ) -> None:
+
+        # Set up structure
+        self.filename = root.joinpath(filename)
         self.featureName = featureName
-        self.data = {}
+        self.submodules = submodules
+        
+        # Test if data already exist
+        self.data = torch.load(self.filename) if self.filename.is_file() else {}
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
@@ -55,11 +60,55 @@ class ComputeModule:
     def save(self, filename : Union[Path, None] = None):
         torch.save({self.featureName: self.data}, self.filename if filename is None else filename)
 
-    def __call__(self, argList : List, identifier = None, pool : Union[Pool, None] = None):
+    def runSubmodules(
+        self, 
+        argList : List, 
+        identifier = None, 
+        pool : Union[Pool, None] = None,
+        force : bool = False
+    ) -> None:
+        for m in self.submodules:
+            m(argList, identifier, pool, force)
+
+    def copy(
+        self,
+        argList,
+        identifier = None
+    ) -> None:
+        newModule = copy(self)
+        keys = [i if identifier is None else x[identifier] for i, x in enumerate(argList)]
+        newModule.data = {k: self.data[k] for k in keys}
+        newModule.submodules = [m.copy() for m in newModule.submodules]
+        return newModule
+
+    def __call__(
+        self, 
+        argList : List, 
+        identifier = None, 
+        pool : Union[Pool, None] = None,
+        force : bool = False):
+      
+      # Test if one has to run or if already computed
+      if len(self.data) == len(argList) and not force:
+          return
+
+      # Run submodules
+      self.runSubmodules(argList, identifier, pool, force)
+
+      # If no pool run on this thread.
+      # Otherwise distribute work
       if pool is None:
-          self.data = helperComputeModuledef(argList, f = self.forward, identifier=identifier)
+          self.data = {}
+          for i, x in enumerate(argList):
+              name = i if identifier is None else x[identifier]
+              try:
+                  value = self.forward(**x)
+              except Exception as e:
+                  print("Problem with computing {}: {}".format(name, str(e)))
+                  value = None
+              self.data[name] = value
       else:
-          helper = partial(helperComputeModuledef, f=self.forward, identifier=identifier)
+          helper = partial(helperComputeModuledef, identifier=identifier, force=force, module=deepcopy(self))
           for partialResult in pool.map(helper, [(kw,) for kw in argList]):
               self.data.update(partialResult)
 
@@ -70,7 +119,7 @@ class GetSequence(ComputeModule):
 
     def __init__(
         self,
-        filename : Path = Path("./seq.pt"), 
+        filename : Path = Path("seq.pt"), 
         featureName : str = "seq"
     ) -> None:
         super().__init__(filename, featureName)
@@ -93,7 +142,7 @@ class GetSequenceCDR(ComputeModule):
 
     def __init__(
         self,
-        filename : Path = Path("./seqCDR.pt"),
+        filename : Path = Path("seqCDR.pt"),
         featureName : str = "seqCDR",
         hmmerpath : str = "/usr/bin/",
     ) -> None:
@@ -138,7 +187,7 @@ class GetChainsDescription(ComputeModule):
 
     def __init__(
         self,
-        filename : Path = Path("./seqChains.pt"),
+        filename : Path = Path("seqChains.pt"),
         featureName : str = "seqChains"
     ) -> None:
         super().__init__(filename, featureName)
@@ -184,7 +233,7 @@ class GetModes(ComputeModule):
 
     def __init__(
         self,
-        filename : Path = Path("./modes.pt"),
+        filename : Path = Path("modes.pt"),
         featureName : str = "modes",
         nModes : int = 20,
         maxNodes : int = 5000
@@ -217,7 +266,7 @@ class GetCartesianDistances(ComputeModule):
 
     def __init__(
         self,
-        filename : Path = Path("./cartDist.pt"),
+        filename : Path = Path("cartDist.pt"),
         featureName : str = "cartDist"
     ) -> None:
         super().__init__(filename, featureName)
@@ -243,7 +292,7 @@ class GetSequenceDistances(ComputeModule):
 
     def __init__(
         self,
-        filename : Path = Path("./seqtDist.pt"),
+        filename : Path = Path("seqtDist.pt"),
         featureName : str = "seqtDist"
     ) -> None:
         super().__init__(filename, featureName)
