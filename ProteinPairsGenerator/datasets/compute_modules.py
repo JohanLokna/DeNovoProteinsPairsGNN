@@ -23,7 +23,7 @@ def helperComputeModuledef(argList : List, module, identifier, force : bool):
     # copiedModule(argList=argList, identifier=identifier, force=force)
     # return copiedModule.data
 
-    for kw in argList:
+    for x in argList:
         x["pdb"] = parsePDB(x["pdb"].ca)
         x["name"] = x["pdb"].getTitle()
     return None
