@@ -27,7 +27,7 @@ def helperComputeModuledef(argList : List, module, identifier, force : bool):
     # for x in argList:
     #     x["pdb"] = parsePDB(x["pdb"].ca)
     #     x["name"] = x["pdb"].getTitle()
-    return None
+    return {}
 
 class ComputeModule:
 
