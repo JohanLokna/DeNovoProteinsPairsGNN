@@ -23,6 +23,7 @@ class Struct2Seq(nn.Module):
         self.node_features = node_features
         self.edge_features = edge_features
         self.hidden_dim = hidden_dim
+        self.vocab = vocab
 
         # Featurization layers
         self.features = ProteinFeatures(
@@ -34,7 +35,7 @@ class Struct2Seq(nn.Module):
         # Embedding layers
         self.W_v = nn.Linear(node_features, hidden_dim, bias=True)
         self.W_e = nn.Linear(edge_features, hidden_dim, bias=True)
-        self.W_s = nn.Embedding(vocab, hidden_dim)
+        self.W_s = nn.Embedding(self.vocab, hidden_dim)
         layer = TransformerLayer if not use_mpnn else MPNNLayer
 
         # Encoder layers
@@ -139,7 +140,7 @@ class Struct2Seq(nn.Module):
         mask_fw = mask_1D * (1. - mask_attend)
 
         N_batch, N_nodes = X.size(0), X.size(1)
-        log_probs = torch.zeros((N_batch, N_nodes, 20))
+        log_probs = torch.zeros((N_batch, N_nodes, self.vocab))
         h_S = torch.zeros_like(h_V)
         h_V_stack = [h_V] + [torch.zeros_like(h_V) for _ in range(len(self.decoder_layers))]
         for t in range(N_nodes):
@@ -187,7 +188,7 @@ class Struct2Seq(nn.Module):
         mask_bw = mask_1D * mask_attend
         mask_fw = mask_1D * (1. - mask_attend)
         N_batch, N_nodes = X.size(0), X.size(1)
-        log_probs = torch.zeros((N_batch, N_nodes, 20))
+        log_probs = torch.zeros((N_batch, N_nodes, self.vocab))
         h_S = torch.zeros_like(h_V)
         S = torch.zeros((N_batch, N_nodes), dtype=torch.int64)
         h_V_stack = [h_V] + [torch.zeros_like(h_V) for _ in range(len(self.decoder_layers))]
