@@ -12,10 +12,22 @@ from .self_attention import *
 from .protein_features import ProteinFeatures
 
 class Struct2Seq(nn.Module):
-    def __init__(self, num_letters, node_features, edge_features,
-        hidden_dim, num_encoder_layers=3, num_decoder_layers=3,
-        vocab=50, k_neighbors=30, protein_features='full', augment_eps=0.,
-        dropout=0.1, forward_attention_decoder=True, use_mpnn=False):
+    def __init__(
+        self, 
+        in_size, 
+        node_features, 
+        edge_features,
+        hidden_dim, 
+        num_encoder_layers=3, 
+        num_decoder_layers=3,
+        out_size=20, 
+        k_neighbors=30,
+        protein_features='full',
+        augment_eps=0.,
+        dropout=0.1, 
+        forward_attention_decoder=True, 
+        use_mpnn=False
+    ) -> None:
         """ Graph labeling network """
         super(Struct2Seq, self).__init__()
 
@@ -23,19 +35,23 @@ class Struct2Seq(nn.Module):
         self.node_features = node_features
         self.edge_features = edge_features
         self.hidden_dim = hidden_dim
-        self.vocab = vocab
+        self.in_size = in_size
+        self.out_size = out_size
 
         # Featurization layers
         self.features = ProteinFeatures(
-            node_features, edge_features, top_k=k_neighbors,
-            features_type=protein_features, augment_eps=augment_eps,
+            node_features, 
+            edge_features, 
+            top_k=k_neighbors,
+            features_type=protein_features, 
+            augment_eps=augment_eps,
             dropout=dropout
         )
 
         # Embedding layers
         self.W_v = nn.Linear(node_features, hidden_dim, bias=True)
         self.W_e = nn.Linear(edge_features, hidden_dim, bias=True)
-        self.W_s = nn.Embedding(self.vocab, hidden_dim)
+        self.W_s = nn.Embedding(self.in_size, hidden_dim)
         layer = TransformerLayer if not use_mpnn else MPNNLayer
 
         # Encoder layers
@@ -50,7 +66,7 @@ class Struct2Seq(nn.Module):
             layer(hidden_dim, hidden_dim*3, dropout=dropout)
             for _ in range(num_decoder_layers)
         ])
-        self.W_out = nn.Linear(hidden_dim, num_letters, bias=True)
+        self.W_out = nn.Linear(hidden_dim, self.out_size, bias=True)
 
         # Initialization
         for p in self.parameters():
@@ -115,106 +131,3 @@ class Struct2Seq(nn.Module):
         logits = self.W_out(h_V) 
         log_probs = F.log_softmax(logits, dim=-1)
         return log_probs
-
-    def forward_sequential(self, X, S, L, mask=None):
-        """ Compute the transformer layer sequentially, for purposes of debugging
-
-            TODO: Rewrite this and self.sample() to use a shared iterator
-        """
-        # Prepare node and edge embeddings
-        V, E, E_idx = self.features(X, L, mask)
-        h_V = self.W_v(V)
-        h_E = self.W_e(E)
-
-        # Encoder is unmasked self-attention
-        mask_attend = gather_nodes(mask.unsqueeze(-1),  E_idx).squeeze(-1)
-        mask_attend = mask.unsqueeze(-1) * mask_attend
-        for layer in self.encoder_layers:
-            h_EV = cat_neighbors_nodes(h_V, h_E, E_idx)
-            h_V = layer(h_V, h_EV, mask_V=mask, mask_attend=mask_attend)
-        
-        # Decoder alternates masked self-attention
-        mask_attend = self._autoregressive_mask(E_idx).unsqueeze(-1)
-        mask_1D = mask.view([mask.size(0), mask.size(1), 1, 1])
-        mask_bw = mask_1D * mask_attend
-        mask_fw = mask_1D * (1. - mask_attend)
-
-        N_batch, N_nodes = X.size(0), X.size(1)
-        log_probs = torch.zeros((N_batch, N_nodes, self.vocab))
-        h_S = torch.zeros_like(h_V)
-        h_V_stack = [h_V] + [torch.zeros_like(h_V) for _ in range(len(self.decoder_layers))]
-        for t in range(N_nodes):
-            # Hidden layers
-            E_idx_t = E_idx[:,t:t+1,:]
-            h_E_t = h_E[:,t:t+1,:,:]
-            h_ES_t = cat_neighbors_nodes(h_S, h_E_t, E_idx_t)
-            # Stale relational features for future states
-            h_ESV_encoder_t = mask_fw[:,t:t+1,:,:] * cat_neighbors_nodes(h_V, h_ES_t, E_idx_t)
-            for l, layer in enumerate(self.decoder_layers):
-                # Updated relational features for future states
-                h_ESV_decoder_t = cat_neighbors_nodes(h_V_stack[l], h_ES_t, E_idx_t)
-                h_V_t = h_V_stack[l][:,t:t+1,:]
-                h_ESV_t = mask_bw[:,t:t+1,:,:] * h_ESV_decoder_t + h_ESV_encoder_t
-                h_V_stack[l+1][:,t,:] = layer(
-                    h_V_t, h_ESV_t, mask_V=mask[:,t:t+1]
-                ).squeeze(1)
-
-            # Sampling step
-            h_V_t = h_V_stack[-1][:,t,:]
-            logits = self.W_out(h_V_t)
-            log_probs[:,t,:] = F.log_softmax(logits, dim=-1)
-
-            # Update
-            h_S[:,t,:] = self.W_s(S[:,t])
-        return log_probs
-
-    def sample(self, X, L, mask=None, temperature=1.0):
-        """ Autoregressive decoding of a model """
-         # Prepare node and edge embeddings
-        V, E, E_idx = self.features(X, L, mask)
-        h_V = self.W_v(V)
-        h_E = self.W_e(E)
-
-        # Encoder is unmasked self-attention
-        mask_attend = gather_nodes(mask.unsqueeze(-1),  E_idx).squeeze(-1)
-        mask_attend = mask.unsqueeze(-1) * mask_attend
-        for layer in self.encoder_layers:
-            h_EV = cat_neighbors_nodes(h_V, h_E, E_idx)
-            h_V = layer(h_V, h_EV, mask_V=mask, mask_attend=mask_attend)
-        
-        # Decoder alternates masked self-attention
-        mask_attend = self._autoregressive_mask(E_idx).unsqueeze(-1)
-        mask_1D = mask.view([mask.size(0), mask.size(1), 1, 1])
-        mask_bw = mask_1D * mask_attend
-        mask_fw = mask_1D * (1. - mask_attend)
-        N_batch, N_nodes = X.size(0), X.size(1)
-        log_probs = torch.zeros((N_batch, N_nodes, self.vocab))
-        h_S = torch.zeros_like(h_V)
-        S = torch.zeros((N_batch, N_nodes), dtype=torch.int64)
-        h_V_stack = [h_V] + [torch.zeros_like(h_V) for _ in range(len(self.decoder_layers))]
-        for t in range(N_nodes):
-            # Hidden layers
-            E_idx_t = E_idx[:,t:t+1,:]
-            h_E_t = h_E[:,t:t+1,:,:]
-            h_ES_t = cat_neighbors_nodes(h_S, h_E_t, E_idx_t)
-            # Stale relational features for future states
-            h_ESV_encoder_t = mask_fw[:,t:t+1,:,:] * cat_neighbors_nodes(h_V, h_ES_t, E_idx_t)
-            for l, layer in enumerate(self.decoder_layers):
-                # Updated relational features for future states
-                h_ESV_decoder_t = cat_neighbors_nodes(h_V_stack[l], h_ES_t, E_idx_t)
-                h_V_t = h_V_stack[l][:,t:t+1,:]
-                h_ESV_t = mask_bw[:,t:t+1,:,:] * h_ESV_decoder_t + h_ESV_encoder_t
-                h_V_stack[l+1][:,t,:] = layer(
-                    h_V_t, h_ESV_t, mask_V=mask[:,t:t+1]
-                ).squeeze(1)
-
-            # Sampling step
-            h_V_t = h_V_stack[-1][:,t,:]
-            logits = self.W_out(h_V_t) / temperature
-            probs = F.softmax(logits, dim=-1)
-            S_t = torch.multinomial(probs, 1).squeeze(-1)
-
-            # Update
-            h_S[:,t,:] = self.W_s(S_t)
-            S[:,t] = S_t
-        return S
