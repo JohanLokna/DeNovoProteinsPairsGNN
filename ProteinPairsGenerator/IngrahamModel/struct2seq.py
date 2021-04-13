@@ -102,6 +102,7 @@ class Struct2Seq(nn.Module):
         
         if self.forward_attention_decoder:
             mask_fw = mask_1D * (1. - mask_attend)
+            print(mask_fw.shape, h_ESV_encoder.shape)
             h_ESV_encoder_fw = mask_fw * h_ESV_encoder
         else:
             h_ESV_encoder_fw = 0
