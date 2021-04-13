@@ -61,15 +61,7 @@ class Struct2Seq(nn.Module):
         ii = torch.arange(N_nodes)
         ii = ii.view((1, -1, 1))
         mask = E_idx - ii < 0
-        mask = mask.type(torch.float32)
-
-        # Debug 
-        # mask_scatter = torch.zeros(E_idx.shape[0],E_idx.shape[1],E_idx.shape[1]).scatter(-1, E_idx, mask)
-        # mask_reduce = gather_edges(mask_scatter.unsqueeze(-1), E_idx).squeeze(-1)
-        # plt.imshow(mask_reduce.data.numpy()[0,:,:])
-        # plt.show()
-        # plt.imshow(mask.data.numpy()[0,:,:])
-        # plt.show()
+        mask = mask.type(torch.float32
         return mask
 
     def forward(self, X, S, L, mask):
