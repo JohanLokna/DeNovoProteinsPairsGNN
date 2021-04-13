@@ -68,25 +68,19 @@ def maskBERTOnehot(
     
     return maskedSeq, mask
 
-from typing import Tuple
-
-import torch
-
-from ProteinPairsGenerator.utils.amino_acids import AMINO_ACID_NULL, AMINO_ACIDS_MAP
-
 
 def maskBERT(
-    inSeq : torch.LongTensor,
+    inSeq : torch.Tensor,
     substitutionMatrix : torch.Tensor,
     maskFrac : float = 0.15,
     keepFrac: float = 0.1,
     substituteFrac : float = 0.1,
     nullToken : int = AMINO_ACIDS_MAP[AMINO_ACID_NULL]
-) -> Tuple[torch.LongTensor, torch.BoolTensor]:
+) -> Tuple[torch.Tensor, torch.BoolTensor]:
 
     """
     @param  inSeq: Sequence to be masked according to BERT training
-    @type   inSeq: torch.LongTensor [N]
+    @type   inSeq: torch.Tensor [N]
     @param  substitutionMatrix: Symmetric matrix with subsitution probabilities
     @type   substitutionMatrix: torch.Tensor [M, M]
     @param  maskFrac: Fraction of elements in inSeq which will be maksed
@@ -98,7 +92,7 @@ def maskBERT(
     @param  nullToken: Token to 
     @type   subsituteFrac: int
     @return: Return masked sequence and indicator of masked elements
-    @rtype: torch.LongTensor [N], torch.BoolTensor [N]
+    @rtype: torch.Tensor [N], torch.BoolTensor [N]
     @inv: 0 < maskFrac and maskFrac < 1
     @inv: 0 < keepFrac and 0 < subsituteFrac and keepFrac + subsituteFrac < 1
     @inv: nullToken < M
