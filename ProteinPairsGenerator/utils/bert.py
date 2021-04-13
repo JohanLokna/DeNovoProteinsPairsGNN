@@ -40,7 +40,7 @@ def maskBERTOnehot(
     idx = torch.multinomial(torch.ones(n), nMask, replacement=False)
 
     # Create mask
-    mask = torch.empty(N).to(inSeq).to(dtype=torch.bool)
+    mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
     mask.zero_()
     mask.scatter_(0, idx, True)
 
@@ -105,14 +105,13 @@ def maskBERT(
     idx = torch.multinomial(torch.ones(n), nMask, replacement=False)
 
     # Create mask
-    mask = torch.empty(N).to(inSeq).to(dtype=torch.bool)
+    mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
     mask.zero_()
     mask.scatter_(0, idx, True)
 
     # Determine indecies for different masks
     beginChange = int(keepFrac * nMask)
     sizeSub = int(substituteFrac * nMask)
-    changeIdx = idx[beginChange:]
     subIdx = idx[beginChange:beginChange + sizeSub]
     nullIdx = idx[beginChange + sizeSub:]
 
