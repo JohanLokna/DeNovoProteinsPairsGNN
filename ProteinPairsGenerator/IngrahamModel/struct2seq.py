@@ -14,7 +14,7 @@ from .protein_features import ProteinFeatures
 class Struct2Seq(nn.Module):
     def __init__(self, num_letters, node_features, edge_features,
         hidden_dim, num_encoder_layers=3, num_decoder_layers=3,
-        vocab=20, k_neighbors=30, protein_features='full', augment_eps=0.,
+        vocab=50, k_neighbors=30, protein_features='full', augment_eps=0.,
         dropout=0.1, forward_attention_decoder=True, use_mpnn=False):
         """ Graph labeling network """
         super(Struct2Seq, self).__init__()
