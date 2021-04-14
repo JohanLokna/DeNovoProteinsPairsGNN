@@ -4,7 +4,7 @@ from tqdm.notebook import tqdm
 from typing import List
 from ProteinPairsGenerator.IngrahamModel.util_mmtf import *
 
-def makeDataTest(
+def makeData(
     pdbDf : DataFrame, 
     verbose : bool = True,
     coordAtoms : List[str] = ["N", "CA", "C", "O"],
