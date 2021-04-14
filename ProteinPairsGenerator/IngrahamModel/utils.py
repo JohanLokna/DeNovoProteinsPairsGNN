@@ -15,7 +15,7 @@ def makeData(
         start = time.time()
         for i, (pdb, metaData) in enumerate(tqdm(pdbDf.iterrows(), total=len(pdbDf))):
 
-            for chain in [metaData[key] if key in metaData for key in chainKeys]:
+            for chain in [metaData[key] for key in chainKeys if key in metaData]:
                 try:
 
                     chain_dict = mmtf_parse(pdb, chain)
