@@ -2,9 +2,9 @@ from pandas import DataFrame
 import time
 from tqdm.notebook import tqdm
 from typing import List
-from .util_mmtf import *
+from ProteinPairsGenerator.IngrahamModel.util_mmtf import *
 
-def makeData(
+def makeDataTest(
     pdbDf : DataFrame, 
     verbose : bool = True,
     coordAtoms : List[str] = ["N", "CA", "C", "O"],
@@ -15,9 +15,9 @@ def makeData(
         start = time.time()
         for i, (pdb, metaData) in enumerate(tqdm(pdbDf.iterrows(), total=len(pdbDf))):
 
-            for chain in [metaData[key] for key in chainKeys if key in metaData]:
-                try:
+            for chain in (c for key in chainKeys if key in metaData for c in metaData[key]):
 
+                try:
                     chain_dict = mmtf_parse(pdb, chain)
                     chain_name = pdb + "." + chain
                     chain_dict["name"] = chain_name
