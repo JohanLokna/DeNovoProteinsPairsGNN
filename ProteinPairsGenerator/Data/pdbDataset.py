@@ -120,4 +120,4 @@ class PDBDataset(InMemoryDataset):
         # Construct title
         title = Title()
 
-        return [nodeAttr, edgeAttr, edgeIdx, getGenericFeatures]
+        return [nodeAttr, edgeAttr, edgeIdx, title]
