@@ -54,19 +54,22 @@ class DataGenerator:
         dataList = []
         for kwargs in tqdm(kwargsList):
 
-            # Iteratively construct features
-            # Ensure that no errors
-            error = False
-            
-            for f in self.features:
-                if not f(**kwargs):
-                    error = True
-                    break
-            if error:
-                continue
+            try:
+                # Iteratively construct features
+                # Ensure that no errors
+                error = False
+                
+                for f in self.features:
+                    if not f(**kwargs):
+                        error = True
+                        break
+                if error:
+                    continue
 
-            # Append correctly computed features
-            dataList.append(PDBData(**{f.featureName: f.data for f in self.features}))
+                # Append correctly computed features
+                dataList.append(PDBData(**{f.featureName: f.data for f in self.features}))
+            except Exception:
+                print(kwargs["pdb"].getTitle())
 
             # Write batch
             if len(dataList) >= batchSize:
