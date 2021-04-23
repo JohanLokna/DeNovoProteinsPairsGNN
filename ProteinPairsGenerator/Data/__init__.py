@@ -1,2 +1,2 @@
-from pdbData import *
-from pdbDataset import *
+from .pdbData import *
+from .pdbDataset import *
