@@ -117,4 +117,7 @@ class PDBDataset(InMemoryDataset):
             dependencies = [stackedDist, closeNeighbours]
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title]
+        # Construct title
+        title = Title()
+
+        return [nodeAttr, edgeAttr, edgeIdx, getGenericFeatures]
