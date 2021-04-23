@@ -3,7 +3,7 @@ from multiprocessing import Pool
 from typing import List, Union, Generator
 
 # Local imports
-from features import FeatureModule
+from .features import FeatureModule
 from ProteinPairsGenerator.Data import PDBData
 
 # Colab dependent imports
