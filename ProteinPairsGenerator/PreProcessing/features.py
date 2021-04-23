@@ -254,6 +254,7 @@ class CartesianCoordinates(FeatureModule):
     ) -> torch.Tensor:
 
         # Get Cartesian coordinates
+        print(torch.from_numpy(pdb.getCoordsets(0)).shape)
         return torch.from_numpy(pdb.getCoordsets(0))
 
     def preFilter(self, *args, **kwargs) -> bool:
