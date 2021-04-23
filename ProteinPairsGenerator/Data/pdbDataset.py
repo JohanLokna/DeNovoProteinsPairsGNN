@@ -11,7 +11,7 @@ from torch_geometric.utils import remove_self_loops
 import torch_geometric.transforms as T
 
 # Local imports
-from ProteinPairsGenerator.PreProcessing import FeatureModule, DataGenerator
+from ProteinPairsGenerator.PreProcessing import *
 
 class PDBDataset(InMemoryDataset):
 
