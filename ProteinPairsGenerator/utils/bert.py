@@ -37,7 +37,7 @@ def maskBERTOnehot(
     # Chose elements to mask
     n = inSeq.shape[0]
     nMask = int(maskFrac * n)
-    idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq.device).to(type=torch.long)
+    idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq).to(dtype=torch.long)
 
     # Create mask
     mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
@@ -102,7 +102,7 @@ def maskBERT(
     # Chose elements to mask
     n = inSeq.shape[0]
     nMask = int(maskFrac * n)
-    idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq.device).to(type=torch.long)
+    idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq).to(dtype=torch.long)
 
     # Create mask
     mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)

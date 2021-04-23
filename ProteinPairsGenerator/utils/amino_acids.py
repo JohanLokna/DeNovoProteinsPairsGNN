@@ -55,6 +55,6 @@ def seq_to_tensor(seq : str) -> torch.Tensor:
     """Mapping between amino acid sequence representations"""
     return torch.as_tensor([AMINO_ACIDS_MAP[aa] for aa in seq]).type(torch.LongTensor)
 
-def tensor_to_seq(seq : str) -> torch.Tensor:
+def tensor_to_seq(seq : torch.Tensor) -> str:
     """Mapping between amino acid sequence representations"""
     return "".join([AMINO_ACIDS_MAP[int(aa.item())] for aa in seq])
