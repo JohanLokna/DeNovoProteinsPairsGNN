@@ -70,6 +70,7 @@ class DataGenerator:
                 dataList.append(PDBData(**{f.featureName: f.data for f in self.features}))
             except Exception:
                 print(kwargs["pdb"].getTitle())
+                raise Exception
 
             # Write batch
             if len(dataList) >= batchSize:
