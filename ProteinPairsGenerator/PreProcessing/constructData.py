@@ -31,7 +31,7 @@ class DataGenerator:
     ) -> int:
 
         # If no batch size, use all blocks
-        batchSize = len(kwargsList) if self.batchSize is None else self.batchSize
+        batchSize = size if self.batchSize is None else self.batchSize
 
         return math.ceil(size / batchSize)
 
