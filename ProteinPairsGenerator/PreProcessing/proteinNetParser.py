@@ -16,6 +16,7 @@ def readPotein(inFile) -> Dict:
     record = {}
     while True:
         line = inFile.readline()
+        print(line)
         
         if "[ID]" in line:
             record["id"] = inFile.readline()[:-1]
