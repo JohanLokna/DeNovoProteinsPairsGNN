@@ -13,6 +13,7 @@ NUM_DIMENSIONS = 3
 def readPotein(inFile) -> Dict:
     """Read ProteinNet record. Based on implementation in their code exaples."""
     
+    print("OK")
     record = {}
     while True:
         line = inFile.readline()
