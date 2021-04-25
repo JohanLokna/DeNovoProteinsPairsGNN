@@ -33,9 +33,9 @@ def readPotein(inFile) -> Dict:
             coords = torch.Tensor([
               [float(step) for step in inFile.readline().split()] for residue in range(NUM_DIMENSIONS)
             ])
-            record["N"] = coords[:, 0::3]
-            record["CA"] = coords[:, 1::3]
-            record["C"] = coords[:, 2::3]
+            record["N"] = coords[:, 0::3].transpose(0, 1)
+            record["CA"] = coords[:, 1::3].transpose(0, 1)
+            record["C"] = coords[:, 2::3].transpose(0, 1)
         elif "[MASK]" in line:
             # Not yet implemented - just skipping lines
             inFile.readline()
