@@ -84,7 +84,7 @@ class DataGeneratorFile(DataGenerator):
         dataList = []
         while True:
             try:
-                self.addDataPoint(dataList=dataList, **kwargs)
+                self.addDataPoint(dataList=dataList, inFile=inFile)
             except EOFError:
                 break
       
