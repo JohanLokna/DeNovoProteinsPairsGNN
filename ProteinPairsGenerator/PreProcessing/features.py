@@ -450,7 +450,7 @@ class ProteinNetRecord(FeatureModule):
             lambda x: ProteinNetField(featureName=fieldName, fieldName=fieldName, dependencies=[self]) \
             for fieldName in ["id", "primary", "N", "CA", "C"]
         })
-        
+        print(self.__dict__)
 
         super().__init__(featureName)
 
