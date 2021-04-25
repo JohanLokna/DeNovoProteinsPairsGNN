@@ -274,6 +274,7 @@ class CartesianDistances(FeatureModule):
         # Set up dependecies
         if len(dependencies) == 0:
             print("nöd ok")
+            raise Exception
             dependencies = [CartesianCoordinates()]
         elif len(dependencies) != 1 or dependencies[0].featureName != "cartCoords":
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
