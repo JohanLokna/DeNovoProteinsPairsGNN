@@ -75,7 +75,6 @@ class ProteinNetDataset(InMemoryDataset):
         cmd = "cd {};".format(str(self.raw_dir)) \
             + "wget https://sharehost.hms.harvard.edu/sysbio/alquraishi/proteinnet/human_readable/casp" \
             + "{}.tar.gz;tar -xvf casp{}.tar.gz".format(str(self.caspVersion), str(self.caspVersion))
-        print(cmd)
         exitCode = os.system(cmd)
 
         if exitCode != 0:
