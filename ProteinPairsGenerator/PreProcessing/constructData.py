@@ -78,10 +78,11 @@ class DataGeneratorFile(DataGenerator):
 
     def __call__(
         self,
-        inFile : IO,
+        inPath : IO,
     ) -> List[GeneralData]:
 
         dataList = []
+        inFile = open(str(inPath), 'r')
         while True:
             try:
                 self.addDataPoint(dataList=dataList, inFile=inFile)
