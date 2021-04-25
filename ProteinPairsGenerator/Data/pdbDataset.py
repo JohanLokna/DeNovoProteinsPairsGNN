@@ -7,8 +7,6 @@ from typing import List, Mapping, Callable, Union, Generator, Any
 # PyTorch imports
 import torch
 from torch_geometric.data import InMemoryDataset
-from torch_geometric.utils import remove_self_loops
-import torch_geometric.transforms as T
 
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
