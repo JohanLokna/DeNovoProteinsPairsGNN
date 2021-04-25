@@ -248,7 +248,7 @@ class SequenceDistances(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "seqtDist"
+        featureName : str = "seqtDist",
         dependencies : List[FeatureModule] = []
     ) -> None:
 
