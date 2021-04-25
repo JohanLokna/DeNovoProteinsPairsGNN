@@ -226,7 +226,8 @@ class CartesianDistances(FeatureModule):
 
 
     def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs
+        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+        return [d.preFilter(*args, **kwargs) for d  in self.dependencies]
 
 
 class SequenceDistances(FeatureModule):
@@ -311,6 +312,7 @@ class EdgeIndecies(FeatureModule):
         return torch.stack(torch.where(self.dependencies[0].data), dim=0)
 
     def preFilter(self, *args, **kwargs) -> bool:
+        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -368,6 +370,7 @@ class StackedFeatures(FeatureModule):
         return torch.stack([d.data for d in self.dependencies], dim=-1)
 
     def preFilter(self, *args, **kwargs) -> bool:
+        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -420,6 +423,7 @@ class ProteinNetField(FeatureModule):
         return self.dependencies[0].data[self.fieldName]
 
     def preFilter(self, *args, **kwargs) -> bool:
+        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -452,4 +456,5 @@ class ProteinNetRecord(FeatureModule):
             return record
 
     def preFilter(self, *args, **kwargs) -> bool:
+        print("inFile" in kwargs)
         return "inFile" in kwargs
