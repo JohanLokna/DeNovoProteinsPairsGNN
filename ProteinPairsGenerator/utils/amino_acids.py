@@ -22,8 +22,8 @@ CHAINS_MAP.update({i: c for i, c in enumerate(CHAINS)})
 
 # List of amino acids (symbol)
 AMINO_ACID_NULL: str = "X"
-CDRS_HEAVY = ["H1", "H2", "H3"]
-CDRS_LIGHT = ["L1", "L2", "L3"]
+CDRS_HEAVY = ["9", "8", "7"]
+CDRS_LIGHT = ["1", "2", "3"]
 AMINO_ACIDS_BASE: List[str] = [
     "G",
     "V",
