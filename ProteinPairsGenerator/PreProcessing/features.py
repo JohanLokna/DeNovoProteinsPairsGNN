@@ -343,6 +343,7 @@ class EdgeAttributes(FeatureModule):
         return self.attributes[self.mask]
 
     def preFilter(self, *args, **kwargs) -> bool:
+        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
