@@ -208,6 +208,7 @@ class CartesianDistances(FeatureModule):
         
         # Set up dependecies
         if len(dependencies) == 0:
+            print("Error 1")
             dependencies = [CartesianCoordinates()]
         elif len(dependencies) != 1:
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
@@ -240,6 +241,7 @@ class SequenceDistances(FeatureModule):
 
         # Set up dependecies
         if len(dependencies) == 0:
+            print("Error 2")
             dependencies = [Sequence()]
         elif len(dependencies) != 1:
             warnings.warn("Dependencies in SequenceCDR might be errornous!", UserWarning)
@@ -247,15 +249,14 @@ class SequenceDistances(FeatureModule):
         super().__init__(featureName, dependencies=dependencies)
     
     def forward(
-        self, 
-        pdb : AtomGroup,
+        self,
         *args,
         **kwargs
     ) -> torch.Tensor:
 
         # Compute sequence distances
         size = len(self.dependencies[0].data)
-        x = torch.arange(size).view(-1, 1).expand(pdb.numAtoms(), 2)
+        x = torch.arange(size).view(-1, 1).expand(size, 2)
         return x[:, 0] - x[:, 1].view(-1, 1)
 
     def preFilter(self, *args, **kwargs) -> bool:
