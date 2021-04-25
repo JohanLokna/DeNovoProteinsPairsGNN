@@ -423,7 +423,7 @@ class ProteinNetField(FeatureModule):
         elif len(dependencies) != 1:
             warnings.warn("Dependencies in ProteinNetField might be errornous!", UserWarning)
 
-        super().__init__(featureName, dependencies=dependecies)
+        super().__init__(featureName, dependencies=dependencies)
 
     def forward(
         self,
