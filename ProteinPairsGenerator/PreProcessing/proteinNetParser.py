@@ -10,6 +10,10 @@ from ProteinPairsGenerator.utils import AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, seq_t
 # Constants
 NUM_DIMENSIONS = 3
 
+def getTitle(line : str) -> str:
+    sections = line.split("_")
+    return sections[0] + sections[2][0]
+
 def readPotein(inFile) -> Dict:
     """Read ProteinNet record. Based on implementation in their code exaples."""
     
@@ -18,7 +22,7 @@ def readPotein(inFile) -> Dict:
         line = inFile.readline()
         
         if "[ID]" in line:
-            record["id"] = inFile.readline()[:-1]
+            record["id"] = getTitle(inFile.readline())
         elif "[PRIMARY]" in line:
             record["primary"] = seq_to_tensor(inFile.readline()[:-1], mapping=AMINO_ACIDS_MAP)
         elif "[EVOLUTIONARY]" in line:
