@@ -57,6 +57,7 @@ class FeatureModule:
     def __call__(self, *args, **kwargs) -> bool:
 
         if not self.preFilter(*args, **kwargs):
+            print(self.featureName)
             return False
 
         if not self.runDependencies(*args, **kwargs):
@@ -208,7 +209,7 @@ class CartesianDistances(FeatureModule):
         # Set up dependecies
         if len(dependencies) == 0:
             dependencies = [CartesianCoordinates()]
-        elif len(dependencies) != 1 or dependencies[0].featureName != "cartCoords":
+        elif len(dependencies) != 1:
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
