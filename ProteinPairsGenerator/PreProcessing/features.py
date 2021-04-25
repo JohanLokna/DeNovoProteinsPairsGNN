@@ -117,8 +117,10 @@ class SequenceCDR(FeatureModule):
         
         self.hmmerpath = hmmerpath
 
-        self.computeSeq = len(dependencies) != 0
-        if self.computeSeq and (len(dependencies) != 1 or dependencies[0].featureName != "seq"):
+        # Set up dependecies
+        if len(dependencies) == 0:
+            dependencies = [Sequence()]
+        elif len(dependencies) != 1 or dependencies[0].featureName != "seq":
             warnings.warn("Dependencies in SequenceCDR might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
@@ -269,8 +271,11 @@ class CartesianDistances(FeatureModule):
         dependencies : List[FeatureModule] = []
     ) -> None:
         
-        self.computeCoords = len(dependencies) != 0
-        if self.computeCoords and (len(dependencies) != 1 or dependencies[0].featureName != "cartCoords"):
+        # Set up dependecies
+        if len(dependencies) == 0:
+            print("nöd ok")
+            dependencies = [CartesianCoordinates()]
+        elif len(dependencies) != 1 or dependencies[0].featureName != "cartCoords":
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
@@ -283,14 +288,9 @@ class CartesianDistances(FeatureModule):
     ) -> torch.Tensor:
 
         # Compute caresian distances
-        if self.computeCoords:
-            print("nöd ok")
-            coords = torch.from_numpy(pdb.getCoordsets(0))
-        else:
-            coords = self.dependencies[0].data
-        dist = torch.cdist(coords, coords).squeeze(0)
+        coords = self.dependencies[0].data
+        return torch.cdist(coords, coords).squeeze(0)
 
-        return dist
 
     def preFilter(self, *args, **kwargs) -> bool:
         return "pdb" in kwargs
@@ -325,11 +325,15 @@ class CloseNeighbours(FeatureModule):
         self,
         threshold,
         featureName : str = "closeNeighbours",
-        dependencies : List[FeatureModule] = [CartesianDistances()]
+        dependencies : List[FeatureModule] = []
     ) -> None:
         self.threshold = threshold
-
-        if len(dependencies) != 1:
+        
+        # Set up dependecies
+        if len(dependencies) == 0:
+            print("nöd ok 2")
+            dependencies = [CartesianDistances()]
+        elif len(dependencies) != 1:
             warnings.warn("Dependencies in CloseNeighbours might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
