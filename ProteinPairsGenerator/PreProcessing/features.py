@@ -2,7 +2,7 @@
 from pathlib import Path
 from prody import AtomGroup, ANM
 from prody.atomic.select import Select
-from typing import List
+from typing import List, IO
 import warnings
 
 # PyTorch imports
@@ -12,9 +12,9 @@ import torch
 from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
                                                     AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, \
                                                     CDRS_HEAVY, CDRS_LIGHT, \
-                                                    CHAIN_NULL, CHAIN_HEAVY, CHAIN_LIGHT, CHAIN_ANTIGEN, \
                                                     CHAINS_MAP
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
+from .proteinNetParser import readPotein
 
 
 class FeatureModule:
@@ -84,7 +84,7 @@ class FeatureModule:
 
 # Modules used for computing features
 
-class Sequence(FeatureModule):
+class SequencePDB(FeatureModule):
 
     def __init__(
         self,
@@ -100,13 +100,13 @@ class Sequence(FeatureModule):
     ) -> torch.Tensor:
         
         # Get sequence
-        return seq_to_tensor(pdb.getSequence())
+        return seq_to_tensor(pdb.getSequence(), mapping=AMINO_ACIDS_MAP)
 
     def preFilter(self, *args, **kwargs) -> bool:
         return "pdb" in kwargs
 
 
-class SequenceCDR(FeatureModule):
+class SequencePDBwithCDR(FeatureModule):
 
     def __init__(
         self,
@@ -135,10 +135,7 @@ class SequenceCDR(FeatureModule):
     ) -> torch.Tensor:
 
         # Get sequence
-        if self.computeSeq:
-            seq = seq_to_tensor(pdb.getSequence())
-        else:
-            seq = self.dependencies[0].data
+        seq = self.dependencies[0].data
 
         # Mask CDR in light chains in seq
         for c in Lchain:
@@ -160,52 +157,6 @@ class SequenceCDR(FeatureModule):
            and "Hchain" in kwargs \
            and set(kwargs["Lchain"] + kwargs["Hchain"]) <= set(kwargs["pdb"].getChids()) \
            and set(kwargs["pdb"].getSequence()) <= set(AMINO_ACIDS_BASE)
-
-
-class ChainAnnotation(FeatureModule):
-
-    def __init__(
-        self,
-        featureName : str = "seqChains"
-    ) -> None:
-
-        super().__init__(featureName)
-    
-    def forward(
-        self,
-        pdb : AtomGroup,
-        Lchain : List[str] = [],
-        Hchain : List[str] = [],
-        antigen_chain: List[str] = [],
-        *args,
-        **kwargs
-    ) -> torch.Tensor:
-        
-        # Get sequence
-        seq = torch.empty(pdb.numAtoms(), dtype=torch.long).fill_(CHAINS_MAP[CHAIN_NULL])
-
-        # Mask light chains in seq
-        for c in Lchain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          seq[idx] = CHAINS_MAP[CHAIN_LIGHT]
-
-        # Mask heavy chains in seq
-        for c in Hchain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          seq[idx] = CHAINS_MAP[CHAIN_HEAVY]
-
-        # Mask antigen chains in seq
-        for c in antigen_chain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          seq[idx] = CHAINS_MAP[CHAIN_ANTIGEN]
-
-        return seq
-
-    def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs \
-           and "Lchain" in kwargs \
-           and "Hchain" in kwargs \
-           and set(kwargs["Lchain"] + kwargs["Hchain"]) <= set(kwargs["pdb"].getChids())
 
 
 class Modes(FeatureModule):
@@ -240,7 +191,7 @@ class Modes(FeatureModule):
         return "pdb" in kwargs and kwargs["pdb"].numAtoms() <= self.maxNodes
 
 
-class CartesianCoordinates(FeatureModule):
+class CartesianCoordinatesPDB(FeatureModule):
 
     def __init__(
         self,
@@ -256,7 +207,6 @@ class CartesianCoordinates(FeatureModule):
     ) -> torch.Tensor:
 
         # Get Cartesian coordinates
-        print(torch.from_numpy(pdb.getCoordsets(0)).shape)
         return torch.from_numpy(pdb.getCoordsets(0))
 
     def preFilter(self, *args, **kwargs) -> bool:
@@ -273,8 +223,6 @@ class CartesianDistances(FeatureModule):
         
         # Set up dependecies
         if len(dependencies) == 0:
-            print("nöd ok")
-            raise Exception
             dependencies = [CartesianCoordinates()]
         elif len(dependencies) != 1 or dependencies[0].featureName != "cartCoords":
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
@@ -282,8 +230,7 @@ class CartesianDistances(FeatureModule):
         super().__init__(featureName, dependencies=dependencies)
     
     def forward(
-        self, 
-        pdb : AtomGroup,
+        self,
         *args,
         **kwargs
     ) -> torch.Tensor:
@@ -302,8 +249,16 @@ class SequenceDistances(FeatureModule):
     def __init__(
         self,
         featureName : str = "seqtDist"
+        dependencies : List[FeatureModule] = []
     ) -> None:
-        super().__init__(featureName)
+
+        # Set up dependecies
+        if len(dependencies) == 0:
+            dependencies = [Sequence()]
+        elif len(dependencies) != 1:
+            warnings.warn("Dependencies in SequenceCDR might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
     
     def forward(
         self, 
@@ -313,11 +268,12 @@ class SequenceDistances(FeatureModule):
     ) -> torch.Tensor:
 
         # Compute sequence distances
-        x = torch.arange(pdb.numAtoms()).view(-1, 1).expand(pdb.numAtoms(), 2)
+        size = len(self.dependencies[0].data)
+        x = torch.arange(size).view(-1, 1).expand(pdb.numAtoms(), 2)
         return x[:, 0] - x[:, 1].view(-1, 1)
 
     def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class CloseNeighbours(FeatureModule):
@@ -332,7 +288,6 @@ class CloseNeighbours(FeatureModule):
         
         # Set up dependecies
         if len(dependencies) == 0:
-            print("nöd ok 2")
             dependencies = [CartesianDistances()]
         elif len(dependencies) != 1:
             warnings.warn("Dependencies in CloseNeighbours might be errornous!", UserWarning)
@@ -347,7 +302,7 @@ class CloseNeighbours(FeatureModule):
         return self.dependencies[0].data < self.threshold
 
     def preFilter(self, *args, **kwargs) -> bool:
-        return all([ d.preFilter(*args, **kwargs) for d  in self.dependencies])
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class EdgeIndecies(FeatureModule):
@@ -371,7 +326,7 @@ class EdgeIndecies(FeatureModule):
         return torch.stack(torch.where(self.dependencies[0].data), dim=0)
 
     def preFilter(self, *args, **kwargs) -> bool:
-        return all([ d.preFilter(*args, **kwargs) for d  in self.dependencies])
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class EdgeAttributes(FeatureModule):
@@ -403,7 +358,7 @@ class EdgeAttributes(FeatureModule):
         return self.attributes[self.mask]
 
     def preFilter(self, *args, **kwargs) -> bool:
-        return all([ d.preFilter(*args, **kwargs) for d  in self.dependencies])
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class StackedFeatures(FeatureModule):
@@ -427,7 +382,7 @@ class StackedFeatures(FeatureModule):
         return torch.stack([d.data for d in self.dependencies], dim=-1)
 
     def preFilter(self, *args, **kwargs) -> bool:
-        return all([ d.preFilter(*args, **kwargs) for d  in self.dependencies])
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class Title(FeatureModule):
@@ -449,3 +404,66 @@ class Title(FeatureModule):
 
     def preFilter(self, *args, **kwargs) -> bool:
         return "pdb" in kwargs
+
+
+class ProteinNetField(FeatureModule):
+
+    def __init__(
+        self,
+        featureName : str,
+        fieldName : str
+        dependecies : List[FeatureModule] = []
+    ) -> None:
+
+        self.fieldName = fieldName
+   
+        # Set up dependecies
+        if len(dependencies) == 0:
+            dependencies = [ProteinNetRecord()]
+        elif len(dependencies) != 1:
+            warnings.warn("Dependencies in ProteinNetField might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependecies)
+
+    def forward(
+        self,
+        inFile : IO[str],
+        *args,
+        **kwargs
+    ) -> torch.Tensor:
+        return self.dependencies[0].data[self.fieldName]
+
+    def preFilter(self, *args, **kwargs) -> bool:
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+
+
+class ProteinNetRecord(FeatureModule):
+
+    def __init__(
+        self,
+        featureName : str = "proteinnetRecord"
+    ) -> None:
+
+        # Update getters for fields
+        self.__dict__.update( {
+          fieldName + "Feature": \
+          lambda featureName: ProteinNetField(featureName=featureName, fieldName=fieldName, dependencies=[self])
+        } for fieldName in ["id", "primary", "teritiary"])
+
+        super().__init__(featureName)
+
+    def forward(
+        self,
+        inFile : IO[str],
+        *args,
+        **kwargs
+    ) -> torch.Tensor:
+        record = readPotein(inFile)
+
+        if record is None:
+            raise EOFError
+        else:
+            return record
+
+    def preFilter(self, *args, **kwargs) -> bool:
+        return "inFile" in kwargs

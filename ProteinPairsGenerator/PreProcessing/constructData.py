@@ -4,7 +4,7 @@ from typing import List, Union, Generator
 
 # Local imports
 from .features import FeatureModule
-from ProteinPairsGenerator.Data import PDBData
+from ProteinPairsGenerator.Data import GeneralData
 
 # Colab dependent imports
 if 'google.colab' in str(get_ipython()):
@@ -38,7 +38,7 @@ class DataGenerator:
     def __call__(
         self,
         kwargsList : List,
-    ) -> Generator[List[PDBData], None, None]:
+    ) -> Generator[List[GeneralData], None, None]:
 
         # Assert unique feature names
         assert len(set([f.featureName for f in self.features])) \
@@ -67,7 +67,7 @@ class DataGenerator:
                     continue
 
                 # Append correctly computed features
-                dataList.append(PDBData(**{f.featureName: f.data for f in self.features}))
+                dataList.append(GeneralData(**{f.featureName: f.data for f in self.features}))
             except Exception:
                 print(kwargs["pdb"].getTitle())
                 raise Exception

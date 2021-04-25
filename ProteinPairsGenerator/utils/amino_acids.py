@@ -1,14 +1,19 @@
-from typing import List
+from typing import List, Mapping
 
 import numpy as np
 import torch
 
-# Chains
-CHAIN_HEAVY : str = "H"
-CHAIN_LIGHT : str = "L"
-CHAIN_ANTIGEN : str = "A"
-CHAIN_NULL : str = "X"
-CHAINS: List[str] = [CHAIN_HEAVY, CHAIN_LIGHT, CHAIN_ANTIGEN, CHAIN_NULL]
+# List of chains (symbol)
+CHAINS : List[str] = [
+  "L",
+  "H",
+  "B",
+  "E",
+  "G",
+  "I",
+  "T",
+  "S"
+]
 CHAINS_ORD: List[int] = [ord(c) for c in CHAINS]
 
 # Bijective mapping between numerical and symbolic representation
@@ -17,8 +22,8 @@ CHAINS_MAP.update({i: c for i, c in enumerate(CHAINS)})
 
 # List of amino acids (symbol)
 AMINO_ACID_NULL: str = "X"
-CDRS_HEAVY = ["9", "8", "7"]
-CDRS_LIGHT = ["1", "2", "3"]
+CDRS_HEAVY = ["H1", "H2", "H3"]
+CDRS_LIGHT = ["L1", "L2", "L3"]
 AMINO_ACIDS_BASE: List[str] = [
     "G",
     "V",
@@ -50,11 +55,10 @@ AMINO_ACIDS_ORD: List[int] = [ord(aa) for aa in AMINO_ACIDS]
 AMINO_ACIDS_MAP = {aa: i for i, aa in enumerate(AMINO_ACIDS)}
 AMINO_ACIDS_MAP.update({i: aa for i, aa in enumerate(AMINO_ACIDS)})
 
-
-def seq_to_tensor(seq : str) -> torch.Tensor:
+def seq_to_tensor(seq : str, mapping : Mapping[str, int]) -> torch.Tensor:
     """Mapping between amino acid sequence representations"""
-    return torch.as_tensor([AMINO_ACIDS_MAP[aa] for aa in seq]).type(torch.LongTensor)
+    return torch.as_tensor([mapping[aa] for aa in seq]).type(torch.LongTensor)
 
-def tensor_to_seq(seq : torch.Tensor) -> str:
+def tensor_to_seq(seq : torch.Tensor, : Mapping[int, str]) -> str:
     """Mapping between amino acid sequence representations"""
-    return "".join([AMINO_ACIDS_MAP[int(aa.item())] for aa in seq])
+    return "".join([mapping[int(aa.item())] for aa in seq])

@@ -91,12 +91,12 @@ class PDBDataset(InMemoryDataset):
     def getGenericFeatures():
 
         # Get sequence attributes
-        nodeAttr = Sequence(featureName = "x")
+        nodeAttr = SequencePDB(featureName = "x")
 
         # Construct coordinates & distances
-        coords = CartesianCoordinates()
+        coords = CartesianCoordinatesPDB()
         cartDist = CartesianDistances(dependencies=[coords])
-        seqDist = SequenceDistances()
+        seqDist = SequenceDistances(dependencies=[nodeAttr])
 
         # Construct edge relations
         closeNeighbours = CloseNeighbours(
