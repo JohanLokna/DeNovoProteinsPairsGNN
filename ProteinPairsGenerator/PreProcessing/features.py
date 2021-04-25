@@ -436,6 +436,7 @@ class ProteinNetField(FeatureModule):
     def preFilter(self, *args, **kwargs) -> bool:
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
+from copy import copy
 
 class ProteinNetRecord(FeatureModule):
 
@@ -447,7 +448,7 @@ class ProteinNetRecord(FeatureModule):
         # Update getters for fields
         self.__dict__.update({
             fieldName: \
-            lambda x: ProteinNetField(featureName=fieldName, fieldName=fieldName, dependencies=[self]) \
+            lambda x: ProteinNetField(featureName=copy(fieldName), fieldName=copy(fieldName), dependencies=[self]) \
             for fieldName in ["id", "primary", "N", "CA", "C"]
         })
         print(self.__dict__)
