@@ -37,7 +37,7 @@ class DataGenerator:
         # Ensure that no errors        
         for f in self.features:
             if not f(*args, **kwargs):
-                print("NÖD ÖK")
+                print("NÖD ÖK", dataList)
                 return
 
         # Append correctly computed features
