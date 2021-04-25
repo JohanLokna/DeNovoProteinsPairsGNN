@@ -71,7 +71,7 @@ class PDBDataset(InMemoryDataset):
             return
 
         print("Downloading ...")
-        # fetchPDBviaHTTP(*self.pdbs.index.values.tolist(), compressed=True)
+        fetchPDBviaHTTP(*self.pdbs.index.values.tolist(), compressed=True)
 
     def process(self, force=False) -> None:
 
