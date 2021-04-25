@@ -412,7 +412,7 @@ class ProteinNetField(FeatureModule):
         self,
         featureName : str,
         fieldName : str,
-        dependecies : List[FeatureModule] = []
+        dependencies : List[FeatureModule] = []
     ) -> None:
 
         self.fieldName = fieldName
@@ -448,7 +448,7 @@ class ProteinNetRecord(FeatureModule):
         self.__dict__.update( {
           fieldName: \
           lambda featureName: ProteinNetField(featureName=featureName, fieldName=fieldName, dependencies=[self])
-        } for fieldName in ["id", "primary", "N", "CA", "C"])
+         for fieldName in ["id", "primary", "N", "CA", "C"]})
 
         super().__init__(featureName)
 
