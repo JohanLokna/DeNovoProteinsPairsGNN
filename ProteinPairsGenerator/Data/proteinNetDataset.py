@@ -128,4 +128,4 @@ class ProteinNetDataset(InMemoryDataset):
         # Construct title
         title = reader.id(featureName = "title")
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, coords, reader]
+        return [nodeAttr, edgeAttr, edgeIdx, title, coords]
