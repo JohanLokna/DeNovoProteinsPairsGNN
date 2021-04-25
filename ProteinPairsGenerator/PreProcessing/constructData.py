@@ -37,9 +37,11 @@ class DataGenerator:
         # Ensure that no errors        
         for f in self.features:
             if not f(*args, **kwargs):
+                print("NÖD ÖK")
                 return
 
         # Append correctly computed features
+        print("OK")
         dataList.append(GeneralData(**{f.featureName: f.data for f in self.features}))
 
     def __call__(self, *args, **kwargs ) -> List[GeneralData]:
