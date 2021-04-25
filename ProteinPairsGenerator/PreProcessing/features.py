@@ -447,6 +447,7 @@ class ProteinNetRecord(FeatureModule):
         if record is None:
             raise EOFError
         else:
+            print(record["primary"])
             return record
 
     def preFilter(self, *args, **kwargs) -> bool:
