@@ -430,6 +430,7 @@ class ProteinNetField(FeatureModule):
         *args,
         **kwargs
     ) -> torch.Tensor:
+        print(self.fieldName, self.dependencies[0].data[self.fieldName], sep='\n', end="\n\n\n")
         return self.dependencies[0].data[self.fieldName]
 
     def preFilter(self, *args, **kwargs) -> bool:
@@ -463,7 +464,6 @@ class ProteinNetRecord(FeatureModule):
         if record is None:
             raise EOFError
         else:
-            print(record["id"], record["primary"], sep='\n', end='\n\n\n\n')
             return record
 
     def preFilter(self, *args, **kwargs) -> bool:
