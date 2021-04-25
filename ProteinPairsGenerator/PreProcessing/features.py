@@ -447,9 +447,11 @@ class ProteinNetRecord(FeatureModule):
 
         # Update getters for fields
         self.__dict__.update({
-            fieldName: \
-            lambda x: ProteinNetField(featureName=copy(fieldName), fieldName=copy(fieldName), dependencies=[self]) \
-            for fieldName in ["id", "primary", "N", "CA", "C"]
+            "getId": lambda x: ProteinNetField(featureName=x, fieldName="id", dependencies=[self]),
+            "getPrimary": lambda x: ProteinNetField(featureName=x, fieldName="primary", dependencies=[self]),
+            "getCoordsN": lambda x: ProteinNetField(featureName=x, fieldName="N", dependencies=[self]),
+            "getCoordsCA": lambda x: ProteinNetField(featureName=x, fieldName="CA", dependencies=[self]),
+            "getCoordsC": lambda x: ProteinNetField(featureName=x, fieldName="C", dependencies=[self])
         })
         print(self.__dict__)
 
