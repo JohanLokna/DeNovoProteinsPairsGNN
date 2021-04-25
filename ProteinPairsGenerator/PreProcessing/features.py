@@ -430,7 +430,6 @@ class ProteinNetField(FeatureModule):
         *args,
         **kwargs
     ) -> torch.Tensor:
-        print(self.fieldName, self.dependencies[0].data[self.fieldName], sep='\n', end="\n\n\n")
         return self.dependencies[0].data[self.fieldName]
 
     def preFilter(self, *args, **kwargs) -> bool:
@@ -453,7 +452,6 @@ class ProteinNetRecord(FeatureModule):
             "getCoordsCA": lambda x: ProteinNetField(featureName=x, fieldName="CA", dependencies=[self]),
             "getCoordsC": lambda x: ProteinNetField(featureName=x, fieldName="C", dependencies=[self])
         })
-        print(self.__dict__)
 
         super().__init__(featureName)
 
