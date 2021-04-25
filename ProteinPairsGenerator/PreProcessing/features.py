@@ -411,7 +411,7 @@ class ProteinNetField(FeatureModule):
     def __init__(
         self,
         featureName : str,
-        fieldName : str
+        fieldName : str,
         dependecies : List[FeatureModule] = []
     ) -> None:
 
