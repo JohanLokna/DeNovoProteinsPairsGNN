@@ -57,7 +57,6 @@ class FeatureModule:
     def __call__(self, *args, **kwargs) -> bool:
 
         if not self.preFilter(*args, **kwargs):
-            print(self.featureName)
             return False
 
         if not self.runDependencies(*args, **kwargs):
@@ -208,7 +207,6 @@ class CartesianDistances(FeatureModule):
         
         # Set up dependecies
         if len(dependencies) == 0:
-            print("Error 1")
             dependencies = [CartesianCoordinates()]
         elif len(dependencies) != 1:
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
@@ -227,7 +225,6 @@ class CartesianDistances(FeatureModule):
 
 
     def preFilter(self, *args, **kwargs) -> bool:
-        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return [d.preFilter(*args, **kwargs) for d  in self.dependencies]
 
 
@@ -241,7 +238,6 @@ class SequenceDistances(FeatureModule):
 
         # Set up dependecies
         if len(dependencies) == 0:
-            print("Error 2")
             dependencies = [Sequence()]
         elif len(dependencies) != 1:
             warnings.warn("Dependencies in SequenceCDR might be errornous!", UserWarning)
@@ -313,7 +309,6 @@ class EdgeIndecies(FeatureModule):
         return torch.stack(torch.where(self.dependencies[0].data), dim=0)
 
     def preFilter(self, *args, **kwargs) -> bool:
-        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -346,7 +341,6 @@ class EdgeAttributes(FeatureModule):
         return self.attributes[self.mask]
 
     def preFilter(self, *args, **kwargs) -> bool:
-        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -371,7 +365,6 @@ class StackedFeatures(FeatureModule):
         return torch.stack([d.data for d in self.dependencies], dim=-1)
 
     def preFilter(self, *args, **kwargs) -> bool:
-        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -424,7 +417,6 @@ class ProteinNetField(FeatureModule):
         return self.dependencies[0].data[self.fieldName]
 
     def preFilter(self, *args, **kwargs) -> bool:
-        print([d.preFilter(*args, **kwargs) for d  in self.dependencies])
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
@@ -457,5 +449,4 @@ class ProteinNetRecord(FeatureModule):
             return record
 
     def preFilter(self, *args, **kwargs) -> bool:
-        print("inFile" in kwargs)
         return "inFile" in kwargs
