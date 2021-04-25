@@ -19,6 +19,7 @@ def readPotein(inFile) -> Dict:
         
         if "[ID]" in line:
             record["id"] = inFile.readline()[:-1]
+            print(record["id"])
         elif "[PRIMARY]" in line:
             record["primary"] = seq_to_tensor(inFile.readline()[:-1], mapping=AMINO_ACIDS_MAP)
         elif "[EVOLUTIONARY]" in line:
