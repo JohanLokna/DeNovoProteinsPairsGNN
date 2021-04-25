@@ -108,7 +108,7 @@ class ProteinNetDataset(InMemoryDataset):
 
         # Construct edge relations
         closeNeighbours = CloseNeighbours(
-            threshold = 1200,
+            threshold = 12000,
             dependencies = [cartDist]
         )
         edgeIdx = EdgeIndecies(
