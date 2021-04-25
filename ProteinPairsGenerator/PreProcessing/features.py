@@ -447,7 +447,7 @@ class ProteinNetRecord(FeatureModule):
         # Update getters for fields
         self.__dict__.update({
             fieldName: \
-            lambda x: ProteinNetField(featureName=x, fieldName=fieldName, dependencies=[self]) \
+            lambda x: ProteinNetField(featureName=fieldName, fieldName=fieldName, dependencies=[self]) \
             for fieldName in ["id", "primary", "N", "CA", "C"]
         })
         
