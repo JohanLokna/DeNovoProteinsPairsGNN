@@ -31,7 +31,7 @@ class DataGenerator:
         if not self.pool is None:
             raise NotImplementedError
 
-    def addDataPoint(self, dataList, *args **kwargs):
+    def addDataPoint(self, dataList, *args, **kwargs):
 
         # Iteratively construct features
         # Ensure that no errors        
