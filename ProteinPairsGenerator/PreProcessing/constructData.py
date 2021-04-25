@@ -1,6 +1,6 @@
 import math
 from multiprocessing import Pool
-from typing import List, Union, Generator
+from typing import List, Union, IO
 
 # Local imports
 from .features import FeatureModule
@@ -17,66 +17,75 @@ class DataGenerator:
     def __init__(
         self,
         features : List[FeatureModule],
-        batchSize : Union[int, None] = None,
-        pool : Union[Pool, None] = None,
-
+        pool : Union[Pool, None] = None
     ) -> None:
         self.features = features
-        self.batchSize = batchSize
-        self.pool = pool
-  
-    def getNumBatches(
-        self,
-        size : int
-    ) -> int:
-
-        # If no batch size, use all blocks
-        batchSize = size if self.batchSize is None else self.batchSize
-
-        return math.ceil(size / batchSize)
-
-    def __call__(
-        self,
-        kwargsList : List,
-    ) -> Generator[List[GeneralData], None, None]:
 
         # Assert unique feature names
         assert len(set([f.featureName for f in self.features])) \
             == len(self.features)
 
-        # If no batch size, use all blocks
-        batchSize = len(kwargsList) if self.batchSize is None else self.batchSize
+        self.pool = pool
 
-        # Might use 
+        # Might use in the future
         if not self.pool is None:
             raise NotImplementedError
 
+    def addDataPoint(self, dataList, *args **kwargs):
+
+        # Iteratively construct features
+        # Ensure that no errors        
+        for f in self.features:
+            if not f(*args, **kwargs):
+                return
+
+        # Append correctly computed features
+        dataList.append(GeneralData(**{f.featureName: f.data for f in self.features}))
+
+    def __call__(self, *args, **kwargs ) -> List[GeneralData]:
+        raise NotImplementedError
+
+
+class DataGeneratorList(DataGenerator):
+    
+    def __init__(
+        self,
+        features : List[FeatureModule],
+        pool : Union[Pool, None] = None
+    ) -> None:
+        super().__init__(features, pool)
+
+    def __call__(
+        self,
+        kwargsList : List,
+    ) -> List[GeneralData]:
+
         dataList = []
         for kwargs in tqdm(kwargsList):
+            self.addDataPoint(dataList=dataList, **kwargs)
+            
+        return dataList
 
+
+class DataGeneratorFile(DataGenerator):
+    
+    def __init__(
+        self,
+        features : List[FeatureModule],
+        pool : Union[Pool, None] = None
+    ) -> None:
+        super().__init__(features, pool)
+
+    def __call__(
+        self,
+        inFile : IO,
+    ) -> List[GeneralData]:
+
+        dataList = []
+        while True:
             try:
-                # Iteratively construct features
-                # Ensure that no errors
-                error = False
-                
-                for f in self.features:
-                    if not f(**kwargs):
-                        error = True
-                        break
-                if error:
-                    continue
-
-                # Append correctly computed features
-                dataList.append(GeneralData(**{f.featureName: f.data for f in self.features}))
-            except Exception:
-                print(kwargs["pdb"].getTitle())
-                raise Exception
-
-            # Write batch
-            if len(dataList) >= batchSize:
-                yield dataList
-                dataList = []
-
-        # Wirte last batch
-        if len(dataList) > 0:
-           yield dataList
+                self.addDataPoint(dataList=dataList, **kwargs)
+            except EOFError:
+                break
+      
+        return dataList

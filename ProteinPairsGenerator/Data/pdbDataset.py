@@ -36,7 +36,7 @@ class PDBDataset(InMemoryDataset):
         pathPDBFolder(folder=self.pdbFolder, divided=False)
         
         # Set up preprocessing
-        gen = DataGenerator(features = features)
+        gen = DataGeneratorList(features = features)
 
         # Initialize super class and complete set up
         super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
@@ -48,8 +48,7 @@ class PDBDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self) -> List[Path]:
-        return [self.processed_dir.joinpath("processed_{}.pt".format(str(i))) \
-                for i in range(self.pre_transform.getNumBatches(len(self.pdbs)))]    
+        return [self.processed_dir.joinpath("processed.pt") ]    
 
     @property
     def raw_dir(self):
@@ -80,12 +79,13 @@ class PDBDataset(InMemoryDataset):
             return
 
         # Create list of DataPDB from the dataframe containing all pdbs
-        for i, dataList in enumerate(self.pre_transform(
+        dataList = self.pre_transform(
           [{"pdb": parsePDB(pdb).ca, **metaData.to_dict()} for pdb, metaData in self.pdbs.iterrows()]
-        )):
-            # Coalate and save
-            data, slices = self.collate(dataList)
-            torch.save((data, slices), self.processed_file_names[i])
+        )
+
+        # Coalate and save
+        data, slices = self.collate(dataList)
+        torch.save((data, slices), self.processed_file_names[0])
 
     @staticmethod
     def getGenericFeatures():

@@ -23,7 +23,7 @@ def readPotein(inFile) -> Dict:
             record["primary"] = seq_to_tensor(inFile.readline()[:-1], mapping=AMINO_ACIDS_MAP)
         elif "[EVOLUTIONARY]" in line:
             evolutionary = torch.Tensor([
-              [step for step in file_.readline().split()] for residue in range(len(AMINO_ACIDS_BASE) + 1)
+              [step for step in inFile.readline().split()] for residue in range(len(AMINO_ACIDS_BASE) + 1)
             ])
             record["evolutionary"] = evolutionary
         elif "[SECONDARY]" in line:
@@ -31,7 +31,7 @@ def readPotein(inFile) -> Dict:
             inFile.readline()
         elif "[TERTIARY]" in line:
             coords = torch.Tensor([
-              [step for step in file_.readline().split()] for residue in range(NUM_DIMENSIONS)
+              [step for step in inFile.readline().split()] for residue in range(NUM_DIMENSIONS)
             ])
             record["N"] = coords[:, 0::3]
             record["CA"] = coords[:, 1::3]
