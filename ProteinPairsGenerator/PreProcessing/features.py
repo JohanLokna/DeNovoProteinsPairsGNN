@@ -38,8 +38,20 @@ class FeatureModule:
     def data(self, value):
         self.data_ = value
 
+    @property
+    def dataId(self):
+        return {"args": self.args_, "kwargs": self.kwargs_}
+
+    def setDataId(self, *args, **kwargs):
+        self.args_ = args
+        self.kwargs_ = kwargs
+
+    def testDataId(self, *args, **kwargs):
+        return self.args_ == args and self.kwargs_ == kwargs
+
     def clear(self):
         self.data = None
+        self.setDataId()
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
@@ -56,6 +68,9 @@ class FeatureModule:
 
     def __call__(self, *args, **kwargs) -> bool:
 
+        if self.testDataId(*args, **kwargs):
+            return True
+
         if not self.preFilter(*args, **kwargs):
             return False
 
@@ -63,6 +78,7 @@ class FeatureModule:
             return False
 
         self.data = self.forward(*args, **kwargs)
+        self.setDataId(*args, **kwargs)
         return True
 
 
