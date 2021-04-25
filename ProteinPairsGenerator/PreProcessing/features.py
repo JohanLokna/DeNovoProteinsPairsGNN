@@ -379,7 +379,7 @@ class EdgeAttributes(FeatureModule):
     def __init__(
         self,
         featureName : str = "edgeAttributes",
-        dependencies : List[FeatureModule] = [CartesianDistances()]
+        dependencies : List[FeatureModule] = []
     ) -> None:
 
         if len(dependencies) != 2:
