@@ -12,7 +12,7 @@ NUM_DIMENSIONS = 3
 
 def getTitle(line : str) -> str:
     sections = line.split("_")
-    return sections[0] + sections[2][0]
+    return sections[0] + "_" + sections[2][0]
 
 def readPotein(inFile) -> Dict:
     """Read ProteinNet record. Based on implementation in their code exaples."""
