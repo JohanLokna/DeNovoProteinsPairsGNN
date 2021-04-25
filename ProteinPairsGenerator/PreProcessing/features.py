@@ -22,13 +22,11 @@ class FeatureModule:
     def __init__(
         self, 
         featureName : str,
-        identifier = lambda *args, **kwargs : kwargs["pdb"],
         dependencies : List = [],
     ) -> None:
 
         # Set up structure
         self.featureName = featureName
-        self.identifier = identifier
         self.dependencies = dependencies
         self.clear()
 
@@ -40,17 +38,8 @@ class FeatureModule:
     def data(self, value):
         self.data_ = value
 
-    @property
-    def dataId(self):
-        return self.dataId_
-
-    @dataId.setter
-    def dataId(self, value):
-        self.dataId_ = value
-
     def clear(self):
         self.data = None
-        self.dataId = None
 
     def forward(self, *args, **kwargs) -> torch.Tensor:
         raise NotImplementedError
@@ -58,7 +47,7 @@ class FeatureModule:
     def preFilter(self, *args, **kwargs) -> bool:
         raise NotImplementedError
 
-    def runDependencies(self, currId, *args, **kwargs) -> bool:
+    def runDependencies(self, *args, **kwargs) -> bool:
 
         for feature in self.dependencies:
             if not feature(*args, **kwargs):
@@ -67,18 +56,13 @@ class FeatureModule:
 
     def __call__(self, *args, **kwargs) -> bool:
 
-        currId = self.identifier(*args, **kwargs)
-        if self.dataId == currId:
-            return True
-
         if not self.preFilter(*args, **kwargs):
             return False
 
-        if not self.runDependencies(currId, *args, **kwargs):
+        if not self.runDependencies(*args, **kwargs):
             return False
 
         self.data = self.forward(*args, **kwargs)
-        self.dataId = currId
         return True
 
 
