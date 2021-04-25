@@ -13,15 +13,12 @@ NUM_DIMENSIONS = 3
 def readPotein(inFile) -> Dict:
     """Read ProteinNet record. Based on implementation in their code exaples."""
     
-    print("OK")
     record = {}
     while True:
         line = inFile.readline()
-        print(line)
         
         if "[ID]" in line:
             record["id"] = inFile.readline()[:-1]
-            print(record["id"])
         elif "[PRIMARY]" in line:
             record["primary"] = seq_to_tensor(inFile.readline()[:-1], mapping=AMINO_ACIDS_MAP)
         elif "[EVOLUTIONARY]" in line:
