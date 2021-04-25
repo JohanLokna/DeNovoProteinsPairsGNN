@@ -94,10 +94,8 @@ class PDBDataset(InMemoryDataset):
         nodeAttr = Sequence(featureName = "x")
 
         # Construct coordinates & distances
-        coords = CartesianCoordinates()
-        print("OK1")
+        coords = CartesianCoordinates(
         cartDist = CartesianDistances(dependencies=[coords])
-        print("OK2")
         seqDist = SequenceDistances()
 
         # Construct edge relations
