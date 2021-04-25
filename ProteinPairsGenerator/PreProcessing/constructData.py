@@ -1,6 +1,6 @@
 import math
 from multiprocessing import Pool
-from typing import List, Union, IO
+from typing import List, Union, IO, Generator
 
 # Local imports
 from .features import FeatureModule
@@ -17,9 +17,11 @@ class DataGenerator:
     def __init__(
         self,
         features : List[FeatureModule],
-        pool : Union[Pool, None] = None
+        pool : Union[Pool, None] = None,
+        batchSize : [int, None] = None
     ) -> None:
         self.features = features
+        self.batchSize = batchSize
 
         # Assert unique feature names
         assert len(set([f.featureName for f in self.features])) \
@@ -42,7 +44,7 @@ class DataGenerator:
         # Append correctly computed features
         dataList.append(GeneralData(**{f.featureName: f.data for f in self.features}))
 
-    def __call__(self, *args, **kwargs ) -> List[GeneralData]:
+    def __call__(self, *args, **kwargs ) -> Generator[List[GeneralData], None, None]:
         raise NotImplementedError
 
 
@@ -50,47 +52,60 @@ class DataGeneratorList(DataGenerator):
     
     def __init__(
         self,
-        features : List[FeatureModule],
-        pool : Union[Pool, None] = None
+        *args,
+        **kwargs
     ) -> None:
-        super().__init__(features, pool)
+        super().__init__(*args, **kwargs)
 
     def __call__(
         self,
         kwargsList : List,
-    ) -> List[GeneralData]:
+    ) -> Generator[List[GeneralData], None, None]:
 
         dataList = []
         for kwargs in tqdm(kwargsList):
             self.addDataPoint(dataList=dataList, **kwargs)
-            
-        return dataList
+
+            if not self.batchSize is None and len(dataList) >= self.batchSize:
+                yield dataList
+                dataList = []
+      
+        if len(dataList) > 0:
+            yield dataList
 
 
 class DataGeneratorFile(DataGenerator):
     
     def __init__(
         self,
-        features : List[FeatureModule],
-        pool : Union[Pool, None] = None
+        *args,
+        **kwargs
     ) -> None:
-        super().__init__(features, pool)
+        super().__init__(*args, **kwargs)
 
     def __call__(
         self,
         inPath : IO,
-    ) -> List[GeneralData]:
+    ) -> Generator[List[GeneralData], None, None]:
 
         dataList = []
         inFile = open(str(inPath), 'r')
+
+        count = 0
         while True:
             try:
                 self.addDataPoint(dataList=dataList, inFile=inFile, iterationIdx = len(dataList))
 
-                if len(dataList) % 1000 == 0:
-                    print("Completed {} samples".format(str(len(dataList))))
-
             except EOFError:
                 break
+
+            if count % 1000 == 0:
+                print("Completed {} samples".format(str(len(dataList))))
+                count += 1
+
+            if not self.batchSize is None and len(dataList) >= self.batchSize:
+                yield dataList
+                dataList = []
       
-        return dataList
+        if len(dataList) > 0:
+            yield dataList
