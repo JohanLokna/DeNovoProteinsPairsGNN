@@ -284,7 +284,8 @@ class CartesianDistances(FeatureModule):
 
         # Compute caresian distances
         if self.computeCoords:
-            coords = torch.from_numpy(pdb.getCoordsets())
+            print("nöd ok")
+            coords = torch.from_numpy(pdb.getCoordsets(0))
         else:
             coords = self.dependencies[0].data
         dist = torch.cdist(coords, coords).squeeze(0)
