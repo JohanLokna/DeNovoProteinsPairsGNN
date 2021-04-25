@@ -96,8 +96,6 @@ class ProteinNetDataset(InMemoryDataset):
     @staticmethod
     def getGenericFeatures():
 
-        print("OK")
-
         reader = ProteinNetRecord()
 
         # Get sequence attributes
