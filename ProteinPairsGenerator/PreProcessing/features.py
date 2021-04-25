@@ -442,8 +442,6 @@ class ProteinNetRecord(FeatureModule):
         **kwargs
     ) -> torch.Tensor:
 
-        print("OKOKOKKOK\n\n\n\n")
-
         record = readPotein(inFile)
 
         if record is None:
