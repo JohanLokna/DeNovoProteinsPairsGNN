@@ -86,7 +86,10 @@ class DataGeneratorFile(DataGenerator):
         while True:
             try:
                 self.addDataPoint(dataList=dataList, inFile=inFile, iterationIdx = len(dataList))
-                return dataList
+
+                if len(dataList) % 1000 == 0:
+                    print("Completed {} samples".format(str(len(dataList))))
+
             except EOFError:
                 break
       
