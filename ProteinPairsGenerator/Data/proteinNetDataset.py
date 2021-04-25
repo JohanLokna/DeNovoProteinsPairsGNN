@@ -99,10 +99,10 @@ class ProteinNetDataset(InMemoryDataset):
         reader = ProteinNetRecord()
 
         # Get sequence attributes
-        nodeAttr = reader.primary("x")
+        nodeAttr = reader.getPrimary("x")
 
         # Construct coordinates & distances
-        coords = reader.CA("coordsCA")
+        coords = reader.getCoordsCA("coordsCA")
         cartDist = CartesianDistances(dependencies=[coords])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
 
@@ -126,6 +126,6 @@ class ProteinNetDataset(InMemoryDataset):
         )
 
         # Construct title
-        title = reader.id("title")
+        title = reader.getId("title")
 
         return [nodeAttr, edgeAttr, edgeIdx, title, coords]
