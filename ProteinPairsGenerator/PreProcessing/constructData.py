@@ -95,13 +95,13 @@ class DataGeneratorFile(DataGenerator):
         while True:
             try:
                 self.addDataPoint(dataList=dataList, inFile=inFile, iterationIdx = len(dataList))
+                count += 1
 
             except EOFError:
                 break
 
             if count % 1000 == 0:
-                print("Completed {} samples".format(str(len(dataList))))
-                count += 1
+                print("Completed {} samples".format(str(count))
 
             if not self.batchSize is None and len(dataList) >= self.batchSize:
                 yield dataList
