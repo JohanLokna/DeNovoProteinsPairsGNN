@@ -88,7 +88,7 @@ class ProteinNetDataset(InMemoryDataset):
         while True:
             newName = ''.join(choices(string.ascii_uppercase + string.digits, k=self.nameSize)) + ".pt"
             if newName not in self.processed_file_names:
-                self.processed_file_names.append(newName)
+                self.processed_file_names.append(Path(newName))
                 return
 
 
