@@ -23,7 +23,8 @@ class ProteinNetDataset(InMemoryDataset):
         features : List[FeatureModule],
         caspVersion : int = 12,
         device : str = "cuda:0" if torch.cuda.is_available() else "cpu",
-        nameSize : int = 6
+        nameSize : int = 6,
+        batchSize = 22000
     ) -> None:
 
         # Save features
@@ -49,7 +50,7 @@ class ProteinNetDataset(InMemoryDataset):
             self.newProcessedFile()
         
         # Set up preprocessing
-        gen = DataGeneratorFile(features = features)
+        gen = DataGeneratorFile(features = features, batchSize=batchSize)
 
         # Initialize super class and complete set up
         super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
