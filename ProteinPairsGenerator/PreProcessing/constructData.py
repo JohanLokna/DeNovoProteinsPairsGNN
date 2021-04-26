@@ -103,7 +103,7 @@ class DataGeneratorFile(DataGenerator):
             if count % 1000 == 0:
                 print("Completed {} samples".format(str(count))
 
-            if not self.batchSize is None and len(dataList) >= self.batchSize:
+            if (not self.batchSize is None) and (len(dataList) >= self.batchSize):
                 yield dataList
                 dataList = []
       
