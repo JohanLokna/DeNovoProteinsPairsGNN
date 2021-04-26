@@ -64,8 +64,8 @@ class ProteinNetDataset(InMemoryDataset):
         return self.processed_names_
 
     @processed_file_names.setter
-    def processed_file_names(self, value : List[Path]) -> List[Path]:
-        return self.processed_names_ = value
+    def processed_file_names(self, value : List[Path]):
+        self.processed_names_ = value
 
     @property
     def finished_processing(self) -> bool:
