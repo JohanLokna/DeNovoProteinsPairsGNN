@@ -43,6 +43,10 @@ class ProteinNetDataset(InMemoryDataset):
         else:
               self.processed_names_ = []
         
+        # To ensure processing
+        if len(self.processed_names_) == 0:
+            self.newProcessedFile()
+        
         # Set up preprocessing
         gen = DataGeneratorFile(features = features)
 
@@ -74,13 +78,13 @@ class ProteinNetDataset(InMemoryDataset):
     def finished_download(self) -> bool:
           return all([f.exists() for f in self.raw_file_names])
 
-    def newProcessedFile(self) -> Path:
+    def newProcessedFile(self):
         while True:
             newName = ''.join(choices(string.ascii_uppercase + string.digits, k=self.nameSize)) + ".pt"
             newName = self.raw_dir.joinpath(newName)
             if newName not in self.processed_file_names:
                 self.processed_file_names.append(newName)
-                return newName
+                return
 
 
     def download(self, force=False) -> None:
@@ -104,11 +108,18 @@ class ProteinNetDataset(InMemoryDataset):
             print("Processing skipped - Processed files exist")
             return
 
+        print("Processing")
+
         # Create list of DataPDB from the dataframe containing all pdbs
-        for i, dataList in enumerate(self.pre_transform(self.raw_file_names[0])):
+        for dataList in self.pre_transform(self.raw_file_names[0]):
+            
             # Coalate and save
             data, slices = self.collate(dataList)
-            torch.save((data, slices), self.newProcessedFile())
+
+            if self.processed_file_names[-1].exists():
+                self.newProcessedFile()
+
+            torch.save((data, slices), self.processed_file_names[-1])
 
     @staticmethod
     def getGenericFeatures():
