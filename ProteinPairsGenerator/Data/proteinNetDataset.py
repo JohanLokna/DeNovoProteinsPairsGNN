@@ -54,7 +54,7 @@ class ProteinNetDataset(InMemoryDataset):
 
         # Initialize super class and complete set up
         super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
-        self.data, self.slices = torch.load(self.processed_file_names[0])
+        self.data, self.slices = None, None #torch.load(self.processed_file_names[0])
 
     @property
     def processed_dir(self):
@@ -121,9 +121,10 @@ class ProteinNetDataset(InMemoryDataset):
             # Coalate and save
             data, slices = self.collate(dataList)
 
-            if self.processed_file_names[-1].exists():
+            if self.processed_dir.joinpath(self.processed_file_names[-1]):
                 self.newProcessedFile()
 
+            print(self.processed_dir.joinpath(self.processed_file_names[-1]))
             torch.save((data, slices), self.processed_dir.joinpath(self.processed_file_names[-1]))
 
     @staticmethod
