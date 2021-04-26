@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from pathlib import Path
 from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
+from random import random
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 # PyTorch imports
@@ -20,10 +21,13 @@ class ProteinNetDataset(InMemoryDataset):
         inFile : Path,
         features : List[FeatureModule],
         caspVersion : int = 12,
-        device : str = "cuda:0" if torch.cuda.is_available() else "cpu"
+        device : str = "cuda:0" if torch.cuda.is_available() else "cpu",
+        nameSize : int = 6
     ) -> None:
 
         # Save features
+        self.nameSize = nameSize
+
         self.caspVersion = caspVersion
         if not self.caspVersion in list(range(7, 12 + 1)):
             raise Exception("CASP version is invalid")
@@ -33,6 +37,10 @@ class ProteinNetDataset(InMemoryDataset):
 
         # Set up root
         root.mkdir(parents=True, exist_ok=True)
+        if root.joinpath("processed").exists():
+              self.processed_names_ = [f.name for f in a.iterdir() if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
+        else:
+              self.processed_names_ = []
         
         # Set up preprocessing
         gen = DataGeneratorFile(features = features)
@@ -47,7 +55,7 @@ class ProteinNetDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self) -> List[Path]:
-        return [self.processed_dir.joinpath("processed.pt")]
+        return self.processed_names_
 
     @property
     def finished_processing(self) -> bool:
@@ -64,6 +72,15 @@ class ProteinNetDataset(InMemoryDataset):
     @property
     def finished_download(self) -> bool:
           return all([f.exists() for f in self.raw_file_names])
+
+    def newProcessedFile(self) -> Path:
+        while True:
+            newName = ''.join(choices(string.ascii_uppercase + string.digits, k=self.nameSize)) + ".pt"
+            newName = self.raw_dir.joinpath(newName)
+            if newName not in self.processed_file_names:
+                self.processed_file_names.append(newName)
+                return newName
+
 
     def download(self, force=False) -> None:
 
@@ -87,11 +104,10 @@ class ProteinNetDataset(InMemoryDataset):
             return
 
         # Create list of DataPDB from the dataframe containing all pdbs
-        dataList = self.pre_transform(self.raw_file_names[0])
-
-        # Coalate and save
-        data, slices = self.collate(dataList)
-        torch.save((data, slices), self.processed_file_names[0])
+        for i, dataList in enumerate(self.pre_transform(self.raw_file_names[0]))
+            # Coalate and save
+            data, slices = self.collate(dataList)
+            torch.save((data, slices), self.newProcessedFile())
 
     @staticmethod
     def getGenericFeatures():
