@@ -60,7 +60,7 @@ class ProteinNetDataset(InMemoryDataset):
 
     @property
     def finished_processing(self) -> bool:
-          return all([f.exists() for f in self.processed_file_names])
+          return False
 
     @property
     def raw_dir(self):
