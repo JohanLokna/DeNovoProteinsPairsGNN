@@ -124,7 +124,7 @@ class ProteinNetDataset(InMemoryDataset):
             if self.processed_file_names[-1].exists():
                 self.newProcessedFile()
 
-            torch.save((data, slices), self.processed_file_names[-1])
+            torch.save((data, slices), self.processed_dir.joinpath(self.processed_file_names[-1]))
 
     @staticmethod
     def getGenericFeatures():
