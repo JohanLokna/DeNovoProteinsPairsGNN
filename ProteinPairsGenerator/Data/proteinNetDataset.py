@@ -38,7 +38,8 @@ class ProteinNetDataset(InMemoryDataset):
         # Set up root
         root.mkdir(parents=True, exist_ok=True)
         if root.joinpath("processed").exists():
-              self.processed_names_ = [f.name for f in a.iterdir() if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
+              self.processed_names_ = [f.name for f in root.joinpath("processed").iterdir() \
+                                       if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
         else:
               self.processed_names_ = []
         
