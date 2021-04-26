@@ -39,13 +39,13 @@ class ProteinNetDataset(InMemoryDataset):
         # Set up root
         root.mkdir(parents=True, exist_ok=True)
         if root.joinpath("processed").exists():
-              self.processed_names_ = [f.name for f in root.joinpath("processed").iterdir() \
-                                       if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
+              self.processed_file_names = [f.name for f in root.joinpath("processed").iterdir() \
+                                           if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
         else:
-              self.processed_names_ = []
+              self.processed_file_names = []
         
         # To ensure processing
-        if len(self.processed_names_) == 0:
+        if len(self.processed_file_names) == 0:
             self.newProcessedFile()
         
         # Set up preprocessing
@@ -62,6 +62,10 @@ class ProteinNetDataset(InMemoryDataset):
     @property
     def processed_file_names(self) -> List[Path]:
         return self.processed_names_
+
+    @processed_file_names.setter
+    def processed_file_names(self, value : List[Path]) -> List[Path]:
+        return self.processed_names_ = value
 
     @property
     def finished_processing(self) -> bool:
@@ -82,7 +86,6 @@ class ProteinNetDataset(InMemoryDataset):
     def newProcessedFile(self):
         while True:
             newName = ''.join(choices(string.ascii_uppercase + string.digits, k=self.nameSize)) + ".pt"
-            newName = self.raw_dir.joinpath(newName)
             if newName not in self.processed_file_names:
                 self.processed_file_names.append(newName)
                 return
