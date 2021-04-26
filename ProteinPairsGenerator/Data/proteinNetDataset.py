@@ -24,7 +24,7 @@ class ProteinNetDataset(InMemoryDataset):
         caspVersion : int = 12,
         device : str = "cuda:0" if torch.cuda.is_available() else "cpu",
         nameSize : int = 6,
-        batchSize = 22000
+        batchSize = None
     ) -> None:
 
         # Save features
