@@ -3,7 +3,8 @@ import os
 import pandas as pd
 from pathlib import Path
 from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
-from random import random
+from random import choices
+import string
 from typing import List, Mapping, Callable, Union, Generator, Any
 
 # PyTorch imports
