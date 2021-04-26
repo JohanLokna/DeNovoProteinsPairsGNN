@@ -104,7 +104,7 @@ class ProteinNetDataset(InMemoryDataset):
             return
 
         # Create list of DataPDB from the dataframe containing all pdbs
-        for i, dataList in enumerate(self.pre_transform(self.raw_file_names[0]))
+        for i, dataList in enumerate(self.pre_transform(self.raw_file_names[0])):
             # Coalate and save
             data, slices = self.collate(dataList)
             torch.save((data, slices), self.newProcessedFile())
