@@ -1,11 +1,10 @@
 # General imports
+from itertools import chain
 import os
-import pandas as pd
 from pathlib import Path
-from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
 from random import choices
 import string
-from typing import List, Mapping, Callable, Union, Generator, Any
+from typing import List, Union
 
 # PyTorch imports
 import torch
@@ -18,43 +17,45 @@ class ProteinNetDataset(InMemoryDataset):
 
     def __init__(
         self,
-        root : Union[Path, None],
-        inFile : Path,
+        root : Path,
+        subsets : List[Path],
         features : List[FeatureModule],
+        batchSize : Union[int, None] = None,
         caspVersion : int = 12,
-        device : str = "cuda:0" if torch.cuda.is_available() else "cpu",
-        nameSize : int = 6,
-        batchSize = None
     ) -> None:
 
-        # Save features
-        self.nameSize = nameSize
+        # Pre-initialize root to avoid erros
+        self.root = root
 
+        # Lenght og name used for storing batched files
+        self.nameSize = 6
+
+        # Ensure that the used casp version is valid
         self.caspVersion = caspVersion
         if not self.caspVersion in list(range(7, 12 + 1)):
             raise Exception("CASP version is invalid")
 
-        self.raw_file = inFile if inFile.exists() else \
-                        root.joinpath("raw").joinpath("casp" + str(self.caspVersion)).joinpath(inFile)
-
-        # Set up root
-        root.mkdir(parents=True, exist_ok=True)
-        if root.joinpath("processed").exists():
-              self.processed_file_names = [f.name for f in root.joinpath("processed").iterdir() \
-                                           if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
-        else:
-              self.processed_file_names = []
-        
-        # To ensure processing
-        if len(self.processed_file_names) == 0:
-            self.newProcessedFile()
+        # Differentiate between new directories to be created
+        # and existing directories
+        self.processing_queue = []
+        self.subsets = []
+        for p in subsets:
+            if not type(p) is Path:
+                raise Exception("All subsets must be of type Path")
+            if p.exists():
+                if p.is_dir():
+                    self.subsets.append(p)
+                else:
+                    raise Exception("All exisiting subsets must refer to a directory")
+            else:
+                self.processing_queue.append(self.processed_dir.joinpath(p.name))
         
         # Set up preprocessing
-        gen = DataGeneratorFile(features = features, batchSize=batchSize)
+        gen = DataGeneratorFile(features=features, batchSize=batchSize)
 
         # Initialize super class and complete set up
         super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
-        self.data, self.slices = None, None #torch.load(self.processed_file_names[0])
+        self.data, self.slices = None, None
 
     @property
     def processed_dir(self):
@@ -62,35 +63,33 @@ class ProteinNetDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self) -> List[Path]:
-        return self.processed_names_
-
-    @processed_file_names.setter
-    def processed_file_names(self, value : List[Path]):
-        self.processed_names_ = value
-
-    @property
-    def finished_processing(self) -> bool:
-          return False
+        return list(chain(*[getFilesInSubset(subset) for subset in self.subsets])) \
+             + list(chain(*[subset.joinpath("dummy") for subset in self.processing_queue]))
 
     @property
     def raw_dir(self):
         return self.root.joinpath("raw")
 
     @property
+    def casp_dir(self):
+        return self.raw_dir.joinpath("casp{}".format(self.caspVersion))
+
+    @property
     def raw_file_names(self) -> List[Path]:
-            return [self.raw_file]
+        return [self.casp_dir.joinpath(f.name) for f in self.processing_queue]
 
     @property
     def finished_download(self) -> bool:
-          return all([f.exists() for f in self.raw_file_names])
+        return all([f.exists() for f in self.raw_file_names])
 
     def newProcessedFile(self):
         while True:
             newName = ''.join(choices(string.ascii_uppercase + string.digits, k=self.nameSize)) + ".pt"
-            if newName not in self.processed_file_names:
-                self.processed_file_names.append(Path(newName))
-                return
+            if newName not in [f.name for f in self.processed_file_names]:
+                return newName
 
+    def getFilesInSubset(self, p : Path) -> List[Path]:
+        return [f for f in p.iterdir() if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
 
     def download(self, force=False) -> None:
 
@@ -116,15 +115,13 @@ class ProteinNetDataset(InMemoryDataset):
         print("Processing")
 
         # Create list of DataPDB from the dataframe containing all pdbs
-        for dataList in self.pre_transform(self.raw_file_names[0]):
-            
-            # Coalate and save
-            data, slices = self.collate(dataList)
-
-            if self.processed_dir.joinpath(self.processed_file_names[-1]):
-                self.newProcessedFile()
-
-            torch.save((data, slices), self.processed_dir.joinpath(self.processed_file_names[-1]))
+        for inPath, outDir in zip(self.raw_file_names, self.processing_queue):
+            for dataList in self.pre_transform(inPath):
+                
+                # Coalate and save
+                data, slices = self.collate(dataList)
+                newName = self.newProcessedFile()
+                torch.save((data, slices), outDir.joinpath(newName))
 
     @staticmethod
     def getGenericFeatures():
