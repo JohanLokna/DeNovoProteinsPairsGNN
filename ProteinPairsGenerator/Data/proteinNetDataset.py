@@ -66,6 +66,10 @@ class ProteinNetDataset(InMemoryDataset):
              + list(chain(*[subset.joinpath("dummy") for subset in self.processing_queue]))
 
     @property
+    def finished_processing(self) -> bool:
+        return len(self.processing_queue) == 0
+
+    @property
     def raw_dir(self):
         return self.root.joinpath("raw")
 
