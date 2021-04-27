@@ -25,6 +25,7 @@ class ProteinNetDataset(InMemoryDataset):
     ) -> None:
 
         # Pre-initialize root to avoid erros
+        root.mkdir(parents=True, exist_ok=True)
         self.root = root
 
         # Lenght og name used for storing batched files
@@ -118,6 +119,8 @@ class ProteinNetDataset(InMemoryDataset):
         for inPath, outDir in zip(self.raw_file_names, self.processing_queue):
             for dataList in self.pre_transform(inPath):
                 
+                outDir.mkdir(parents=True, exist_ok=True)
+
                 # Coalate and save
                 data, slices = self.collate(dataList)
                 newName = self.newProcessedFile()
