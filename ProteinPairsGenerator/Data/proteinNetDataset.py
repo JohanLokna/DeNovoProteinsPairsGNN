@@ -41,8 +41,6 @@ class ProteinNetDataset(InMemoryDataset):
         self.processing_queue = []
         self.subsets = []
         for p in subsets:
-            if not type(p) is Path:
-                raise Exception("All subsets must be of type Path")
             if p.exists():
                 if p.is_dir():
                     self.subsets.append(p)
