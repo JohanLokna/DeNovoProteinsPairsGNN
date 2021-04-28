@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch_geometric.nn.inits import reset
 
 # Local imports
-from . import scatter_
+from ProteinPairsGenerator.StrokachModel.scatter import scatter_
 
 
 class EdgeConvMod(torch.nn.Module):
