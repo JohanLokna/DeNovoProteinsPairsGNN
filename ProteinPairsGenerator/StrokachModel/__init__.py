@@ -1,1 +1,1 @@
-from .edge_conv_mod import *
+from model import Net as StokachModel

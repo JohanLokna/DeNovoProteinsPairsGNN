@@ -1,11 +1,14 @@
+# General imports
 import copy
 
+# Torch imports
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.modules.container import ModuleList
 
-from ProteinPairsGenerator.nn import EdgeConvBatch, EdgeConvMod
+# Local imports
+from ProteinPairsGenerator.StrokachModel.edge_conv_mod import EdgeConvBatch, EdgeConvMod
 
 
 def _get_clones(module, N):
@@ -24,7 +27,7 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
 
 
 class Net(nn.Module):
-    def __init__(self, x_input_size, adj_input_size, x_feat_size, hidden_size, output_size, N = 3):
+    def __init__(self, x_input_size, adj_input_size, hidden_size, output_size, N = 3):
         super().__init__()
 
         self.embed_x = nn.Sequential(
@@ -43,41 +46,27 @@ class Net(nn.Module):
             if adj_input_size
             else None
         )
-        self.embed_feat = (
-            nn.Sequential(
-                nn.Linear(x_feat_size, hidden_size),
-                nn.ReLU(),
-                nn.Linear(hidden_size, hidden_size),
-                nn.LayerNorm(hidden_size),
-            )
-            if x_feat_size
-            else None
-        )
-        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size) + 2 * bool(x_feat_size)) * hidden_size, 2 * hidden_size, hidden_size)
+        self.graph_conv_0 = get_graph_conv_layer((2 + bool(adj_input_size)) * hidden_size, 2 * hidden_size, hidden_size)
 
         graph_conv = get_graph_conv_layer(3 * hidden_size, 2 * hidden_size, hidden_size)
         self.graph_conv = _get_clones(graph_conv, N)
 
         self.linear_out = nn.Linear(hidden_size, output_size)
 
-    def forward(self, x, edge_index, edge_attr, x_feat = None):
+    def forward(self, x, edge_index, edge_attr):
 
         edge_attr = self.embed_adj(edge_attr) if edge_attr is not None else None
 
         x = self.embed_x(x)
-        if x_feat is not None:
-            x_feat = self.embed_feat(x_feat)
-            x_out, edge_attr_out = self.graph_conv_0(torch.cat([x, x_feat], dim=-1), edge_index, edge_attr)
-        else:
-            x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
+        x_out, edge_attr_out = self.graph_conv_0(x, edge_index, edge_attr)
 
         x = x + x_out
         edge_attr = (edge_attr + edge_attr_out) if edge_attr is not None else edge_attr_out
 
-        for i in range(3):
+        for graph_layer in self.graph_conv:
             x = F.relu(x)
             edge_attr = F.relu(edge_attr)
-            x_out, edge_attr_out = self.graph_conv[i](x, edge_index, edge_attr)
+            x_out, edge_attr_out = graph_layer(x, edge_index, edge_attr)
             x = x + x_out
             edge_attr = edge_attr + edge_attr_out
 

@@ -14,7 +14,7 @@ from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
                                                     CDRS_HEAVY, CDRS_LIGHT, \
                                                     CHAINS_MAP
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
-from .proteinNetParser import readPotein
+from ProteinPairsGenerator.PreProcessing.proteinNetParser import readPotein
 
 
 class FeatureModule:
