@@ -3,9 +3,6 @@ import torch
 import torch.nn as nn
 from torch_geometric.nn.inits import reset
 
-# Local imports
-from ProteinPairsGenerator.StrokachModel.scatter import scatter_
-
 
 class EdgeConvMod(torch.nn.Module):
     def __init__(self, nn, aggr="max"):
@@ -27,7 +24,7 @@ class EdgeConvMod(torch.nn.Module):
         else:
             out = torch.cat([x[row], x[col], edge_attr], dim=-1)
         out = self.nn(out)
-        x = scatter_(self.aggr, out, row, dim_size=x.size(0))
+        x = torch.scatter(self.aggr, out, row, dim_size=x.size(0), reduce='add')
 
         return x, out
 
