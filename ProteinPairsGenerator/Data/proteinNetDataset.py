@@ -12,11 +12,12 @@ from typing import List, Union, Tuple
 import torch
 from torch.utils.data import Subset
 from torch_geometric.data import Dataset
+import pytorch_lightning as pl
 
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
 
-class ProteinNetDataset(Dataset):
+class ProteinNetDataset(Dataset, pl.LightningModule):
 
     def __init__(
         self,
@@ -26,6 +27,10 @@ class ProteinNetDataset(Dataset):
         batchSize : Union[int, None] = None,
         caspVersion : int = 12,
     ) -> None:
+
+        # Initialize Ligthning
+        super(pl.LightningModule, self).__init__()
+
 
         # Pre-initialize root to avoid erros
         root.mkdir(parents=True, exist_ok=True)
@@ -56,7 +61,7 @@ class ProteinNetDataset(Dataset):
         gen = DataGeneratorFile(features=features, batchSize=batchSize)
 
         # Initialize super class and complete set up
-        super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
+        super(Dataset, self).__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
 
         # Se up indexing
         self.setUpIndexing()
