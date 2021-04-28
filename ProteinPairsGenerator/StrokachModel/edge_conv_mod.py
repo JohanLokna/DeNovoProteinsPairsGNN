@@ -1,7 +1,10 @@
+# Pytorch imports
 import torch
 import torch.nn as nn
 from torch_geometric.nn.inits import reset
-from torch_geometric.utils import scatter_
+
+# Local imports
+from . import scatter_
 
 
 class EdgeConvMod(torch.nn.Module):
