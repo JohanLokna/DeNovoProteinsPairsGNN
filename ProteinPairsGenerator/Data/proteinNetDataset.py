@@ -1,19 +1,22 @@
 # General imports
-from itertools import chain
+import copy
+from itertools import chain, repeat, product
 import os
 from pathlib import Path
 from random import choices
+from shutil import copyfile
 import string
-from typing import List, Union
+from typing import List, Union, Tuple
 
 # PyTorch imports
 import torch
-from torch_geometric.data import InMemoryDataset
+from torch.utils.data import Subset
+from torch_geometric.data import Dataset
 
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
 
-class ProteinNetDataset(InMemoryDataset):
+class ProteinNetDataset(Dataset):
 
     def __init__(
         self,
@@ -48,13 +51,18 @@ class ProteinNetDataset(InMemoryDataset):
                     raise Exception("All exisiting subsets must refer to a directory")
             else:
                 self.processing_queue.append(self.processed_dir.joinpath(p.name))
-        
+
         # Set up preprocessing
         gen = DataGeneratorFile(features=features, batchSize=batchSize)
 
         # Initialize super class and complete set up
         super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
-        self.data, self.slices = None, None
+
+        # Se up indexing
+        self.setUpIndexing()
+
+        # Load first file
+        self.pageFault(0, 0)
 
     @property
     def processed_dir(self):
@@ -62,28 +70,32 @@ class ProteinNetDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self) -> List[Path]:
-        return list(chain(*[getFilesInSubset(subset) for subset in self.subsets])) \
-             + list(chain(*[subset.joinpath("dummy") for subset in self.processing_queue]))
+        return list(chain(*[self.getFilesInSubset(subset) for subset in self.subsets])) \
+             + [subset.joinpath("dummy") for subset in self.processing_queue]
 
     @property
     def finished_processing(self) -> bool:
         return len(self.processing_queue) == 0
 
     @property
-    def raw_dir(self):
-        return self.root.joinpath("raw")
-
-    @property
     def casp_dir(self):
         return self.raw_dir.joinpath("casp{}".format(self.caspVersion))
 
     @property
+    def raw_dir(self):
+        return self.root.joinpath("raw")
+
+    @property
     def raw_file_names(self) -> List[Path]:
-        return [self.casp_dir.joinpath(f.name) for f in self.processing_queue]
+        return [self.getCaspFile(f) for f in self.processing_queue]
 
     @property
     def finished_download(self) -> bool:
         return all([f.exists() for f in self.raw_file_names])
+
+    @property
+    def meta_files(self) -> List[str]:
+        return ["pre_transform.pt", "pre_filter.pt"]
 
     def newProcessedFile(self):
         while True:
@@ -92,7 +104,10 @@ class ProteinNetDataset(InMemoryDataset):
                 return newName
 
     def getFilesInSubset(self, p : Path) -> List[Path]:
-        return [f for f in p.iterdir() if str(f.name) not in ["pre_transform.pt", "pre_filter.pt"]]
+        return [f for f in p.iterdir() if str(f.name) not in self.meta_files]
+
+    def getCaspFile(self, p : Path) -> Path:
+        return self.casp_dir.joinpath(p.name)
 
     def download(self, force=False) -> None:
 
@@ -115,18 +130,104 @@ class ProteinNetDataset(InMemoryDataset):
             print("Processing skipped - Processed files exist")
             return
 
-        print("Processing")
-
         # Create list of DataPDB from the dataframe containing all pdbs
-        for inPath, outDir in zip(self.raw_file_names, self.processing_queue):
-            for dataList in self.pre_transform(inPath):
-                
-                outDir.mkdir(parents=True, exist_ok=True)
+        while len(self.processing_queue) > 0:
 
-                # Coalate and save
+            # Get input file and output directory
+            outDir = self.processing_queue.pop()
+            inPath = self.getCaspFile(outDir)
+
+            # Make output directory
+            outDir.mkdir(parents=True, exist_ok=True)
+
+            # Iterate over chunks
+            for dataList in self.pre_transform(inPath):
+
+                # Coalate and save each chunk
                 data, slices = self.collate(dataList)
                 newName = self.newProcessedFile()
                 torch.save((data, slices), outDir.joinpath(newName))
+
+            # Add to finished subsets
+            self.subsets.append(outDir)
+
+    def setUpIndexing(self):
+        self.indexingDict = {}
+        self.subsetMapping = {}
+        self.filesMapping = {}
+        self.totalLength = 0
+
+        for i, subset in enumerate(self.subsets):
+
+            # Update bijective mapping
+            self.subsetMapping[i] = subset
+            self.subsetMapping[subset] = i
+
+            localDict = {}
+            for j, f in enumerate(self.getFilesInSubset(subset)):
+                _, slices = torch.load(f)
+                nElements = list(slices.values())[0].shape[0] - 1
+                localDict[j] = (f, nElements)
+                self.totalLength += nElements
+                self.filesMapping[(i, j)] = f
+                self.filesMapping[f] = (i, j)
+          
+            # Update indexing dict
+            self.indexingDict[i] = localDict
+
+    def pageFault(self, subsetIdx, fileIdx):
+        f = self.filesMapping[(subsetIdx, fileIdx)]
+        self.data, self.slices = torch.load(f)
+        self.subsetIdx, self.fileIdx = subsetIdx, fileIdx
+
+    def len(self):
+        return self.totalLength
+
+    def get(self, idx):
+        return self.index_select(idx)
+
+    def index_select(self, allIdx):
+
+        subsetIdx, fileIdx, idx = allIdx
+        if (subsetIdx, fileIdx) != (self.subsetIdx, self.fileIdx):
+            self.pageFault(subsetIdx, fileIdx)
+        
+        data = self.data.__class__()
+        for key in self.data.keys:
+            item, slices = self.data[key], self.slices[key]
+            start, end = slices[idx].item(), slices[idx + 1].item()
+            if torch.is_tensor(item):
+                s = list(repeat(slice(None), item.dim()))
+                cat_dim = self.data.__cat_dim__(key, item)
+                if cat_dim is None:
+                    cat_dim = 0
+                s[cat_dim] = slice(start, end)
+            elif start + 1 == end:
+                s = slices[start]
+            else:
+                s = slice(start, end)
+            data[key] = item[s]
+
+        return data
+
+    def getSubsetIndecies(self, subset : Path) -> List[Tuple]:
+        indecies = []
+        for f in self.getFilesInSubset(subset):
+            i, j = self.filesMapping[f]
+            _, n = self.indexingDict[i][j]
+            indecies += [(i, j, k) for k in range(n)]
+        return indecies
+
+    def getSubset(self, subset : Path) -> Subset:
+        return Subset(self, self.getSubsetIndecies(subset))
+
+    @property
+    def __indices__(self):
+        return list(chain(*[self.getSubsetIndecies(subset) for subset in self.subsets]))
+
+    @__indices__.setter
+    def __indices__(self, value):
+        pass
 
     @staticmethod
     def getGenericFeatures():
@@ -134,7 +235,7 @@ class ProteinNetDataset(InMemoryDataset):
         reader = ProteinNetRecord()
 
         # Get sequence attributes
-        nodeAttr = reader.getPrimary("x")
+        nodeAttr = reader.getPrimary("seq")
 
         # Construct coordinates & distances
         coords = reader.getCoordsCA("coordsCA")
@@ -164,3 +265,46 @@ class ProteinNetDataset(InMemoryDataset):
         title = reader.getId("title")
 
         return [nodeAttr, edgeAttr, edgeIdx, title, coords]
+
+    @staticmethod
+    def collate(data_list):
+        """Collates a python list of data objects to the internal storage format"""
+        keys = data_list[0].keys
+        data = data_list[0].__class__()
+
+        for key in keys:
+            data[key] = []
+        slices = {key: [0] for key in keys}
+
+        for item, key in product(data_list, keys):
+            data[key].append(item[key])
+            if isinstance(item[key], torch.Tensor) and item[key].dim() > 0:
+                cat_dim = item.__cat_dim__(key, item[key])
+                cat_dim = 0 if cat_dim is None else cat_dim
+                s = slices[key][-1] + item[key].size(cat_dim)
+            else:
+                s = slices[key][-1] + 1
+            slices[key].append(s)
+
+        if hasattr(data_list[0], '__num_nodes__'):
+            data.__num_nodes__ = []
+            for item in data_list:
+                data.__num_nodes__.append(item.num_nodes)
+
+        for key in keys:
+            item = data_list[0][key]
+            if isinstance(item, torch.Tensor) and len(data_list) > 1:
+                if item.dim() > 0:
+                    cat_dim = data.__cat_dim__(key, item)
+                    cat_dim = 0 if cat_dim is None else cat_dim
+                    data[key] = torch.cat(data[key], dim=cat_dim)
+                else:
+                    data[key] = torch.stack(data[key])
+            elif isinstance(item, torch.Tensor):  # Don't duplicate attributes...
+                data[key] = data[key][0]
+            elif isinstance(item, int) or isinstance(item, float):
+                data[key] = torch.tensor(data[key])
+
+            slices[key] = torch.tensor(slices[key], dtype=torch.long)
+
+        return data, slices
