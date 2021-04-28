@@ -29,7 +29,7 @@ class ProteinNetDataset(Dataset, pl.LightningModule):
     ) -> None:
 
         # Initialize Ligthning
-        super(pl.LightningModule).__init__()
+        pl.LightningModule.__init__(self)
 
 
         # Pre-initialize root to avoid erros
@@ -61,7 +61,7 @@ class ProteinNetDataset(Dataset, pl.LightningModule):
         gen = DataGeneratorFile(features=features, batchSize=batchSize)
 
         # Initialize super class and complete set up
-        super(Dataset).__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
+        Dataset.__init__(self, root=root, transform=None, pre_transform=gen, pre_filter=None)
 
         # Se up indexing
         self.setUpIndexing()
