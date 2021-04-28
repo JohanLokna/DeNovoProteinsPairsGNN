@@ -1,1 +1,1 @@
-from model import Net as StokachModel
+from .model import Net as StokachModel
