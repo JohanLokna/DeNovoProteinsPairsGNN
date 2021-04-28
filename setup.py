@@ -26,9 +26,9 @@ setup(
       "torch-scatter",
       "torch-sparse",
       "torch-geometric==1.4.3",
+      "pytorch_lightning==1.1.0",
       "mmtf-python==1.1.2",
       "prody",
-      "python-constraint",
       "pandas",
       "mlflow",
       "tqdm"
