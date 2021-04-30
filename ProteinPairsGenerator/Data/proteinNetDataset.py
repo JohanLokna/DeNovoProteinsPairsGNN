@@ -1,6 +1,7 @@
 # General imports
 import copy
 from itertools import chain, repeat, product
+import json
 import os
 from pathlib import Path
 from random import choices
@@ -163,14 +164,22 @@ class ProteinNetDataset(Dataset):
             self.subsetMapping[i] = subset
             self.subsetMapping[subset] = i
 
-            localDict = {}
-            for j, f in enumerate(self.getFilesInSubset(subset)):
-                _, slices = torch.load(f)
-                nElements = list(slices.values())[0].shape[0] - 1
-                localDict[j] = (f, nElements)
-                self.totalLength += nElements
-                self.filesMapping[(i, j)] = f
-                self.filesMapping[f] = (i, j)
+            # Test if meta data is provided
+            metaData = subset.joinpath("subset.json")
+            if metaData.exists():
+                localDict = json.load(metaData.open())
+
+            # Otherwise construct the metadata
+            else:
+                localDict = {}
+                for j, f in enumerate(self.getFilesInSubset(subset)):
+                    _, slices = torch.load(f)
+                    nElements = list(slices.values())[0].shape[0] - 1
+                    localDict[j] = (f, nElements)
+                    self.totalLength += nElements
+                    self.filesMapping[(i, j)] = f
+                    self.filesMapping[f] = (i, j)
+                json.dump(localDict, metaData.open())
           
             # Update indexing dict
             self.indexingDict[i] = localDict
