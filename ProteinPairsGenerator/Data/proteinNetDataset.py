@@ -180,7 +180,7 @@ class ProteinNetDataset(Dataset):
                     self.filesMapping[(i, j)] = f
                     self.filesMapping[f] = (i, j)
                 print("KKK")
-                json.dump(localDict, metaData.open(mode='r'))
+                json.dump(localDict, metaData.open(mode="w"))
           
             # Update indexing dict
             self.indexingDict[i] = localDict
