@@ -12,12 +12,11 @@ from typing import List, Union, Tuple
 import torch
 from torch.utils.data import Subset
 from torch_geometric.data import Dataset
-import pytorch_lightning as pl
 
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
 
-class ProteinNetDataset(Dataset, pl.LightningModule):
+class ProteinNetDataset(Dataset):
 
     def __init__(
         self,
@@ -27,10 +26,6 @@ class ProteinNetDataset(Dataset, pl.LightningModule):
         batchSize : Union[int, None] = None,
         caspVersion : int = 12,
     ) -> None:
-
-        # Initialize Ligthning
-        pl.LightningModule.__init__(self)
-
 
         # Pre-initialize root to avoid erros
         root.mkdir(parents=True, exist_ok=True)
@@ -241,6 +236,12 @@ class ProteinNetDataset(Dataset, pl.LightningModule):
 
         # Get sequence attributes
         nodeAttr = reader.getPrimary("seq")
+
+        # Restrict sequence lenght
+        constraint = Constraint(
+            constraint = lambda seq: len(seq) < 1500,
+            dependecies = [nodeAttr]
+        )
 
         # Construct coordinates & distances
         coords = reader.getCoordsCA("coordsCA")

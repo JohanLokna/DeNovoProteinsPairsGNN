@@ -23,6 +23,7 @@ class FeatureModule:
         self, 
         featureName : str,
         dependencies : List = [],
+        save : bool = True
     ) -> None:
 
         # Set up structure
@@ -471,3 +472,25 @@ class ProteinNetRecord(FeatureModule):
 
     def preFilter(self, *args, **kwargs) -> bool:
         return "inFile" in kwargs
+
+class Constraint(FeatureModule):
+
+    def __init__(
+        self,
+        constraint,
+        featureName : str = "constraint",
+        dependecies : List[FeatureModule] = []
+    ) -> None:
+
+        super().__init__(featureName, save = False)
+        self.constraint = constraint
+
+    def forward(
+        *args,
+        **kwargs
+    ) -> torch.Tensor:
+        pass
+        
+    def preFilter(self, *args, **kwargs) -> bool:
+        return self.runDependencies(*args, **kwargs) \
+           and self.constraint(*[d.data for d in self.dependencies])
