@@ -178,7 +178,8 @@ class ProteinNetDataset(Dataset):
                     localDict[j] = (f.name, nElements)
                 json.dump(localDict, metaData.open(mode="w"))
           
-            for j, (name, nElements) in enumerate(localDict.values()):
+            localDict =  {int(k): v for k, v in localDict.items()}
+            for j, (name, nElements) in localDict.items():
                 f = subset.joinpath(name)
                 self.totalLength += nElements
                 self.filesMapping[(i, j)] = f
