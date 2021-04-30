@@ -220,12 +220,13 @@ class ProteinNetDataset(Dataset):
 
         return data
 
-    def getSubsetIndecies(self, subset : Path) -> List[Tuple]:
+    def getSubsetIndecies(self, allSubsets : Union[Path, List[Path]]) -> List[Tuple]:
         indecies = []
-        for f in self.getFilesInSubset(subset):
-            i, j = self.filesMapping[f]
-            _, n = self.indexingDict[i][j]
-            indecies += [(i, j, k) for k in range(n)]
+        for subset in allSubsets if type(allSubsets) is list else [allSubsets]:
+            for f in self.getFilesInSubset(subset):
+                i, j = self.filesMapping[f]
+                _, n = self.indexingDict[i][j]
+                indecies += [(i, j, k) for k in range(n)]
         return indecies
 
     def getSubset(self, subset : Path) -> Subset:
