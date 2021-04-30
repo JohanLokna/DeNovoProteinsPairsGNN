@@ -175,14 +175,14 @@ class ProteinNetDataset(Dataset):
                 for j, f in enumerate(self.getFilesInSubset(subset)):
                     _, slices = torch.load(f)
                     nElements = list(slices.values())[0].shape[0] - 1
-                    localDict[j] = (f, nElements)
-                    self.totalLength += nElements
-                    self.filesMapping[(i, j)] = f
-                    self.filesMapping[f] = (i, j)
-                print("KKK")
+                    localDict[j] = (f.name, nElements)
                 json.dump(localDict, metaData.open(mode="w"))
           
-            # Update indexing dict
+            for j, (name, nElements) in enumerate(localDict.values()):
+                f = subset.joinpath(name)
+                self.totalLength += nElements
+                self.filesMapping[(i, j)] = f
+                self.filesMapping[f] = (i, j)
             self.indexingDict[i] = localDict
 
     def pageFault(self, subsetIdx, fileIdx):
