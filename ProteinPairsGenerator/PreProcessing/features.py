@@ -29,6 +29,7 @@ class FeatureModule:
         # Set up structure
         self.featureName = featureName
         self.dependencies = dependencies
+        self.save = save
         self.clear()
 
     @property
