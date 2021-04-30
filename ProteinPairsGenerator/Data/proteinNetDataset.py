@@ -96,7 +96,7 @@ class ProteinNetDataset(Dataset):
 
     @property
     def meta_files(self) -> List[str]:
-        return ["pre_transform.pt", "pre_filter.pt"]
+        return ["pre_transform.pt", "pre_filter.pt", "subset.json"]
 
     def newProcessedFile(self):
         while True:
