@@ -179,7 +179,8 @@ class ProteinNetDataset(Dataset):
                     self.totalLength += nElements
                     self.filesMapping[(i, j)] = f
                     self.filesMapping[f] = (i, j)
-                json.dump(localDict, metaData.open())
+                print("KKK")
+                json.dump(localDict, metaData.open(mode='r'))
           
             # Update indexing dict
             self.indexingDict[i] = localDict
