@@ -251,7 +251,7 @@ class ProteinNetDataset(Dataset):
 
         # Restrict sequence lenght
         constraint = Constraint(
-            constraint = lambda seq: len(seq) < 1500,
+            constraint = lambda seq: len(seq) < 1000,
             dependecies = [nodeAttr]
         )
 
@@ -282,7 +282,7 @@ class ProteinNetDataset(Dataset):
         # Construct title
         title = reader.getId("title")
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, coords]
+        return [nodeAttr, edgeAttr, edgeIdx, title, coords, constraint]
 
     @staticmethod
     def collate(data_list):
