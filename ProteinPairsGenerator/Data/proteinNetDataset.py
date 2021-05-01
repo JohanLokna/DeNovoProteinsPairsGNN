@@ -278,7 +278,7 @@ class ProteinNetDataset(Dataset):
 
         # Restrict sequence lenght
         constraint = Constraint(
-            constraint = lambda attr: attr.shape[0] < 200000:,
+            constraint = lambda attr: attr.shape[0] < 200000,
             dependecies = [edgeAttr]
         )
 
