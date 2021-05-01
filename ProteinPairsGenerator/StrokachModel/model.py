@@ -9,6 +9,7 @@ from torch.nn.modules.container import ModuleList
 
 # Local imports
 from ProteinPairsGenerator.StrokachModel.edge_conv_mod import EdgeConvBatch, EdgeConvMod
+from ProteinPairsGenerator.BERTModel import BERTModel
 
 
 def _get_clones(module, N):
@@ -26,7 +27,7 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
     return graph_conv
 
 
-class Net(nn.Module):
+class Net(BERTModel):
     def __init__(self, x_input_size, adj_input_size, hidden_size, output_size, N = 3):
         super().__init__()
 

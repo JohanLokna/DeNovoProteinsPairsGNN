@@ -1,3 +1,3 @@
-__all__ = ["utils", "Data", "PreProcessing"]
+__all__ = ["utils", "Data", "PreProcessing", "BERTModel", "StrokachModel"]
 
 from . import *

@@ -4,6 +4,11 @@ def read_md(file):
     with open(file) as fin:
         return fin.read()
 
+class InstallCommand(install):
+    def run(self):
+        install.run(self)
+        # PUT YOUR POST-INSTALL SCRIPT HERE or CALL A FUNCTION
+
 setup(
     name="DeNovoProteinsPairsGNN",
     version="0.0.1",
@@ -30,3 +35,5 @@ setup(
       "tqdm"
     ]
 )
+
+
