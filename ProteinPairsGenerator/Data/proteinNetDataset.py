@@ -249,12 +249,6 @@ class ProteinNetDataset(Dataset):
         # Get sequence attributes
         nodeAttr = reader.getPrimary("seq")
 
-        # Restrict sequence lenght
-        constraint = Constraint(
-            constraint = lambda seq: len(seq) < 1000,
-            dependecies = [nodeAttr]
-        )
-
         # Construct coordinates & distances
         coords = reader.getCoordsCA("coordsCA")
         cartDist = CartesianDistances(dependencies=[coords])
@@ -281,6 +275,12 @@ class ProteinNetDataset(Dataset):
 
         # Construct title
         title = reader.getId("title")
+
+        # Restrict sequence lenght
+        constraint = Constraint(
+            constraint = lambda attr: attr.shape[0] < 200000:,
+            dependecies = [edgeAttr]
+        )
 
         return [nodeAttr, edgeAttr, edgeIdx, title, coords, constraint]
 
