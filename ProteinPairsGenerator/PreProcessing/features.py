@@ -480,10 +480,10 @@ class Constraint(FeatureModule):
         self,
         constraint,
         featureName : str = "constraint",
-        dependecies : List[FeatureModule] = []
+        dependencies : List[FeatureModule] = []
     ) -> None:
 
-        super().__init__(featureName, dependecies=dependecies, save = False)
+        super().__init__(featureName, dependencies=dependencies, save = False)
         self.constraint = constraint
 
     def forward(
