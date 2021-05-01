@@ -487,12 +487,12 @@ class Constraint(FeatureModule):
         self.constraint = constraint
 
     def forward(
+        self,
         *args,
         **kwargs
     ) -> torch.Tensor:
         pass
         
     def preFilter(self, *args, **kwargs) -> bool:
-        print(kwargs)
         return self.runDependencies(*args, **kwargs) \
            and self.constraint(*[d.data for d in self.dependencies])
