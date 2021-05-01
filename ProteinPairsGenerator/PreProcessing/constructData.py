@@ -94,7 +94,7 @@ class DataGeneratorFile(DataGenerator):
         count = 0
         while True:
             try:
-                self.addDataPoint(dataList=dataList, inFile=inFile, iterationIdx = len(dataList))
+                self.addDataPoint(dataList=dataList, inFile=inFile, iterationIdx = count)
                 count += 1
 
             except EOFError:
