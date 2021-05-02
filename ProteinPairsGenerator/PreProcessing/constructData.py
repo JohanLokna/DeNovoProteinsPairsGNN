@@ -1,4 +1,5 @@
 import math
+import os
 from multiprocessing import Pool
 from typing import List, Union, IO, Generator
 
@@ -7,7 +8,7 @@ from .features import FeatureModule
 from ProteinPairsGenerator.Data import GeneralData
 
 # Colab dependent imports
-if 'google.colab' in str(get_ipython()):
+if ("get_ipython" in dir(os)) and ("google.colab" in str(get_ipython())):
   from tqdm.notebook import tqdm
 else:
   from tqdm import tqdm
