@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 import pytorch_lightning as pl
 
 # Local imports
-from ProteinPairsGenerator.StrokachModel import StrokachLoader
+from .loader import StrokachLoader
 
 
 class StrokachDataModule(pl.LightningDataModule):

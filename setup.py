@@ -28,7 +28,8 @@ setup(
       "pandas",
       "mlflow",
       "tqdm",
-      "biopython"
+      "biopython",
+      "Cython"
     ]
 )
 
