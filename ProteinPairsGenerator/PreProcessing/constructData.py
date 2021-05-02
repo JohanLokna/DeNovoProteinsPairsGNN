@@ -8,7 +8,7 @@ from .features import FeatureModule
 from ProteinPairsGenerator.Data import GeneralData
 
 # Colab dependent imports
-if ("get_ipython" in dir(os)) and ("google.colab" in str(get_ipython())):
+if "get_ipython" in dir(os):
   from tqdm.notebook import tqdm
 else:
   from tqdm import tqdm
