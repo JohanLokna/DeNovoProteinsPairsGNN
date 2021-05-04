@@ -31,13 +31,13 @@ class IngrahamDataModule(pl.LightningDataModule):
         pass
 
     def train_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.trainSet), batch_size=self.batchSize)
+        return IngrahamLoader(self.dataset.getSubset(self.trainSet), batch_size=self.batchSize)
 
     def val_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.valSet), batch_size=self.batchSize)
+        return IngrahamLoader(self.dataset.getSubset(self.valSet), batch_size=self.batchSize)
 
     def test_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.testSet), batch_size=self.batchSize)
+        return IngrahamLoader(self.dataset.getSubset(self.testSet), batch_size=self.batchSize)
 
     def transfer_batch_to_device(self, batch, device):
         return [tuple((X.to(device=device), S.to(device=device), l, v.to(device=device)), y.to(device=device), mask.to(device=device)) \
