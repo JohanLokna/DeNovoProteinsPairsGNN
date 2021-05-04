@@ -1,3 +1,3 @@
-from .model import Net as StrokachModel
-from .datamodule import StrokachDataModule
-from .loader import StrokachLoader
+from .struct2seq import Struct2Seq as IngrahamModel
+from .datamodule import IngrahamDataModule
+from .loader import IngrahamLoader
