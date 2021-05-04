@@ -250,8 +250,10 @@ class ProteinNetDataset(Dataset):
         nodeAttr = reader.getPrimary("seq")
 
         # Construct coordinates & distances
-        coords = reader.getCoordsCA("coordsCA")
-        cartDist = CartesianDistances(dependencies=[coords])
+        coordsCA = reader.getCoordsCA("coordsCA")
+        coordsN = reader.getCoordsN("coordsN")
+        coordsC = reader.getCoordsC("coordsC")
+        cartDist = CartesianDistances(dependencies=[coordsCA])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
 
         # Construct edge relations
@@ -268,9 +270,14 @@ class ProteinNetDataset(Dataset):
         stackedDist = StackedFeatures(
             dependencies = [cartDist, seqDist]
         )
-        edgeAttr = EdgeAttributes(
-            featureName = "edge_attr",
+        edgeAttrUnnormal = EdgeAttributes(
             dependencies = [stackedDist, closeNeighbours]
+        )
+        edgeAttr = Normalize(
+            bias = torch.Tensor([7.5759e+02, 1.4498e-06]), # Should be zero in second coordinate but roundoff error
+            scale = torch.Tensor([368.0696, 116.6342]),
+            featureName = "edge_attr",
+            dependencies = [edgeAttrUnnormal]
         )
 
         # Construct title
@@ -282,7 +289,7 @@ class ProteinNetDataset(Dataset):
             dependencies = [edgeAttr]
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, coords, constraint]
+        return [nodeAttr, edgeAttr, edgeIdx, title, coordsCA, coordsN, coordsC, constraint]
 
     @staticmethod
     def collate(data_list):
