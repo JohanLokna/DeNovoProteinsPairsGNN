@@ -11,7 +11,9 @@ import torch.nn.functional as F
 from .self_attention import *
 from .protein_features import ProteinFeatures
 
-class Struct2Seq(nn.Module):
+from ProteinPairsGenerator.BERTModel import BERTModel
+
+class Struct2Seq(BERTModel):
     def __init__(
         self, 
         in_size, 
