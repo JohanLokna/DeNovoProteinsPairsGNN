@@ -40,5 +40,5 @@ class IngrahamDataModule(pl.LightningDataModule):
         return StrokachLoader(self.dataset.getSubset(self.testSet), batch_size=self.batchSize)
 
     def transfer_batch_to_device(self, batch, device):
-        return [(X.to(device=device), S.to(device=device), l, v.to(device=device)), y.to(device=device), mask.to(device=device) \
+        return [tuple((X.to(device=device), S.to(device=device), l, v.to(device=device)), y.to(device=device), mask.to(device=device)) \
                 for (X, S, l, v), y, mask in batch]
