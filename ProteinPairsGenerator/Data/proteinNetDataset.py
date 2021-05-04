@@ -283,19 +283,13 @@ class ProteinNetDataset(Dataset):
         # Construct title
         title = reader.getId("title")
 
-        # Coords
-        coords = StackedFeatures(
-            featureName = "coordsNCaC",
-            dependencies = [coordsN, coordsCA, coordsC]
-        )
-
         # Restrict sequence lenght
         constraint = Constraint(
             constraint = lambda attr: attr.shape[0] < 200000,
             dependencies = [edgeAttr]
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, coords, constraint]
+        return [nodeAttr, edgeAttr, edgeIdx, title, coordsCA, coordsN, coordsC, constraint]
 
     @staticmethod
     def collate(data_list):
