@@ -6,6 +6,8 @@ from typing import Union, List
 from torch.utils.data import Dataset
 import pytorch_lightning as pl
 
+# Local imports
+from ProteinPairsGenerator.IngrahamModel import IngrahamLoader
 
 class IngrahamDataModule(pl.LightningDataModule):
 
