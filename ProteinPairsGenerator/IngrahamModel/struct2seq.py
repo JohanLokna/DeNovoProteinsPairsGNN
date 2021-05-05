@@ -168,9 +168,7 @@ class Struct2Seq(BERTModel):
 
     def configure_optimizers(self):
         optimizer = NoamOpt.getStandard(self.parameters(), self.hidden_dim)
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", verbose=True)
         return {
            'optimizer': optimizer,
-           'lr_scheduler': scheduler,
            'monitor': 'valLoss'
         }
