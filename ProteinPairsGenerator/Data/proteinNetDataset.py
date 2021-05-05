@@ -293,7 +293,7 @@ class ProteinNetDataset(Dataset):
             dependencies = [nodeAttr]
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, coordsCA, coordsN, coordsC, constraint]
+        return [nodeAttr, edgeAttr, edgeIdx, title, coordsCA, coordsN, coordsC, constraintMaxSize, constraintMinLength]
 
     @staticmethod
     def collate(data_list):
