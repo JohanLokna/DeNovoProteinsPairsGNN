@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+import pytorch_lightning as pl
 import numpy as np
 import copy
 
@@ -11,7 +12,7 @@ from matplotlib import pyplot as plt
 
 from .self_attention import gather_edges, gather_nodes, Normalize
 
-class PositionalEncodings(nn.Module):
+class PositionalEncodings(pl.LightningModule):
     def __init__(self, num_embeddings, period_range=[2,1000]):
         super(PositionalEncodings, self).__init__()
         self.num_embeddings = num_embeddings
@@ -41,7 +42,7 @@ class PositionalEncodings(nn.Module):
         E = torch.cat((torch.cos(angles), torch.sin(angles)), -1)
         return E
 
-class ProteinFeatures(nn.Module):
+class ProteinFeatures(pl.LightningModule):
     def __init__(self, edge_features, node_features, num_positional_embeddings=16,
         num_rbf=16, top_k=30, features_type='full', augment_eps=0., dropout=0.1):
         """ Extract protein features """
