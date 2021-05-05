@@ -151,22 +151,19 @@ class Struct2Seq(BERTModel):
         return log_probs
 
     def step(self, batch):
-        
-        print("Ckpt 0")
 
         (X, S, l, v), y, mask = batch
 
-        print("Ckpt 1")
-        output = self(X, S, l, v)
-        print("Ckpt 2")
+        try:
+            output = self(X, S, l, v)
+        except Exception:
+            print(*[x.shape for x in [X, S, v, y, mask]])
+        
         _, loss = loss_smoothed(y, output, mask, self.out_size)
-        print("Ckpt 3")
 
         yPred = torch.argmax(output.data, 2)
         nCorrect = ((yPred == y) * mask).sum()
         nTotal = torch.sum(mask)
-
-        print("Ckpt 4", end="\n\n")
 
         return {
             "loss" : loss,
