@@ -13,14 +13,14 @@ class NoamOpt(optim.Adam):
         self.hiddenSize = hiddenSize
         self._rate = 0
         
-    def step(self):
+    def step(self, *args, **kwargs):
         "Update parameters and rate"
         self._step += 1
         rate = self.rate()
         for p in super().param_groups:
             p['lr'] = rate
         self._rate = rate
-        super().step()
+        super().step(*args, **kwargs)
         
     def rate(self, step = None):
         "Implement `lrate` above"
