@@ -11,7 +11,9 @@ class IngrahamLoader(DataLoader):
     def __init__(
         self,
         dataset : Dataset,
-        batch_size : int
+        batch_size : int,
+        num_workers : int = 0,
+        prefetch_factor : int = 2
     ) -> None:
 
         self.nTokens = len(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
@@ -40,5 +42,7 @@ class IngrahamLoader(DataLoader):
         super().__init__(
             dataset=dataset,
             batch_size=batch_size,
-            collate_fn=featurize
+            collate_fn=featurize,
+            num_workers=num_workers,
+            prefetch_factor=prefetch_factor
         )

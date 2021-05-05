@@ -30,7 +30,12 @@ class IngrahamDataModule(pl.LightningDataModule):
         pass
 
     def train_dataloader(self):
-        return IngrahamLoader(self.dataset.getSubset(self.trainSet), batch_size=self.batchSize)
+        return IngrahamLoader(
+                  self.dataset.getSubset(self.trainSet), 
+                  batch_size=self.batchSize,
+                  num_workers=1,
+                  prefetch_factor=50
+               )
 
     def val_dataloader(self):
         return IngrahamLoader(self.dataset.getSubset(self.valSet), batch_size=self.batchSize)
