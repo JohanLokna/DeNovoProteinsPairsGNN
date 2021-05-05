@@ -104,8 +104,8 @@ class ProteinFeatures(pl.LightningModule):
     def _rbf(self, D):
         # Distance radial basis function
         D_min, D_max, D_count = 0., 20., self.num_rbf
-        D_mu = torch.linspace(D_min, D_max, D_count)
-        D_mu = D_mu.view([1,1,1,-1])
+        D_mu = torch.linspace(D_min, D_max, D_count).type_as(D)
+        D_mu = D_mu.view([1,1,1,-1]).type_as(D)
         D_sigma = (D_max - D_min) / D_count
         D_expand = torch.unsqueeze(D, -1)
         RBF = torch.exp(-((D_expand - D_mu) / D_sigma)**2)
