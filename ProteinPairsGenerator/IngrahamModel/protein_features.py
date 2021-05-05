@@ -60,7 +60,7 @@ def debug(self, X, E_idx, eps=1e-6):
         # Orientation features
         O_features = torch.cat((dU,Q), dim=-1)
 
-        print([torch.any(torch.isnan(x)).cpu() for x in [AD_features, O_features]])
+        print([torch.any(torch.isnan(x)).cpu() for x in [dU,Q]])
 
         return AD_features, O_features
 
