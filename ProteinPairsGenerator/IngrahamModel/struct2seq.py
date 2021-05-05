@@ -156,10 +156,10 @@ class Struct2Seq(BERTModel):
 
         if torch.numel(S) <= self.k_neighbors:
             X = torch.rand(1, 50, 3, 3).type_as(X)
-            S = torch.randint(0, 20, 1, 50).type_as(S)
+            S = torch.randint(0, 20, (1, 50)).type_as(S)
             l = [50]
             v = torch.ones(1, 50).type_as(v)
-            y = torch.randint(0, 20, 1, 50).type_as(y)
+            y = torch.randint(0, 20, (1, 50)).type_as(y)
             mask = torch.zeros(1, 50).type_as(mask)
 
         output = self(X, S, l, v)
@@ -168,8 +168,6 @@ class Struct2Seq(BERTModel):
         yPred = torch.argmax(output.data, 2)
         nCorrect = ((yPred == y) * mask).sum()
         nTotal = torch.sum(mask)
-
-        print(loss.device)
 
         return {
             "loss" : loss,
