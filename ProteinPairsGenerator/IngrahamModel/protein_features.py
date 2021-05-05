@@ -23,11 +23,11 @@ class PositionalEncodings(pl.LightningModule):
         N_batch = E_idx.size(0)
         N_nodes = E_idx.size(1)
         N_neighbors = E_idx.size(2)
-        ii = torch.arange(N_nodes, dtype=torch.float32).view((1, -1, 1))
+        ii = torch.arange(N_nodes, dtype=torch.float32, device=E_idx.device).view((1, -1, 1))
         d = (E_idx.float() - ii).unsqueeze(-1)
         # Original Transformer frequencies
         frequency = torch.exp(
-            torch.arange(0, self.num_embeddings, 2, dtype=torch.float32)
+            torch.arange(0, self.num_embeddings, 2, dtype=torch.float32, device=E_idx.device)
             * -(np.log(10000.0) / self.num_embeddings)
         )
         # Grid-aligned
