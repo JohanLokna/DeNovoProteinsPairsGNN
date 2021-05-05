@@ -160,7 +160,7 @@ class Struct2Seq(BERTModel):
             l = [50]
             v = torch.ones(1, 50).type_as(v)
             y = torch.randint(0, 20, (1, 50)).type_as(y)
-            mask = torch.zeros(1, 50).type_as(mask)
+            mask = torch.ones(1, 50).type_as(mask)
 
         output = self(X, S, l, v)
         _, loss = loss_smoothed(y, output, mask, self.out_size)
