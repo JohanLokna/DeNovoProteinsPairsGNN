@@ -171,7 +171,7 @@ class Struct2Seq(BERTModel):
 
         if torch.any(torch.isnan(output)).item():
             for x in self.parameters():
-                print(x)
+                print(torch.isnan(x))
             exit(0)
 
         return {
