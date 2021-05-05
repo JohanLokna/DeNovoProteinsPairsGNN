@@ -293,13 +293,12 @@ class ProteinFeatures(pl.LightningModule):
         # Embed the nodes
         V = self.node_embedding(V)
         V = self.norm_nodes(V)
-        E = self.edge_embedding(E)
-        E = self.norm_edges(E)
+        E1 = self.edge_embedding(E)
+        E2 = self.norm_edges(E)
 
-        if any([torch.any(torch.isnan(x)).cpu() for x in [V, E, E_idx]]):
-            print("E_positional, RBF, O_features")
-            print(*[torch.any(torch.isnan(x)).cpu() for x in [E_positional, RBF, O_features]])
-            debug(self, X_ca, E_idx)
+        if any([torch.any(torch.isnan(x)).cpu() for x in [E2]]):
+            print("E, E1, E2")
+            print(*[torch.any(torch.isnan(x)).cpu() for x in [E, E1, E2]])
             exit(0)
 
-        return V, E, E_idx
+        return V, E2, E_idx
