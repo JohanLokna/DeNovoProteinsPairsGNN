@@ -12,7 +12,7 @@ import torch.nn.functional as F
 from ProteinPairsGenerator.IngrahamModel.self_attention import *
 from ProteinPairsGenerator.IngrahamModel.protein_features import ProteinFeatures
 from ProteinPairsGenerator.BERTModel import BERTModel
-from ProteinPairsGenerator.IngrahamModel.noam_opt import get_std_opt
+from ProteinPairsGenerator.IngrahamModel.noam_opt import NoamOpt
 
 
 def loss_smoothed(S, log_probs, mask, vocab_size, weight=0.1):
@@ -167,10 +167,10 @@ class Struct2Seq(BERTModel):
         }
 
     def configure_optimizers(self):
-        optimizer = get_std_opt(self.parameters(), self.hidden_dim)
+        optimizer = NoamOpt.getStandard(self.parameters(), self.hidden_dim)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", verbose=True)
         return {
            'optimizer': optimizer,
            'lr_scheduler': scheduler,
            'monitor': 'valLoss'
-       }
+        }
