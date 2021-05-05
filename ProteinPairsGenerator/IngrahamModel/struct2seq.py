@@ -152,22 +152,22 @@ class Struct2Seq(BERTModel):
 
     def step(self, batch):
         
-        loss = 0
-        nCorrect = 0
-        nTotal = 0
+        (X, S, l, v), y, mask = batch
 
-        for (X, S, l, v), y, mask in batch:
+        if torch.numel(S) <= self.k_neighbors:
+            print(S.shape)
+            return {
+                "loss" : torch.zeros(1, device=S.device, requires_grad=True),
+                "nCorrect" : 0,
+                "nTotal" : 0
+            }
 
-            if torch.numel(S) <= self.k_neighbors:
-                continue
+        output = self(X, S, l, v)
+        _, loss = loss_smoothed(y, output, mask, self.out_size)
 
-            output = self(X, S, l, v)
-            _, lossLocal = loss_smoothed(y, output, mask, self.out_size)
-            loss += lossLocal
-
-            yPred = torch.argmax(output.data, 2)
-            nCorrect = ((yPred == y) * mask).sum()
-            nTotal = torch.sum(mask)
+        yPred = torch.argmax(output.data, 2)
+        nCorrect = ((yPred == y) * mask).sum()
+        nTotal = torch.sum(mask)
 
         return {
             "loss" : loss,
