@@ -246,7 +246,7 @@ class ProteinFeatures(pl.LightningModule):
 
         if any([torch.any(torch.isnan(x)).cpu() for x in [V, E, E_idx]]):
             print("E_positional, RBF, O_features")
-            print(*[torch.any(torch.isnan(x)) for x in [E_positional, RBF, O_features]])
+            print(*[torch.any(torch.isnan(x)).cpu() for x in [E_positional, RBF, O_features]])
             exit(0)
 
         return V, E, E_idx
