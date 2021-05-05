@@ -12,57 +12,6 @@ from matplotlib import pyplot as plt
 
 from .self_attention import gather_edges, gather_nodes, Normalize
 
-def debug(self, X, E_idx, eps=1e-6):
-        # Pair features
-
-        # Shifted slices of unit vectors
-        dX = X[:,1:,:] - X[:,:-1,:]
-        U = F.normalize(dX, dim=-1)
-        u_2 = U[:,:-2,:]
-        u_1 = U[:,1:-1,:]
-        u_0 = U[:,2:,:]
-        # Backbone normals
-        n_2 = F.normalize(torch.cross(u_2, u_1), dim=-1)
-        n_1 = F.normalize(torch.cross(u_1, u_0), dim=-1)
-
-        # Bond angle calculation
-        cosA = -(u_1 * u_0).sum(-1)
-        cosA = torch.clamp(cosA, -1+eps, 1-eps)
-        A = torch.acos(cosA)
-        # Angle between normals
-        cosD = (n_2 * n_1).sum(-1)
-        cosD = torch.clamp(cosD, -1+eps, 1-eps)
-        D = torch.sign((u_2 * n_1).sum(-1)) * torch.acos(cosD)
-        # Backbone features
-        AD_features = torch.stack((torch.cos(A), torch.sin(A) * torch.cos(D), torch.sin(A) * torch.sin(D)), 2)
-        AD_features = F.pad(AD_features, (0,0,1,2), 'constant', 0)
-
-        # Build relative orientations
-        o_1 = F.normalize(u_2 - u_1, dim=-1)
-        O = torch.stack((o_1, n_2, torch.cross(o_1, n_2)), 2)
-        O = O.view(list(O.shape[:2]) + [9])
-        O = F.pad(O, (0,0,1,2), 'constant', 0)
-
-        O_neighbors = gather_nodes(O, E_idx)
-        X_neighbors = gather_nodes(X, E_idx)
-        
-        # Re-view as rotation matrices
-        O = O.view(list(O.shape[:2]) + [3,3])
-        O_neighbors = O_neighbors.view(list(O_neighbors.shape[:3]) + [3,3])
-
-        # Rotate into local reference frames
-        dX = X_neighbors - X.unsqueeze(-2)
-        dU = torch.matmul(O.unsqueeze(2), dX.unsqueeze(-1)).squeeze(-1)
-        dU = F.normalize(dU, dim=-1)
-        R = torch.matmul(O.unsqueeze(2).transpose(-1,-2), O_neighbors)
-        Q = self._quaternions(R)
-
-        # Orientation features
-        O_features = torch.cat((dU,Q), dim=-1)
-
-        print([torch.any(torch.isnan(x)).cpu() for x in [dU,Q]])
-
-        return AD_features, O_features
 
 class PositionalEncodings(pl.LightningModule):
     def __init__(self, num_embeddings, period_range=[2,1000]):
@@ -295,11 +244,5 @@ class ProteinFeatures(pl.LightningModule):
         V = self.norm_nodes(V)
         E = self.edge_embedding(E)
         E = self.norm_edges(E)
-
-        if any([torch.any(torch.isnan(x)).cpu() for x in [V, E, E_idx]]):
-            print("E_positional, RBF, O_features")
-            print(*[torch.any(torch.isnan(x)).cpu() for x in [E_positional, RBF, O_features]])
-            print(*[torch.any(torch.isnan(x)).cpu() for x in torch.unbind(O_features, dim=-1)])
-            exit(0)
 
         return V, E, E_idx

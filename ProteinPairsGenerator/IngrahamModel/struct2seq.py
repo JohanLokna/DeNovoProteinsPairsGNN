@@ -168,12 +168,7 @@ class Struct2Seq(BERTModel):
         yPred = torch.argmax(output.data, 2)
         nCorrect = ((yPred == y) * mask).sum()
         nTotal = torch.sum(mask)
-
-        if torch.any(torch.isnan(output)).item():
-            print(any([torch.any(torch.isnan(x)) for x in self.parameters()]))
-            print(any([torch.any(torch.isnan(x)) for x in [X, S, v, mask, y]]))
-            exit(0)
-
+        
         return {
             "loss" : loss,
             "nCorrect" : nCorrect,
