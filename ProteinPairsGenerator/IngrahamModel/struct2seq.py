@@ -54,6 +54,7 @@ class Struct2Seq(BERTModel):
         self.hidden_dim = hidden_dim
         self.in_size = in_size
         self.out_size = out_size
+        self.k_neighbors = k_neighbors
 
         # Featurization layers
         self.features = ProteinFeatures(
@@ -152,6 +153,13 @@ class Struct2Seq(BERTModel):
     def step(self, batch):
         
         (X, S, l, v), y, mask = batch
+
+        if torch.numel(S).cpu() <= self.k_neighbors:
+            return {
+                "loss" : torch.zeros(0, device=S.device, requires_grad=True),
+                "nCorrect" : 0,
+                "nTotal" : 0
+            }
 
         output = self(X, S, l, v)
         _, loss = loss_smoothed(y, output, mask, self.out_size)
