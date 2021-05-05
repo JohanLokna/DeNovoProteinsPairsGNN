@@ -31,11 +31,11 @@ class IngrahamLoader(DataLoader):
             # Build the batch
             for i, (b, l) in enumerate(zip(batch, lengths)):
                 SBERT[i, :l], validBERT[i, :l] = maskBERT(b.seq, self.subMatirx)
-                X[i] = torch.stack([b.N, b.CA, b.C], dim=1)
+                X[i, :l] = torch.stack([b.coordsN, b.coordsCA, b.coordsC], dim=1)
                 S[i, :l] = b.seq
                 valid[i, :l] = 1.0
 
-            return (X, SBERT, lengths, valid), S, validBERT
+            return tuple((X, SBERT, lengths, valid)), S, validBERT
 
         super().__init__(
             dataset=dataset,

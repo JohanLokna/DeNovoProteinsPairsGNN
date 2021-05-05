@@ -5,13 +5,28 @@ from matplotlib import pyplot as plt
 import copy
 
 import torch
-import torch.nn as nn
+from torch import nn
+from torch import optim
 import torch.nn.functional as F
 
-from .self_attention import *
-from .protein_features import ProteinFeatures
-
+from ProteinPairsGenerator.IngrahamModel.self_attention import *
+from ProteinPairsGenerator.IngrahamModel.protein_features import ProteinFeatures
 from ProteinPairsGenerator.BERTModel import BERTModel
+from ProteinPairsGenerator.IngrahamModel.noam_opt import get_std_opt
+
+
+def loss_smoothed(S, log_probs, mask, vocab_size, weight=0.1):
+    """ Negative log probabilities """
+    S_onehot = torch.nn.functional.one_hot(S, num_classes = vocab_size).float()
+
+    # Label smoothing
+    S_onehot = S_onehot + weight / float(S_onehot.size(-1))
+    S_onehot = S_onehot / S_onehot.sum(-1, keepdim=True)
+
+    loss = -(S_onehot * log_probs).sum(-1)
+    loss_av = torch.sum(loss * mask) / torch.sum(mask)
+    return loss, loss_av
+
 
 class Struct2Seq(BERTModel):
     def __init__(
@@ -133,3 +148,29 @@ class Struct2Seq(BERTModel):
         logits = self.W_out(h_V) 
         log_probs = F.log_softmax(logits, dim=-1)
         return log_probs
+
+    def step(self, batch):
+        
+        (X, S, l, v), y, mask = batch
+
+        output = self(X, S, l, v)
+        _, loss = loss_smoothed(y, output, mask, self.out_size)
+
+        yPred = torch.argmax(output.data, 2)
+        nCorrect = ((yPred == y) * mask).sum()
+        nTotal = torch.sum(mask)
+
+        return {
+            "loss" : loss,
+            "nCorrect" : nCorrect,
+            "nTotal" : nTotal
+        }
+
+    def configure_optimizers(self):
+        optimizer = get_std_opt(self.parameters(), self.hidden_dim)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", verbose=True)
+        return {
+           'optimizer': optimizer,
+           'lr_scheduler': scheduler,
+           'monitor': 'valLoss'
+       }

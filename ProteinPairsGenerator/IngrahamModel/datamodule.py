@@ -6,9 +6,6 @@ from typing import Union, List
 from torch.utils.data import Dataset
 import pytorch_lightning as pl
 
-# Local imports
-from .loader import IngrahamLoader
-
 
 class IngrahamDataModule(pl.LightningDataModule):
 
@@ -39,6 +36,6 @@ class IngrahamDataModule(pl.LightningDataModule):
     def test_dataloader(self):
         return IngrahamLoader(self.dataset.getSubset(self.testSet), batch_size=self.batchSize)
 
-    def transfer_batch_to_device(self, batch, device):
-        return [tuple((X.to(device=device), S.to(device=device), l, v.to(device=device)), y.to(device=device), mask.to(device=device)) \
-                for (X, S, l, v), y, mask in batch]
+    def transfer_batch_to_device(self, x, device):
+        (X, S, l, v), y, mask = x
+        return (X.to(device=device), S.to(device=device), l, v.to(device=device)), y.to(device=device), mask.to(device=device)
