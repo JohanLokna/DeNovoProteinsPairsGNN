@@ -155,12 +155,12 @@ class Struct2Seq(BERTModel):
         (X, S, l, v), y, mask = batch
 
         if torch.numel(S) <= self.k_neighbors:
-            print(S.shape, S.device)
-            return {
-                "loss" : torch.zeros(1, device=S.device, requires_grad=True),
-                "nCorrect" : 0,
-                "nTotal" : 0
-            }
+            X = torch.rand(1, 50, 3, 3).type_as(X)
+            S = torch.randint(0, 20, 1, 50).type_as(S)
+            l = [50]
+            v = torch.ones(1, 50).type_as(v)
+            y = torch.randint(0, 20, 1, 50).type_as(y)
+            mask = torch.zeros(1, 50).type_as(mask)
 
         output = self(X, S, l, v)
         _, loss = loss_smoothed(y, output, mask, self.out_size)
