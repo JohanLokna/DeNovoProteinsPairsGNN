@@ -154,7 +154,7 @@ class Struct2Seq(BERTModel):
         
         (X, S, l, v), y, mask = batch
 
-        if torch.numel(S).cpu() <= self.k_neighbors:
+        if torch.numel(S) <= self.k_neighbors:
             return {
                 "loss" : torch.zeros(0, device=S.device, requires_grad=True),
                 "nCorrect" : 0,
