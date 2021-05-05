@@ -169,7 +169,7 @@ class Struct2Seq(BERTModel):
         nCorrect = ((yPred == y) * mask).sum()
         nTotal = torch.sum(mask)
 
-        print(loss, torch.sum(mask))
+        print(loss, torch.any(torch.isnan(output)))
 
         return {
             "loss" : loss,
