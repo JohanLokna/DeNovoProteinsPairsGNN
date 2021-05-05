@@ -284,9 +284,13 @@ class ProteinNetDataset(Dataset):
         title = reader.getId("title")
 
         # Restrict sequence lenght
-        constraint = Constraint(
+        constraintMaxSize = Constraint(
             constraint = lambda attr: attr.shape[0] < 200000,
             dependencies = [edgeAttr]
+        )
+        constraintMinLength = Constraint(
+            constraint = lambda attr: attr.shape[0] > 30,
+            dependencies = [nodeAttr]
         )
 
         return [nodeAttr, edgeAttr, edgeIdx, title, coordsCA, coordsN, coordsC, constraint]
