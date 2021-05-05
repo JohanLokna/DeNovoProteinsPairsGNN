@@ -297,7 +297,7 @@ class ProteinFeatures(pl.LightningModule):
         E = self.norm_edges(E)
 
         if any([torch.any(torch.isnan(x)).cpu() for x in [V, E, E_idx]]):
-            debug(X_ca, E_idx)
+            debug(self, X_ca, E_idx)
             exit(0)
 
         return V, E, E_idx
