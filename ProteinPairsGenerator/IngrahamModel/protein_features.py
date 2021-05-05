@@ -294,7 +294,7 @@ class ProteinFeatures(pl.LightningModule):
         V = self.node_embedding(V)
         V = self.norm_nodes(V)
         E1 = self.edge_embedding(E)
-        E2 = self.norm_edges(E)
+        E2 = self.norm_edges(E1)
 
         if any([torch.any(torch.isnan(x)).cpu() for x in [E2]]):
             print("E, E1, E2")
