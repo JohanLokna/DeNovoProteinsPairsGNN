@@ -170,8 +170,7 @@ class Struct2Seq(BERTModel):
         nTotal = torch.sum(mask)
 
         if torch.any(torch.isnan(output)).item():
-            for x in self.parameters():
-                print(torch.isnan(x))
+            print(any([torch.any(torch.isnan(x)) for x in self.parameters()]))
             exit(0)
 
         return {
