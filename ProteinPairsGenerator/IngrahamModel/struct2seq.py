@@ -157,7 +157,7 @@ class Struct2Seq(BERTModel):
         if torch.numel(S) <= self.k_neighbors:
             print(S.shape)
             return {
-                "loss" : torch.zeros(1, device=S.device, requires_grad=True),
+                "loss" : torch.zeros(1, requires_grad=True),
                 "nCorrect" : 0,
                 "nTotal" : 0
             }
