@@ -60,7 +60,6 @@ class ProteinFeatures(pl.LightningModule):
             'coarse': (3, num_positional_embeddings + num_rbf + 7),
             'full': (6, num_positional_embeddings + num_rbf + 7),
             'dist': (6, num_positional_embeddings + num_rbf),
-            'hbonds': (3, 2 * num_positional_embeddings),
         }
 
         # Positional encoding
@@ -76,6 +75,7 @@ class ProteinFeatures(pl.LightningModule):
 
     def _dist(self, X, mask, eps=1E-6):
         """ Pairwise euclidean distances """
+        
         # Convolutional network on NCHW
         mask_2D = torch.unsqueeze(mask,1) * torch.unsqueeze(mask,2)
         dX = torch.unsqueeze(X,1) - torch.unsqueeze(X,2)
@@ -87,18 +87,6 @@ class ProteinFeatures(pl.LightningModule):
         D_neighbors, E_idx = torch.topk(D_adjust, self.top_k, dim=-1, largest=False)
         mask_neighbors = gather_edges(mask_2D.unsqueeze(-1), E_idx)
 
-        # Debug plot KNN
-        # print(E_idx[:10,:10])
-        # D_simple = mask_2D * torch.zeros(D.size()).scatter(-1, E_idx, torch.ones_like(knn_D))
-        # print(D_simple)
-        # fig = plt.figure(figsize=(4,4))
-        # ax = fig.add_subplot(111)
-        # D_simple = D.data.numpy()[0,:,:]
-        # plt.imshow(D_simple, aspect='equal')
-        # plt.axis('off')
-        # plt.tight_layout()
-        # plt.savefig('D_knn.pdf')
-        # exit(0)
         return D_neighbors, E_idx, mask_neighbors
 
     def _rbf(self, D):
@@ -109,18 +97,7 @@ class ProteinFeatures(pl.LightningModule):
         D_sigma = (D_max - D_min) / D_count
         D_expand = torch.unsqueeze(D, -1)
         RBF = torch.exp(-((D_expand - D_mu) / D_sigma)**2)
-
-        # for i in range(D_count):
-        #     fig = plt.figure(figsize=(4,4))
-        #     ax = fig.add_subplot(111)
-        #     rbf_i = RBF.data.numpy()[0,i,:,:]
-        #     # rbf_i = D.data.numpy()[0,0,:,:]
-        #     plt.imshow(rbf_i, aspect='equal')
-        #     plt.axis('off')
-        #     plt.tight_layout()
-        #     plt.savefig('rbf{}.pdf'.format(i))
-        #     print(np.min(rbf_i), np.max(rbf_i), np.mean(rbf_i))
-        # exit(0)
+        
         return RBF
 
     def _quaternions(self, R):
@@ -149,75 +126,8 @@ class ProteinFeatures(pl.LightningModule):
         w = torch.sqrt(F.relu(1 + diag.sum(-1, keepdim=True))) / 2.
         Q = torch.cat((xyz, w), -1)
         Q = F.normalize(Q, dim=-1)
-
-        # Axis of rotation
-        # Replace bad rotation matrices with identity
-        # I = torch.eye(3).view((1,1,1,3,3))
-        # I = I.expand(*(list(R.shape[:3]) + [-1,-1]))
-        # det = (
-        #     R[:,:,:,0,0] * (R[:,:,:,1,1] * R[:,:,:,2,2] - R[:,:,:,1,2] * R[:,:,:,2,1])
-        #     - R[:,:,:,0,1] * (R[:,:,:,1,0] * R[:,:,:,2,2] - R[:,:,:,1,2] * R[:,:,:,2,0])
-        #     + R[:,:,:,0,2] * (R[:,:,:,1,0] * R[:,:,:,2,1] - R[:,:,:,1,1] * R[:,:,:,2,0])
-        # )
-        # det_mask = torch.abs(det.unsqueeze(-1).unsqueeze(-1))
-        # R = det_mask * R + (1 - det_mask) * I
-
-        # DEBUG
-        # https://math.stackexchange.com/questions/2074316/calculating-rotation-axis-from-rotation-matrix
-        # Columns of this are in rotation plane
-        # A = R - I
-        # v1, v2 = A[:,:,:,:,0], A[:,:,:,:,1]
-        # axis = F.normalize(torch.cross(v1, v2), dim=-1)
+        
         return Q
-
-    def _contacts(self, D_neighbors, E_idx, mask_neighbors, cutoff=8):
-        """ Contacts """
-        D_neighbors = D_neighbors.unsqueeze(-1)
-        neighbor_C = mask_neighbors * (D_neighbors < cutoff).type(torch.float32)
-        return neighbor_C
-
-    def _hbonds(self, X, E_idx, mask_neighbors, eps=1E-3):
-        """ Hydrogen bonds and contact map
-        """
-        X_atoms = dict(zip(['N', 'CA', 'C', 'O'], torch.unbind(X, 2)))
-
-        # Virtual hydrogens
-        X_atoms['C_prev'] = F.pad(X_atoms['C'][:,1:,:], (0,0,0,1), 'constant', 0)
-        X_atoms['H'] = X_atoms['N'] + F.normalize(
-             F.normalize(X_atoms['N'] - X_atoms['C_prev'], -1)
-          +  F.normalize(X_atoms['N'] - X_atoms['CA'], -1)
-        , -1)
-
-        def _distance(X_a, X_b):
-            return torch.norm(X_a[:,None,:,:] - X_b[:,:,None,:], dim=-1)
-
-        def _inv_distance(X_a, X_b):
-            return 1. / (_distance(X_a, X_b) + eps)
-
-        # DSSP vacuum electrostatics model
-        U = (0.084 * 332) * (
-              _inv_distance(X_atoms['O'], X_atoms['N'])
-            + _inv_distance(X_atoms['C'], X_atoms['H'])
-            - _inv_distance(X_atoms['O'], X_atoms['H'])
-            - _inv_distance(X_atoms['C'], X_atoms['N'])
-        )
-
-        HB = (U < -0.5).type(torch.float32)
-        neighbor_HB = mask_neighbors * gather_edges(HB.unsqueeze(-1),  E_idx)
-        # print(HB)
-        # HB = F.sigmoid(U)
-        # U_np = U.cpu().data.numpy()
-        # # plt.matshow(np.mean(U_np < -0.5, axis=0))
-        # plt.matshow(HB[0,:,:])
-        # plt.colorbar()
-        # plt.show()
-        # D_CA = _distance(X_atoms['CA'], X_atoms['CA'])
-        # D_CA = D_CA.cpu().data.numpy()
-        # plt.matshow(D_CA[0,:,:] < contact_D)
-        # # plt.colorbar()
-        # plt.show()
-        # exit(0)
-        return neighbor_HB
 
     def _orientations_coarse(self, X, E_idx, eps=1e-6):
         # Pair features
@@ -250,17 +160,6 @@ class ProteinFeatures(pl.LightningModule):
         O = O.view(list(O.shape[:2]) + [9])
         O = F.pad(O, (0,0,1,2), 'constant', 0)
 
-        # DEBUG: Viz [dense] pairwise orientations 
-        # O = O.view(list(O.shape[:2]) + [3,3])
-        # dX = X.unsqueeze(2) - X.unsqueeze(1)
-        # dU = torch.matmul(O.unsqueeze(2), dX.unsqueeze(-1)).squeeze(-1)
-        # dU = dU / torch.norm(dU, dim=-1, keepdim=True)
-        # dU = (dU + 1.) / 2.
-        # plt.imshow(dU.data.numpy()[0])
-        # plt.show()
-        # print(dX.size(), O.size(), dU.size())
-        # exit(0)
-
         O_neighbors = gather_nodes(O, E_idx)
         X_neighbors = gather_nodes(X, E_idx)
         
@@ -278,21 +177,10 @@ class ProteinFeatures(pl.LightningModule):
         # Orientation features
         O_features = torch.cat((dU,Q), dim=-1)
 
-        # DEBUG: Viz pairwise orientations
-        # IMG = Q[:,:,:,:3]
-        # # IMG = dU
-        # dU_full = torch.zeros(X.shape[0], X.shape[1], X.shape[1], 3).scatter(
-        #     2, E_idx.unsqueeze(-1).expand(-1,-1,-1,3), IMG
-        # )
-        # print(dU_full)
-        # dU_full = (dU_full + 1.) / 2.
-        # plt.imshow(dU_full.data.numpy()[0])
-        # plt.show()
-        # exit(0)
-        # print(Q.sum(), dU.sum(), R.sum())
         return AD_features, O_features
 
     def _dihedrals(self, X, eps=1e-7):
+
         # First 3 coordinates are N, CA, C
         X = X[:,:,:3,:].reshape(X.shape[0], 3*X.shape[1], 3)
 
@@ -314,24 +202,6 @@ class ProteinFeatures(pl.LightningModule):
         # This scheme will remove phi[0], psi[-1], omega[-1]
         D = F.pad(D, (1,2), 'constant', 0)
         D = D.view((D.size(0), int(D.size(1)/3), 3))
-        phi, psi, omega = torch.unbind(D,-1)
-
-        # print(cosD.cpu().data.numpy().flatten())
-        # print(omega.sum().cpu().data.numpy().flatten())
-
-        # Bond angle calculation
-        # A = torch.acos(-(u_1 * u_0).sum(-1))
-
-        # DEBUG: Ramachandran plot
-        # x = phi.cpu().data.numpy().flatten()
-        # y = psi.cpu().data.numpy().flatten()
-        # plt.scatter(x * 180 / np.pi, y * 180 / np.pi, s=1, marker='.')
-        # plt.xlabel('phi')
-        # plt.ylabel('psi')
-        # plt.axis('square')
-        # plt.grid()
-        # plt.axis([-180,180,-180,180])
-        # plt.show()
 
         # Lift angle representations to the circle
         D_features = torch.cat((torch.cos(D), torch.sin(D)), 2)
@@ -346,7 +216,7 @@ class ProteinFeatures(pl.LightningModule):
 
         # Build k-Nearest Neighbors graph
         X_ca = X[:,:,1,:]
-        D_neighbors, E_idx, mask_neighbors = self._dist(X_ca, mask)
+        D_neighbors, E_idx, _ = self._dist(X_ca, mask)
 
         # Pairwise features
         AD_features, O_features = self._orientations_coarse(X_ca, E_idx)
@@ -359,18 +229,6 @@ class ProteinFeatures(pl.LightningModule):
             # Coarse backbone features
             V = AD_features
             E = torch.cat((E_positional, RBF, O_features), -1)
-        elif self.features_type == 'hbonds':
-            # Hydrogen bonds and contacts
-            neighbor_HB = self._hbonds(X, E_idx, mask_neighbors)
-            neighbor_C = self._contacts(D_neighbors, E_idx, mask_neighbors)
-            # Dropout
-            neighbor_C = self.dropout(neighbor_C)
-            neighbor_HB = self.dropout(neighbor_HB)
-            # Pack
-            V = mask.unsqueeze(-1) * torch.ones_like(AD_features)
-            neighbor_C = neighbor_C.expand(-1,-1,-1, int(self.num_positional_embeddings / 2))
-            neighbor_HB = neighbor_HB.expand(-1,-1,-1, int(self.num_positional_embeddings / 2))
-            E = torch.cat((E_positional, neighbor_C, neighbor_HB), -1)
         elif self.features_type == 'full':
             # Full backbone angles
             V = self._dihedrals(X)
@@ -386,9 +244,4 @@ class ProteinFeatures(pl.LightningModule):
         E = self.edge_embedding(E)
         E = self.norm_edges(E)
 
-        # DEBUG
-        # U = (np.nan * torch.zeros(X.size(0),X.size(1),X.size(1),3)).scatter(2, E_idx.unsqueeze(-1).expand(-1,-1,-1,3), E[:,:,:,:3])
-        # plt.imshow(U.data.numpy()[0,:,:,0])
-        # plt.show()
-        # exit(0)
         return V, E, E_idx
