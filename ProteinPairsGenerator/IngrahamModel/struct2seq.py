@@ -92,7 +92,7 @@ class Struct2Seq(BERTModel):
 
     def _autoregressive_mask(self, E_idx):
         N_nodes = E_idx.size(1)
-        ii = torch.arange(N_nodes)
+        ii = torch.arange(N_nodes, device=E_idx.device)
         ii = ii.view((1, -1, 1))
         mask = E_idx - ii < 0
         mask = mask.type(torch.float32)
