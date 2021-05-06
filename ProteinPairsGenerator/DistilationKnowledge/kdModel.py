@@ -4,11 +4,10 @@ import pytorch_lightning as pl
 
 def getKDModel(baseModel):
 
-    class KDModel(baseModel):
+    class KDModel(baseModel : pl.LightningModule, alpha : float):
 
         def __init__(
-            self, 
-            alpha : float,
+            self,
             *args, 
             **kwargs
         ) -> None:
