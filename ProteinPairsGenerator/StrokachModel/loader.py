@@ -18,13 +18,11 @@ class StrokachLoader(DataLoader):
 
         def updateElement(x):
             x = x[0]
-            for key in x.__dict__.keys():
-                if not key in self.validFields:
-                    x.__dict__.pop(key)
+            x.__dict__ = {(k, v) for k, v in x.__dict__.items() if not k in self.validFields}
             maskedSeq, mask = maskBERT(x.seq, self.subMatirx)
             x.maskedSeq = maskedSeq
             x.mask = mask
-            return xList
+            return x
 
         super().__init__(
             dataset=dataset,
