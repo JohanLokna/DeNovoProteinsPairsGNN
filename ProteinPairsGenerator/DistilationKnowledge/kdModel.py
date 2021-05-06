@@ -18,7 +18,7 @@ def getKDModel(baseModel):
             self.criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
         def step(self, batch):
-            outDict = super().__call__(batch)
+            outDict = super().step(batch)
             outDict["loss"] = self.alpha * outDict["loss"] \
                             + (1 - self.alpha) * self.criterion(self.output, batch.teacherSeq)
             return outDict
