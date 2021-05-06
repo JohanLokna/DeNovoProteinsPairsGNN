@@ -92,8 +92,8 @@ class Net(BERTModel):
         nTotal = 0
         for x in batch:
 
-            output = self(x.seq, x.edge_index, x.edge_attr)[x.mask]
-            yTrue = x.y[x.mask]
+            output = self(x.maskedSeq, x.edge_index, x.edge_attr)[x.mask]
+            yTrue = x.seq[x.mask]
 
             loss += self.criterion(output, yTrue)
 
