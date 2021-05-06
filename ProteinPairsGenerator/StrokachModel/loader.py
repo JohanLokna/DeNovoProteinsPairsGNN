@@ -15,13 +15,18 @@ class StrokachLoader(DataLoader):
 
         self.nTokens = 20
         self.subMatirx = torch.ones(self.nTokens, self.nTokens)
+        self.validFields = ["seq", "edge_index", "edge_attr"]
 
-        def singleElement(x):
-            maksedSeq, mask = maskBERT(x.seq, self.subMatirx)
-            return tuple((maksedSeq, x.edge_index, x.edge_attr)), x.seq, mask
+        def updateElement(x):
+            for key in x.__dict__.keys() if not key in self.validFields:
+                x.__dict__.pop(key)
+            maskedSeq, mask = maskBERT(x.seq, self.subMatirx)
+            x.maskedSeq = maskedSeq
+            x.mask = mask
+            return x
 
         super().__init__(
             dataset=dataset,
             batch_size=batch_size,
-            collate_fn=lambda batch: [singleElement(x) for x in batch]
+            collate_fn=lambda batch: updateElement
         )
