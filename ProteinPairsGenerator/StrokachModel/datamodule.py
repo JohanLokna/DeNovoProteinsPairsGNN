@@ -17,27 +17,25 @@ class StrokachDataModule(pl.LightningDataModule):
         dataset : Dataset,
         trainSet: Union[Path, List[Path]],
         valSet: Union[Path, List[Path]],
-        testSet: Union[Path, List[Path]],
-        batchSize: int = 1
+        testSet: Union[Path, List[Path]]
     ) -> None:
         super().__init__()
         self.dataset = dataset
         self.trainSet = trainSet
         self.valSet = valSet
         self.testSet = testSet
-        self.batchSize = batchSize
 
     def setup(self, stage=None):
         pass
 
     def train_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.trainSet), batch_size=self.batchSize)
+        return StrokachLoader(self.dataset.getSubset(self.trainSet))
 
     def val_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.valSet), batch_size=self.batchSize)
+        return StrokachLoader(self.dataset.getSubset(self.valSet))
 
     def test_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.testSet), batch_size=self.batchSize)
+        return StrokachLoader(self.dataset.getSubset(self.testSet))
 
     def transfer_batch_to_device(self, x, device):
         x.update((k, v.to(device=device)) for k, v in x.__dict__.items())

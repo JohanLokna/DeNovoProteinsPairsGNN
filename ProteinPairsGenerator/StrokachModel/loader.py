@@ -9,8 +9,7 @@ class StrokachLoader(DataLoader):
 
     def __init__(
         self,
-        dataset : Dataset,
-        batch_size : int
+        dataset : Dataset
     ) -> None:
 
         self.nTokens = 20
