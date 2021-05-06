@@ -154,12 +154,11 @@ class Struct2Seq(BERTModel):
 
         (X, S, l, v), y, mask = batch
 
-        # output = self(X, S, l, v)
+        print("Ckpt 0")
+        print(*[x.shape for x in [X, S, v, y, mask]])
+        output = self(X, S, l, v)
 
-        try:
-            output = self(X, S, l, v)
-        except Exception:
-            print(*[x.shape for x in [X, S, v, y, mask]])
+        print("Ckpt 1")
         
         _, loss = loss_smoothed(y, output, mask, self.out_size)
 
