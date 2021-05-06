@@ -85,21 +85,16 @@ class Net(BERTModel):
            'monitor': 'valLoss'
        }
     
-    def step(self, batch):
-        
-        loss = 0
-        nCorrect = 0
-        nTotal = 0
-        for x in batch:
+    def step(self, x):
 
-            output = self(x.maskedSeq, x.edge_index, x.edge_attr)[x.mask]
-            yTrue = x.seq[x.mask]
+        output = self(x.maskedSeq, x.edge_index, x.edge_attr)[x.mask]
+        yTrue = x.seq[x.mask]
 
-            loss += self.criterion(output, yTrue)
+        loss = self.criterion(output, yTrue)
 
-            yPred = torch.argmax(output.data, 1)
-            nCorrect += (yPred == yTrue).sum()
-            nTotal += torch.numel(yPred)
+        yPred = torch.argmax(output.data, 1)
+        nCorrect = (yPred == yTrue).sum()
+        nTotal = torch.numel(yPred)
 
         return {
             "loss" : loss,
