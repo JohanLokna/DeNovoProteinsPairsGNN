@@ -74,3 +74,34 @@ class Net(BERTModel):
         x = self.linear_out(x)
 
         return x
+    
+    def configure_optimizers(self):
+        optimizer = optim.Adam(self.parameters(), lr=1e-4)
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", verbose=True)
+        return {
+           'optimizer': optimizer,
+           'lr_scheduler': scheduler,
+           'monitor': 'valLoss'
+       }
+    
+    def step(self, batch):
+        
+        loss = 0
+        nCorrect = 0
+        nTotal = 0
+        for x in batch:
+
+            output = self(x.seq, x.edge_index, x.edge_attr)[x.mask]
+            yTrue = x.y[x.mask]
+
+            loss += self.criterion(output, yTrue)
+
+            yPred = torch.argmax(output.data, 1)
+            nCorrect += (yPred == yTrue).sum()
+            nTotal += torch.numel(yPred)
+
+        return {
+            "loss" : loss,
+            "nCorrect" : nCorrect,
+            "nTotal" : nTotal
+        }
