@@ -14,8 +14,7 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
             super().__init__(*args, **kwargs)
             self.alpha = alpha
             self.output = None
-            self.sofmax = nn.Softmax(dim=1)
-            self.criterion = lambda out, lbl: -torch.sum(self.sofmax(out) * lbl)
+            self.criterion = lambda out, lbl: -torch.sum(nn.Softmax(dim=1)(out) * lbl)
 
         def step(self, batch):
             outDict = super().step(batch)
