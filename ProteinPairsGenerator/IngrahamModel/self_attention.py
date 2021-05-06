@@ -222,7 +222,7 @@ class NeighborAttention(nn.Module):
             h_V_t:            Node update
         """
         # Dimensions
-        n_batch, n_nodes, n_neighbors = h_E.shape[:3]
+        n_batch, _, n_neighbors = h_E.shape[:3]
         n_heads = self.num_heads
         d = self.num_hidden / n_heads
 
