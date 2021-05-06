@@ -38,5 +38,5 @@ class StrokachDataModule(pl.LightningDataModule):
         return StrokachLoader(self.dataset.getSubset(self.testSet))
 
     def transfer_batch_to_device(self, x, device):
-        x.update((k, v.to(device=device)) for k, v in x.__dict__.items())
+        x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items())
         return x
