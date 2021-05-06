@@ -5,6 +5,7 @@ import copy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch import optim
 from torch.nn.modules.container import ModuleList
 
 # Local imports
@@ -28,9 +29,9 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
 
 
 class Net(BERTModel):
-    def __init__(self, x_input_size, adj_input_size, hidden_size, output_size, N = 3):
+    def __init__(self, x_input_size, adj_input_size, hidden_size, output_size, N=3, criterion=nn.CrossEntropyLoss()):
         super().__init__()
-
+        self.criterion = criterion
         self.embed_x = nn.Sequential(
             nn.Embedding(x_input_size, hidden_size),
             nn.ReLU(),
