@@ -22,6 +22,7 @@ class StrokachLoader(DataLoader):
             maskedSeq, mask = maskBERT(x.seq, self.subMatirx)
             x.maskedSeq = maskedSeq
             x.mask = mask
+            x.teacherSeq = torch.nn.functional.one_hot(x.seq, num_classes = self.nTokens).float()
             return x
 
         super().__init__(
