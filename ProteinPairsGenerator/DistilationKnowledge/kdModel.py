@@ -14,12 +14,12 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
             super().__init__(*args, **kwargs)
             self.alpha = alpha
             self.output = None
-            self.criterion = lambda out, lbl: -torch.sum(nn.Softmax(dim=1)(out) * lbl)
+            self.softmax = nn.Softmax(dim=1)
 
-        def step(self, batch):
-            outDict = super().step(batch)
+        def step(self, x):
+            outDict = super().step(x)
             outDict["loss"] = self.alpha * outDict["loss"] \
-                            + (1 - self.alpha) * self.criterion(self.output, batch.teacherSeq)
+                            - (1 - self.alpha) * torch.sum(self.softmax(self.output) * x.teacherSeq)
             return outDict
 
         def __call__(self, *args, **kwargs):
