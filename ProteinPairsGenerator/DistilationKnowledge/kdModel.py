@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 
-def getKDModel(baseModel):
+def getKDModel(baseModel : pl.LightningModule, alpha : float):
 
-    class KDModel(baseModel : pl.LightningModule, alpha : float):
+    class KDModel(baseModel):
 
         def __init__(
             self,
