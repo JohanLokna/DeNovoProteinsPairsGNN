@@ -27,6 +27,5 @@ class StrokachLoader(DataLoader):
 
         super().__init__(
             dataset=dataset,
-            batch_size=batch_size,
             collate_fn=lambda batch: updateElement
         )
