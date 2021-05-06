@@ -24,7 +24,6 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
 
         def __call__(self, *args, **kwargs):
             self.output = super().__call__(*args, **kwargs)
-            print(self.output.shape)
             return self.output
 
     return KDModel
