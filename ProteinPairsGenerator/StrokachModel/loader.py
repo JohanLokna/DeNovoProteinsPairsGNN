@@ -18,7 +18,7 @@ class StrokachLoader(DataLoader):
 
         def updateElement(x):
             x = x[0]
-            x.__dict__ = {k: v for k, v in x.__dict__.items() if not k in self.validFields}
+            x.__dict__ = {k: v for k, v in x.__dict__.items() if k in self.validFields}
             maskedSeq, mask = maskBERT(x.seq, self.subMatirx)
             x.maskedSeq = maskedSeq
             x.mask = mask
