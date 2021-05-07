@@ -16,7 +16,7 @@ class KDTokenizer(TAPETokenizer):
 
     def encode(self, inTensor: torch.Tensor) -> torch.Tensor:
       encoded = super().encode(tensor_to_seq(inTensor, AMINO_ACIDS_MAP))
-      return torch.from_numpy(np.where(encoded == self.findValue, self.replaceValue, encoded))
+      return torch.from_numpy(np.where(encoded == self.findValue, self.replaceValue, encoded)).unsqueeze(0)
 
 def extractBaseAcids(inTensor: torch.Tensor) -> torch.Tensor:
     return inTensor[:, outColumnsFromBERT]
