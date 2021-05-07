@@ -2,7 +2,10 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 
-from tape import ProteinBertForMaskedLM, TAPETokenizer
+from tape import ProteinBertForMaskedLM
+
+from .utils import extractBaseAcids
+
 tokenizer = TAPETokenizer(vocab='iupac')
 
 def getKDModel(baseModel : pl.LightningModule, alpha : float):
@@ -24,7 +27,7 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
 
         def step(self, x):
             outDict = super().step(x)
-            teacherLabels = self.teacher(x.tokenizedSeq)[0]
+            teacherLabels = extractBaseAcids(self.teacher(x.tokenizedSeq)[0])
             lossTeacher = torch.mean(torch.sum(-torch.log_softmax(self.output, dim=1) * teacherLabels, dim=1)[x.mask])
             outDict["loss"] = self.alpha * outDict["loss"] + (1 - self.alpha) * lossTeacher
             return outDict
