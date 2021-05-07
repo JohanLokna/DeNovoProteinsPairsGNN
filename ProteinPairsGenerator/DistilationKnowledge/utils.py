@@ -20,4 +20,4 @@ class KDTokenizer(TAPETokenizer):
 
 def extractBaseAcids(inTensor: torch.Tensor) -> torch.Tensor:
     print(inTensor.shape)
-    return inTensor[:, outColumnsFromBERT]
+    return inTensor[0, :, outColumnsFromBERT]
