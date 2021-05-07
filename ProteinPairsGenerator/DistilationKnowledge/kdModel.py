@@ -19,6 +19,8 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
             self.output = None
             self.softmax = nn.Softmax(dim=1)
             self.teacher = ProteinBertForMaskedLM.from_pretrained('bert-base')
+            for param in self.teacher.parameters():
+                param.requires_grad = False
 
         def step(self, x):
             outDict = super().step(x)
