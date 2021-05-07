@@ -6,8 +6,6 @@ from tape import ProteinBertForMaskedLM
 
 from .utils import extractBaseAcids
 
-tokenizer = TAPETokenizer(vocab='iupac')
-
 def getKDModel(baseModel : pl.LightningModule, alpha : float):
 
     class KDModel(baseModel):
