@@ -9,12 +9,14 @@ class StrokachLoader(DataLoader):
 
     def __init__(
         self,
-        dataset : Dataset
+        dataset : Dataset,
+        tokenizer = None
     ) -> None:
 
         self.nTokens = 20
         self.subMatirx = torch.ones(self.nTokens, self.nTokens)
         self.validFields = ["seq", "edge_index", "edge_attr"]
+        self.tokenizer = tokenizer
 
         def updateElement(x):
             x = x[0]
@@ -22,7 +24,8 @@ class StrokachLoader(DataLoader):
             maskedSeq, mask = maskBERT(x.seq, self.subMatirx)
             x.maskedSeq = maskedSeq
             x.mask = mask
-            x.teacherLabels = torch.nn.functional.one_hot(x.seq, num_classes=self.nTokens).float()
+            if not self.tokenizer is None:
+                x.tokenizedSeq = self.tokenizer.encode(x.seq)
             return x
 
         super().__init__(
