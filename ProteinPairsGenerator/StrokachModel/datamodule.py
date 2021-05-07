@@ -26,7 +26,7 @@ class StrokachDataModule(pl.LightningDataModule):
         self.trainSet = trainSet
         self.valSet = valSet
         self.testSet = testSet
-        self.tokenizer = {None: None, "TAPE": KDTokenizer()}
+        self.tokenizer = {None: None, "TAPE": KDTokenizer()}[kdRegularizer]
 
     def setup(self, stage=None):
         pass
