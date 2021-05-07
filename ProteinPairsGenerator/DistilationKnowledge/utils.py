@@ -19,5 +19,4 @@ class KDTokenizer(TAPETokenizer):
       return torch.from_numpy(np.where(encoded == self.findValue, self.replaceValue, encoded)).unsqueeze(0)
 
 def extractBaseAcids(inTensor: torch.Tensor) -> torch.Tensor:
-    print(inTensor.shape)
     return inTensor[0, 1:-1, outColumnsFromBERT]
