@@ -20,7 +20,7 @@ class Annotator(nn.Module):
         self.model = model
         for param in self.model.parameters():
             param.requires_grad = False
-        self.model.to(device=self.device)
+        self.model = self.model.to(device=self.device)
         print(self.device)
 
     def __call__(self, inTensors):
