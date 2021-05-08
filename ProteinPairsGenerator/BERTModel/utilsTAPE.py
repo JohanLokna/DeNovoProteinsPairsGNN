@@ -20,12 +20,11 @@ class AdaptedTAPETokenizer(TAPETokenizer):
         if isinstance(inTensors, torch.Tensor):
             inTensors = [inTensors]
 
-        B, LMax, V = len(inTensors), max([torch.numel(seq) + 2 for seq in inTensors]), len(IUPAC_VOCAB)
-        tokenizedTensos = torch.zeros(B, LMax, V)
+        B, LMax = len(inTensors), max([torch.numel(seq) + 2 for seq in inTensors])
+        tokenizedTensos = torch.zeros(B, LMax)
 
         for i, seq in enumerate(inTensors):
             enc = super().encode(tensor_to_seq(seq, AMINO_ACIDS_MAP))
-            print(enc.shape)
             tokenizedTensos[i] = torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc))
 
     def BERT2AA(self, inTensors: torch.Tensor) -> torch.Tensor:
