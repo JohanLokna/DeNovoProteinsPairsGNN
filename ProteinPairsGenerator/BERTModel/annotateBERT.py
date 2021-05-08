@@ -21,6 +21,7 @@ class Annotator(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = False
         self.model.to(device=self.device)
+        print(self.device)
 
     def __call__(self, inTensors):
         inTensors = self.tokenizer.AA2BERT(inTensors).to(device=self.device)
