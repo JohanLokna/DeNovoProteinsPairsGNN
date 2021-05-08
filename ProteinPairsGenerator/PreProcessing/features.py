@@ -16,8 +16,6 @@ from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 from ProteinPairsGenerator.BERTModel import maskBERT
 from ProteinPairsGenerator.PreProcessing.proteinNetParser import readPotein
-from ProteinPairsGenerator.DistilationKnowledge import KDTokenizer
-
 
 class FeatureModule:
 
