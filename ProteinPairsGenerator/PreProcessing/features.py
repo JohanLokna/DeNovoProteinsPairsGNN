@@ -14,7 +14,7 @@ from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
                                                     CDRS_HEAVY, CDRS_LIGHT, \
                                                     CHAINS_MAP
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
-from ProteinPairsGenerator.BERTModel import maskBERT
+from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
 from ProteinPairsGenerator.PreProcessing.proteinNetParser import readPotein
 
 class FeatureModule:
@@ -548,6 +548,31 @@ class MaskBERT(FeatureModule):
         **kwargs
     ) -> torch.Tensor:
         return [maskBERT(self.dependencies[0].data, self.subMatrix) for _ in range(self.nMasks)]
+        
+    def preFilter(self, *args, **kwargs) -> bool:
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+
+
+class TAPEFeatures(FeatureModule):
+
+    def __init__(
+        self,
+        featureName : str = "TAPE",
+        dependencies : List[FeatureModule] = []
+    ) -> None:
+
+        if len(dependencies)!= 1:
+            warnings.warn("Dependencies in TAPEFeatures might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
+        self.annotator = TAPEAnnotator()
+
+    def forward(
+        self,
+        *args,
+        **kwargs
+    ) -> torch.Tensor:
+        return self.annotator([seq for seq, _ in self.dependencies[0].data])
         
     def preFilter(self, *args, **kwargs) -> bool:
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])

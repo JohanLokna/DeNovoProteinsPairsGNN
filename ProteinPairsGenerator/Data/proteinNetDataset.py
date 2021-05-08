@@ -306,7 +306,10 @@ class ProteinNetDataset(Dataset):
             nMasks = 4,
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, mask, coords, constraintMaxSize, constraintMinLength]
+        # Get TAPE annotation
+        tape = TAPEFeatures()
+
+        return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coords, constraintMaxSize, constraintMinLength]
 
     @staticmethod
     def collate(data_list):
