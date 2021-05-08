@@ -27,5 +27,7 @@ class AdaptedTAPETokenizer(TAPETokenizer):
             enc = super().encode(tensor_to_seq(seq, AMINO_ACIDS_MAP))
             tokenizedTensos[i] = torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc))
 
+        return tokenizedTensos
+
     def BERT2AA(self, inTensors: torch.Tensor) -> torch.Tensor:
         return torch.unbind(inTensors[:, 1:-1, self.AAColsBERT], dim=0)
