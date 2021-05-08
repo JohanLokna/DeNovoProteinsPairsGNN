@@ -1,5 +1,6 @@
 from tape import ProteinBertForMaskedLM
 
+import torch
 from torch import nn
 
 from .utilsTAPE import AdaptedTAPETokenizer
