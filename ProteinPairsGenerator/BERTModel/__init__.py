@@ -1,4 +1,4 @@
 from .modelBERT import BERTModel
-from .masking import *
+from .maskingBERT import *
 from .annotateBERT import *
 from .utilsTAPE import *

@@ -531,7 +531,7 @@ class MaskBERT(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "MaskBERT",
+        featureName : str = "maskBERT",
         dependencies : List[FeatureModule] = [],
         nMasks : int = 1,
         subMatrix : torch.Tensor = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))

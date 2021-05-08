@@ -256,6 +256,11 @@ class ProteinNetDataset(Dataset):
         cartDist = CartesianDistances(dependencies=[coordsCA])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
 
+        # Coords
+        coords = StackedFeatures(
+            dependencies = [coordsN, coordsCA, coordsC]
+        )
+
         # Construct edge relations
         closeNeighbours = CloseNeighbours(
             threshold = 1200,
@@ -285,17 +290,23 @@ class ProteinNetDataset(Dataset):
 
         # Restrict sequence lenght
         constraintMaxSize = Constraint(
-            featureName="constraintMaxSize",
+            featureName = "constraintMaxSize",
             constraint = lambda attr: attr.shape[0] < 200000,
             dependencies = [edgeAttr]
         )
         constraintMinLength = Constraint(
-            featureName="constraintMinLength",
+            featureName = "constraintMinLength",
             constraint = lambda attr: attr.shape[0] > 30,
             dependencies = [nodeAttr]
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, coordsCA, coordsN, coordsC, constraintMaxSize, constraintMinLength]
+        # Get BERT masking
+        mask = MaskBERT(
+            dependencies = [nodeAttr],
+            nMasks = 4,
+        )
+
+        return [nodeAttr, edgeAttr, edgeIdx, title, mask, coords, constraintMaxSize, constraintMinLength]
 
     @staticmethod
     def collate(data_list):
