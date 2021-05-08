@@ -23,7 +23,7 @@ class Annotator(nn.Module):
         self.model.to(device=self.device)
 
     def __call__(self, inTensors):
-        return self.BERT2AA(self.model(self.AA2BERT(inTensors).to(device=self.device)))
+        return self.tokenizer.BERT2AA(self.model(self.tokenizer.AA2BERT(inTensors).to(device=self.device)))
 
 
 class TAPEAnnotator(Annotator):
