@@ -11,6 +11,7 @@ class Annotator(nn.Module):
         model : nn.Module,
         tokenizer
     ) -> None:
+        super().__init__()
         self.tokenizer = tokenizer
         self.model = model
         for param in self.teacher.parameters():
