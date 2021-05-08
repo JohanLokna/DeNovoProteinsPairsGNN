@@ -3,8 +3,6 @@ import torch.nn as nn
 from torch.nn.functional import softmax, log_softmax
 import pytorch_lightning as pl
 
-from tape import ProteinBertForMaskedLM
-
 from .utils import extractBaseAcids
 
 def getKDModel(baseModel : pl.LightningModule, alpha : float):

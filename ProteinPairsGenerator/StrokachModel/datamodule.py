@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Union, List
 
 # Pytorch imports
+import torch
 from torch.utils.data import Dataset
 import pytorch_lightning as pl
 
 # Local imports
 from .loader import StrokachLoader
-from ProteinPairsGenerator.DistilationKnowledge import KDTokenizer
 
 
 class StrokachDataModule(pl.LightningDataModule):
@@ -18,28 +18,26 @@ class StrokachDataModule(pl.LightningDataModule):
         dataset : Dataset,
         trainSet: Union[Path, List[Path]],
         valSet: Union[Path, List[Path]],
-        testSet: Union[Path, List[Path]],
-        kdRegularizer : Union[str, None] = None
+        testSet: Union[Path, List[Path]]
     ) -> None:
         super().__init__()
         self.dataset = dataset
         self.trainSet = trainSet
         self.valSet = valSet
         self.testSet = testSet
-        self.tokenizer = {None: None, "TAPE": KDTokenizer()}[kdRegularizer]
 
     def setup(self, stage=None):
         pass
 
     def train_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.trainSet), tokenizer=self.tokenizer)
+        return StrokachLoader(self.dataset.getSubset(self.trainSet))
 
     def val_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.valSet), tokenizer=self.tokenizer)
+        return StrokachLoader(self.dataset.getSubset(self.valSet))
 
     def test_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.testSet), tokenizer=self.tokenizer)
+        return StrokachLoader(self.dataset.getSubset(self.testSet))
 
     def transfer_batch_to_device(self, x, device):
-        x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items())
+        x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items() if isinstance(v, torch.Tensor))
         return x
