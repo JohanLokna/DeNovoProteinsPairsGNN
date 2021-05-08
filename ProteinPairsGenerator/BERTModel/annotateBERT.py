@@ -4,21 +4,26 @@ from torch import nn
 
 from .utilsTAPE import AdaptedTAPETokenizer
 
+
 class Annotator(nn.Module):
 
     def __init__(
         self,
         model : nn.Module,
-        tokenizer
+        tokenizer,
+        device : str = "cuda:0" if torch.cuda.is_available() else "cpu"
     ) -> None:
         super().__init__()
+        self.device = device
         self.tokenizer = tokenizer
         self.model = model
-        for param in self.teacher.parameters():
+        for param in self.model.parameters():
             param.requires_grad = False
+        self.model.to(device=self.device)
 
     def __call__(self, inTensors):
-        return self.BERT2AA(self.model(self.AA2BERT(inTensors)))
+        return self.BERT2AA(self.model(self.AA2BERT(inTensors).to(device=self.device)))
+
 
 class TAPEAnnotator(Annotator):
     
