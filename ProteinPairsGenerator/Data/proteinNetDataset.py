@@ -258,6 +258,7 @@ class ProteinNetDataset(Dataset):
 
         # Coords
         coords = StackedFeatures(
+            featureName = "coords",
             dependencies = [coordsN, coordsCA, coordsC]
         )
 
@@ -296,7 +297,7 @@ class ProteinNetDataset(Dataset):
         )
         constraintMinLength = Constraint(
             featureName = "constraintMinLength",
-            constraint = lambda attr: attr.shape[0] > 30,
+            constraint = lambda attr: attr.shape[0] > 50,
             dependencies = [nodeAttr]
         )
 
