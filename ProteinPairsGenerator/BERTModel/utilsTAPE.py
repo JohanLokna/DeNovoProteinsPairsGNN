@@ -25,6 +25,7 @@ class AdaptedTAPETokenizer(TAPETokenizer):
 
         for i, seq in enumerate(inTensors):
             enc = super().encode(tensor_to_seq(seq, AMINO_ACIDS_MAP))
+            print(enc.shape)
             tokenizedTensos[i] = torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc))
 
     def BERT2AA(self, inTensors: torch.Tensor) -> torch.Tensor:
