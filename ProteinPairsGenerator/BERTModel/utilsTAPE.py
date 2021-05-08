@@ -21,7 +21,7 @@ class AdaptedTAPETokenizer(TAPETokenizer):
             inTensors = [inTensors]
 
         B, LMax = len(inTensors), max([torch.numel(seq) + 2 for seq in inTensors])
-        tokenizedTensos = torch.zeros(B, LMax)
+        tokenizedTensos = torch.zeros(B, LMax, dtype=torch.long)
 
         for i, seq in enumerate(inTensors):
             enc = super().encode(tensor_to_seq(seq, AMINO_ACIDS_MAP))
