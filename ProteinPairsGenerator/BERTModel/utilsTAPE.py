@@ -31,4 +31,4 @@ class AdaptedTAPETokenizer(TAPETokenizer):
 
     def BERT2AA(self, inTensors: torch.Tensor) -> torch.Tensor:
         print(self.AAColsBERT)
-        return torch.unbind(inTensors[:, 1:-1, self.AAColsBERT], dim=0)
+        return inTensors[:, 1:-1, self.AAColsBERT]
