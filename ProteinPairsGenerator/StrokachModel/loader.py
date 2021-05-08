@@ -22,7 +22,7 @@ class StrokachLoader(DataLoader):
             x.__dict__ = {k: v for k, v in x.__dict__.items() if k in self.validFields}
 
             # Randomly selecet masked sequence
-            idx = torch.randint(0, len(x.maskBERT), (1)).item()
+            idx = torch.randint(len(x.maskBERT), (1)).item()
             maskBERTList = x.__dict__.pop("maskBERT")
             x.maskedSeq, x.mask = maskBERTList[idx]
             for key in [k for k in x.__dict__.keys() if k in ["TAPE"]]:
