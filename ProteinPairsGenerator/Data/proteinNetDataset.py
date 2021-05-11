@@ -310,7 +310,7 @@ class ProteinNetDataset(Dataset):
         # Get TAPE annotation
         tape = TAPEFeatures(
             dependencies = [mask],
-            device=device
+            device = device
         )
 
         return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coords, constraintMaxSize, constraintMinLength]

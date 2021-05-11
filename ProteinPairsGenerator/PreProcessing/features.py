@@ -558,14 +558,16 @@ class TAPEFeatures(FeatureModule):
     def __init__(
         self,
         featureName : str = "TAPE",
-        dependencies : List[FeatureModule] = []
+        dependencies : List[FeatureModule] = [],
+        *args,
+        **kwargs
     ) -> None:
 
         if len(dependencies)!= 1:
             warnings.warn("Dependencies in TAPEFeatures might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
-        self.annotator = TAPEAnnotator()
+        self.annotator = TAPEAnnotator(*args, **kwargs)
 
     def forward(
         self,
