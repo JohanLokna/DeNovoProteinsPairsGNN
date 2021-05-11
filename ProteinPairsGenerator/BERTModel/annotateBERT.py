@@ -31,5 +31,5 @@ class Annotator(nn.Module):
 
 class TAPEAnnotator(Annotator):
     
-    def __init__(self):
-          super().__init__(ProteinBertForMaskedLM.from_pretrained('bert-base'), AdaptedTAPETokenizer())
+    def __init__(self, *args, **kwargs):
+          super().__init__(ProteinBertForMaskedLM.from_pretrained('bert-base'), AdaptedTAPETokenizer(), *args, **kwargs)

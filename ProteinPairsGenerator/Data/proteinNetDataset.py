@@ -242,7 +242,7 @@ class ProteinNetDataset(Dataset):
         pass
 
     @staticmethod
-    def getGenericFeatures():
+    def getGenericFeatures(device : str = "cuda:0" if torch.cuda.is_available() else "cpu"):
 
         reader = ProteinNetRecord()
 
@@ -304,12 +304,13 @@ class ProteinNetDataset(Dataset):
         # Get BERT masking
         mask = MaskBERT(
             dependencies = [nodeAttr],
-            nMasks = 4,
+            nMasks = 4
         )
 
         # Get TAPE annotation
         tape = TAPEFeatures(
-            dependencies = [mask]
+            dependencies = [mask],
+            device=device
         )
 
         return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coords, constraintMaxSize, constraintMinLength]
