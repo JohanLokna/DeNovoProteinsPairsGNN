@@ -574,7 +574,7 @@ class TAPEFeatures(FeatureModule):
         *args,
         **kwargs
     ) -> torch.Tensor:
-        return self.annotator([seq for seq, _ in self.dependencies[0].data])
+        return [self.annotator([seq]) for seq, _ in self.dependencies[0].data]
         
     def preFilter(self, *args, **kwargs) -> bool:
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
