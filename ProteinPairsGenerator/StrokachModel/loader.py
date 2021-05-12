@@ -1,5 +1,5 @@
 # General imports
-from typing import List
+from typing import Union
 
 # Pytorch imports
 import torch
@@ -10,10 +10,13 @@ class StrokachLoader(DataLoader):
     def __init__(
         self,
         dataset : Dataset,
-        extraFields : List[str] = []
+        teacher : Union[str, None] = None
     ) -> None:
 
-        self.validFields = ["seq", "edge_index", "edge_attr", "maskBERT"] + extraFields
+        self.teacher = teacher
+        self.validFields = ["seq", "edge_index", "edge_attr", "maskBERT"]
+        if self.teacher:
+            self.validFields.append(self.teacher)
 
         def updateElement(x):
 
@@ -25,8 +28,9 @@ class StrokachLoader(DataLoader):
             idx = torch.randint(len(x.maskBERT), (1,)).item()
             maskBERTList = x.__dict__.pop("maskBERT")
             x.maskedSeq, x.mask = maskBERTList[idx]
-            for key in [k for k in x.__dict__.keys() if k in ["TAPE"]]:
-                x.__dict__[key] = x.__dict__[key][idx]
+            if self.teacher and self.teacher in x.__dict__.keys():
+                x.__dict__[self.teacher] = x.__dict__[self.teacher][idx]
+                x.__dict__["teacherLabels"] = x.__dict__.pop(self.teacher)
 
             return x
 

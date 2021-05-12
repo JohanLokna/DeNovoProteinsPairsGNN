@@ -26,11 +26,6 @@ class StrokachDataModule(pl.LightningDataModule):
         self.trainSet = trainSet
         self.valSet = valSet
         self.testSet = testSet
-        self.extraFields = {
-          "": [],
-          "TAPE": ["TAPE"]
-        }[teacherModel]
-
 
     def setup(self, stage=None):
         pass
