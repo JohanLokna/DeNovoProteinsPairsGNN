@@ -44,7 +44,8 @@ class StrokachLoader(DataLoader):
         kwargs["batch_size"] = 1
         kwargs["collate_fn"] = updateElement
 
-        # print(kwargs["sampler"].__dict__)
+        if "sampler" in kwargs:
+            print(kwargs["sampler"].__dict__)
 
         kwargs["sampler"] = None
         kwargs["shuffle"] = False
