@@ -37,8 +37,7 @@ class StrokachDataModule(pl.LightningDataModule):
     def val_dataloader(self):
         return StrokachLoader(
             self.dataset.getSubset(self.valSet), 
-            teacher=self.teacher,
-            prefetch_factor = 100            
+            teacher=self.teacher       
         )
 
     def test_dataloader(self):
