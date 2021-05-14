@@ -188,7 +188,7 @@ class ProteinNetDataset(Dataset):
 
     def pageFault(self, subsetIdx, fileIdx):
         f = self.filesMapping[(subsetIdx, fileIdx)]
-        self.data, self.slices = torch.load(f)
+        self.data, self.slices = torch.load(f, map_location="cpu")
         self.subsetIdx, self.fileIdx = subsetIdx, fileIdx
 
     def len(self):
