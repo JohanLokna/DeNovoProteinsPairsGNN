@@ -41,6 +41,8 @@ class StrokachLoader(DataLoader):
         if not (kwargs.pop("batch_size", None) in [1, None]):
             warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
         
+        print(kwargs)
+
         super().__init__(
             dataset=dataset,
             collate_fn=updateElement,
