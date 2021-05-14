@@ -43,7 +43,7 @@ class StrokachLoader(DataLoader):
         kwargs["batch_size"] = 1
         kwargs["collate_fn"] = updateElement
         kwargs["sampler"] = None
-        kwargs["shuffle "] = False
+        kwargs["shuffle"] = False
 
         super().__init__(
             dataset=dataset,
