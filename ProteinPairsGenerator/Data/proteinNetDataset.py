@@ -23,7 +23,7 @@ class ProteinNetDataset(Dataset):
         self,
         root : Path,
         subsets : List[Path],
-        features : List[FeatureModule],
+        features : List[FeatureModule] = [],
         batchSize : Union[int, None] = None,
         caspVersion : int = 12,
     ) -> None:

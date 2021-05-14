@@ -9,23 +9,32 @@ import pytorch_lightning as pl
 
 # Local imports
 from .loader import StrokachLoader
+from ProteinPairsGenerator.Data import ProteinNetDataset
 
 
 class StrokachDataModule(pl.LightningDataModule):
 
     def __init__(
         self,
-        dataset : Dataset,
-        trainSet: Union[Path, List[Path]],
-        valSet: Union[Path, List[Path]],
-        testSet: Union[Path, List[Path]],
+        root : Union[Path, str],
+        trainSet: Union[Path, List[Path], None] = None,
+        valSet: Union[List[Path], None] = None,
+        testSet: Union[List[Path], None] = None,
         teacher: Union[str, None] = None
     ) -> None:
         super().__init__()
-        self.dataset = dataset
-        self.trainSet = trainSet
-        self.valSet = valSet
-        self.testSet = testSet
+
+        if isinstance(root, str):
+            root = Path(root)
+
+        self.trainSet = trainSet if not trainSet is None else [root.joinpath("processed/training_100")]
+        self.valSet = valSet if not valSet is None else [root.joinpath("processed/validation")]
+        self.testSet = testSet if not testSet is None else [root.joinpath("processed/testing")]
+        self.dataset = ProteinNetDataset(
+            root = root,
+            subsets = self.trainSet + self.valSet + self.trainSet,
+            batchSize = 11000,
+        )
         self.teacher = teacher
 
     def setup(self, stage=None):
@@ -35,7 +44,7 @@ class StrokachDataModule(pl.LightningDataModule):
         return StrokachLoader(
             self.dataset.getSubset(self.trainSet), 
             teacher=self.teacher,
-            num_workers=1, 
+            num_workers=1,
             pin_memory=True
         )
 
