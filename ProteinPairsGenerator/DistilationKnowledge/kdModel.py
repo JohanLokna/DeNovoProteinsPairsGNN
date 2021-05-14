@@ -17,9 +17,6 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
             super().__init__(*args, **kwargs)
             self.alpha = alpha
             self.output = None
-            self.softmax = nn.Softmax(dim=1)
-            for param in self.teacher.parameters():
-                param.requires_grad = False
 
         def step(self, x):
             outDict = super().step(x)
