@@ -19,25 +19,26 @@ class StrokachDataModule(pl.LightningDataModule):
         trainSet: Union[Path, List[Path]],
         valSet: Union[Path, List[Path]],
         testSet: Union[Path, List[Path]],
-        teacherModel: str = ""
+        teacher: Union[str, None] = None
     ) -> None:
         super().__init__()
         self.dataset = dataset
         self.trainSet = trainSet
         self.valSet = valSet
         self.testSet = testSet
+        self.teacher = teacher
 
     def setup(self, stage=None):
         pass
 
     def train_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.trainSet), extraFields=self.extraFields)
+        return StrokachLoader(self.dataset.getSubset(self.trainSet), teacher=self.teacher)
 
     def val_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.valSet), extraFields=self.extraFields)
+        return StrokachLoader(self.dataset.getSubset(self.valSet), teacher=self.teacher)
 
     def test_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.testSet), extraFields=self.extraFields)
+        return StrokachLoader(self.dataset.getSubset(self.testSet), teacher=self.teacher)
 
     def transfer_batch_to_device(self, x, device):
         x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items() if isinstance(v, torch.Tensor))
