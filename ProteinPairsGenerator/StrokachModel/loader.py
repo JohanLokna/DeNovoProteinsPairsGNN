@@ -37,9 +37,9 @@ class StrokachLoader(DataLoader):
 
             return x
 
-        # Only implemented with batch size == 1
-        if not (kwargs.pop("batch_size", None) in [1, None]):
-            warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
+        # # Only implemented with batch size == 1
+        # if not (kwargs.pop("batch_size", None) in [1, None]):
+        #     warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
         
         print(kwargs)
 
