@@ -38,7 +38,6 @@ class StrokachDataModule(pl.LightningDataModule):
         return StrokachLoader(
             self.dataset.getSubset(self.valSet), 
             teacher=self.teacher,
-            num_workers = 8,
             prefetch_factor = 100            
         )
 
