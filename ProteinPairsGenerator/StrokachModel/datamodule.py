@@ -32,13 +32,16 @@ class StrokachDataModule(pl.LightningDataModule):
         pass
 
     def train_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.trainSet), teacher=self.teacher)
+        return StrokachLoader(self.dataset.getSubset(
+            self.trainSet), 
+            teacher=self.teacher,
+            teacher=self.teacher,
+            num_workers=8, 
+            pin_memory=True
+        )
 
     def val_dataloader(self):
-        return StrokachLoader(
-            self.dataset.getSubset(self.valSet), 
-            teacher=self.teacher       
-        )
+        return StrokachLoader(self.dataset.getSubset(self.valSet), teacher=self.teacher)
 
     def test_dataloader(self):
         return StrokachLoader(self.dataset.getSubset(self.testSet), teacher=self.teacher)
