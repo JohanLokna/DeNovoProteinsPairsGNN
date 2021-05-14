@@ -10,7 +10,9 @@ class StrokachLoader(DataLoader):
     def __init__(
         self,
         dataset : Dataset,
-        teacher : Union[str, None] = None
+        teacher : Union[str, None] = None,
+        *args,
+        **kwargs
     ) -> None:
 
         self.teacher = teacher
@@ -37,5 +39,7 @@ class StrokachLoader(DataLoader):
         super().__init__(
             dataset=dataset,
             collate_fn=updateElement,
-            batch_size=1
+            batch_size = 1,
+            *args,
+            **kwargs
         )
