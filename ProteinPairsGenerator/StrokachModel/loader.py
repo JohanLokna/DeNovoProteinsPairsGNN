@@ -1,5 +1,6 @@
 # General imports
 from typing import Union
+import warnings
 
 # Pytorch imports
 import torch
@@ -36,10 +37,14 @@ class StrokachLoader(DataLoader):
 
             return x
 
+        # Only implemented with batch size == 1
+        if not (kwargs.pop("batch_size", None) in [1, None]):
+            warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
+        
         super().__init__(
             dataset=dataset,
             collate_fn=updateElement,
-            batch_size = 1,
+            batch_size=1, 
             *args,
             **kwargs
         )
