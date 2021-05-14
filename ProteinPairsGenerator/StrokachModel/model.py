@@ -35,11 +35,10 @@ class Net(BERTModel):
         adj_input_size : int, 
         hidden_size : int, 
         output_size : int , 
-        N : int = 3, 
-        criterion = nn.CrossEntropyLoss()
+        N : int = 3
     ) -> None:
         super().__init__()
-        self.criterion = criterion
+        self.criterion = nn.CrossEntropyLoss()
         self.embed_x = nn.Sequential(
             nn.Embedding(x_input_size, hidden_size),
             nn.ReLU(),
