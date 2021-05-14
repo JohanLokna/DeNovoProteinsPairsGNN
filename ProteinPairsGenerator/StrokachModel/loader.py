@@ -42,6 +42,9 @@ class StrokachLoader(DataLoader):
             warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
         kwargs["batch_size"] = 1
         kwargs["collate_fn"] = updateElement
+
+        print(kwargs["sampler"].__dict__)
+
         kwargs["sampler"] = None
         kwargs["shuffle"] = False
 
