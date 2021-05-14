@@ -35,7 +35,7 @@ class StrokachDataModule(pl.LightningDataModule):
         return StrokachLoader(
             self.dataset.getSubset(self.trainSet), 
             teacher=self.teacher,
-            num_workers=8, 
+            num_workers=1, 
             pin_memory=True
         )
 

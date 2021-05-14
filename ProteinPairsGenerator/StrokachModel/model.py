@@ -29,7 +29,15 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
 
 
 class Net(BERTModel):
-    def __init__(self, x_input_size, adj_input_size, hidden_size, output_size, N=3, criterion=nn.CrossEntropyLoss()):
+    def __init__(
+        self, 
+        x_input_size : int, 
+        adj_input_size : int, 
+        hidden_size : int, 
+        output_size : int , 
+        N : int = 3, 
+        criterion = nn.CrossEntropyLoss()
+    ) -> None:
         super().__init__()
         self.criterion = criterion
         self.embed_x = nn.Sequential(

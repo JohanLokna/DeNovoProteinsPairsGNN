@@ -19,6 +19,7 @@ def getKDModel(baseModel : pl.LightningModule, alpha : float):
             self.output = None
 
         def step(self, x):
+            print(x)
             outDict = super().step(x)
             lossTeacher = torch.mean(torch.sum(-log_softmax(self.output, dim=1) * softmax(x.teacherLabels, dim=1), dim=1)[x.mask])
             outDict["loss"] = (1 - self.alpha) * outDict["loss"] + self.alpha * lossTeacher
