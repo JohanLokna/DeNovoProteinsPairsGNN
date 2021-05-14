@@ -19,11 +19,9 @@ class StrokachDataModule(pl.LightningDataModule):
         trainSet: Union[Path, List[Path]],
         valSet: Union[Path, List[Path]],
         testSet: Union[Path, List[Path]],
-        teacher: Union[str, None] = None,
-        *args,
-        **kwargs
+        teacher: Union[str, None] = None
     ) -> None:
-        super().__init__(*args, **kwargs)
+        super().__init__()
         self.dataset = dataset
         self.trainSet = trainSet
         self.valSet = valSet
