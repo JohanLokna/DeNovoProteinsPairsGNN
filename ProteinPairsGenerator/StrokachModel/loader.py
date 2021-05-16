@@ -40,7 +40,6 @@ class StrokachLoader(DataLoader):
             return x
 
         # Ensure correct kwargs
-        print(kwargs)
         if not (kwargs.pop("batch_size", None) in [1, None]):
             warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
         kwargs["batch_size"] = 1
@@ -50,6 +49,7 @@ class StrokachLoader(DataLoader):
             rank = kwargs["sampler"].rank
             size = kwargs["sampler"].num_replicas
             newIndecies = [x for x in dataset.indices if x[0] % size == rank]
+            print(newIndecies[0])
             dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
             kwargs["sampler"] = None
         kwargs["shuffle"] = False
