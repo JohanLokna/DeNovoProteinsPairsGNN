@@ -47,11 +47,11 @@ class StrokachLoader(DataLoader):
         kwargs["collate_fn"] = updateElement
 
         if ("sampler" in kwargs) and isinstance(kwargs["sampler"], DistributedSampler):
-            kwargs["sampler"] = None
             rank = kwargs["sampler"].rank
             size = kwargs["sampler"].num_replicas
             newIndecies = [x for x in dataset.indices if x[0] % size == rank]
             dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
+            kwargs["sampler"] = None
         kwargs["shuffle"] = False
 
         super().__init__(
