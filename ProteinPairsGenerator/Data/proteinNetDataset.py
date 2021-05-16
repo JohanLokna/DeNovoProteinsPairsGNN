@@ -199,8 +199,6 @@ class ProteinNetDataset(Dataset):
 
     def index_select(self, allIdx):
 
-        print(allIdx)
-
         subsetIdx, fileIdx, idx = allIdx
         if (subsetIdx, fileIdx) != (self.subsetIdx, self.fileIdx):
             self.pageFault(subsetIdx, fileIdx)

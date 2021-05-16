@@ -49,7 +49,6 @@ class StrokachLoader(DataLoader):
             rank = kwargs["sampler"].rank
             size = kwargs["sampler"].num_replicas
             newIndecies = [x for x in dataset.indices if x[0] % size == rank]
-            print(newIndecies[0], rank)
             dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
             kwargs["sampler"] = None
         kwargs["shuffle"] = False
