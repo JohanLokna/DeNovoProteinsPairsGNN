@@ -20,7 +20,8 @@ class StrokachDataModule(pl.LightningDataModule):
         trainSet: Union[Path, List[Path], None] = None,
         valSet: Union[List[Path], None] = None,
         testSet: Union[List[Path], None] = None,
-        teacher: Union[str, None] = None
+        teacher: Union[str, None] = None,
+        num_workers: int = 1
     ) -> None:
         super().__init__()
 
@@ -36,12 +37,17 @@ class StrokachDataModule(pl.LightningDataModule):
             batchSize = 11000,
         )
         self.teacher = teacher
+        self.num_workers = num_workers
 
     def setup(self, stage=None):
         pass
 
     def train_dataloader(self):
-        return StrokachLoader(self.dataset.getSubset(self.trainSet), teacher=self.teacher)
+        return StrokachLoader(
+            self.dataset.getSubset(self.trainSet), 
+            teacher=self.teacher,
+            num_workers=self.num_workers
+        )
 
     def val_dataloader(self):
         return StrokachLoader(self.dataset.getSubset(self.valSet), teacher=self.teacher)
