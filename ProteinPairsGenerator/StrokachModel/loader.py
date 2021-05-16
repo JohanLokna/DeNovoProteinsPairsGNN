@@ -4,13 +4,15 @@ import warnings
 
 # Pytorch imports
 import torch
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Subset
+from torch.utils.data.distributed import DistributedSampler
+
 
 class StrokachLoader(DataLoader):
 
     def __init__(
         self,
-        dataset : Dataset,
+        dataset : Subset,
         teacher : Union[str, None] = None,
         *args,
         **kwargs
@@ -44,10 +46,12 @@ class StrokachLoader(DataLoader):
         kwargs["batch_size"] = 1
         kwargs["collate_fn"] = updateElement
 
-        if "sampler" in kwargs:
-            print(kwargs["sampler"].__dict__)
-
-        kwargs["sampler"] = None
+        if ("sampler" in kwargs) and isinstance(kwargs["sampler"], DistributedSampler):
+            kwargs["sampler"] = None
+            rank = kwargs["sampler"].rank
+            size = kwargs["sampler"].num_replicas
+            newIndecies = [x for x in dataset.indices if x[0] % size == rank]
+            dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
         kwargs["shuffle"] = False
 
         super().__init__(
