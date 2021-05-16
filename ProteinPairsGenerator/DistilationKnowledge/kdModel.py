@@ -5,12 +5,13 @@ from torch.nn.functional import softmax, log_softmax
 import pytorch_lightning as pl
 
 
-def getKDModel(baseModel : pl.LightningModule, alpha : float):
+def getKDModel(baseModel : pl.LightningModule):
 
     class KDModel(baseModel):
 
         def __init__(
             self,
+            alpha : float = 0.0,
             *args, 
             **kwargs
         ) -> None:
