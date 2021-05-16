@@ -21,7 +21,8 @@ class StrokachDataModule(pl.LightningDataModule):
         valSet: Union[List[Path], None] = None,
         testSet: Union[List[Path], None] = None,
         teacher: Union[str, None] = None,
-        num_workers: int = 1
+        num_workers: int = 1,
+        prefetch_factor: int = 2
     ) -> None:
         super().__init__()
 
@@ -38,6 +39,7 @@ class StrokachDataModule(pl.LightningDataModule):
         )
         self.teacher = teacher
         self.num_workers = num_workers
+        self.prefetch_factor = prefetch_factor
 
     def setup(self, stage=None):
         pass
@@ -46,7 +48,8 @@ class StrokachDataModule(pl.LightningDataModule):
         return StrokachLoader(
             self.dataset.getSubset(self.trainSet), 
             teacher=self.teacher,
-            num_workers=self.num_workers
+            num_workers=self.num_workers,
+            prefetch_factor=self.prefetch_factor
         )
 
     def val_dataloader(self):
