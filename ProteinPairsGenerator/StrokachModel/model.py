@@ -108,3 +108,7 @@ class Net(BERTModel):
             "nCorrect" : nCorrect,
             "nTotal" : nTotal
         }
+
+    def to(self, device):
+        print(device)
+        super().to(device)
