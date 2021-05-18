@@ -59,5 +59,6 @@ class StrokachDataModule(pl.LightningDataModule):
         return StrokachLoader(self.dataset.getSubset(self.testSet), teacher=self.teacher)
 
     def transfer_batch_to_device(self, x, device):
+        print(device)
         x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items() if isinstance(v, torch.Tensor))
         return x
