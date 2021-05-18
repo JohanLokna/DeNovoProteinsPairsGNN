@@ -110,5 +110,4 @@ class Net(BERTModel):
         }
 
     def to(self, device):
-        print(device)
         super().to(device)
