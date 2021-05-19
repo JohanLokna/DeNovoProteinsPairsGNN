@@ -16,8 +16,8 @@ class BERTModel(pl.LightningModule):
         nCorrect = sum([o["nCorrect"] for o in outputs])
         nTotal = sum([o["nTotal"]  for o in outputs])
         loss = sum([o["loss"] * o["nTotal"] for o in outputs]) / nTotal
-        self.log(phase + "Loss", loss, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(phase + "Acc", nCorrect / nTotal, on_step=False, on_epoch=True, prog_bar=True)
+        self.log(phase + "Loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        self.log(phase + "Acc", nCorrect / nTotal, on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
     def training_step(self, batch, idx):
         return self.step(batch)
