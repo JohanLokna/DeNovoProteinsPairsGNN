@@ -21,7 +21,8 @@ class BERTDataModule(pl.LightningDataModule):
         testSet: Union[List[Path], None] = None,
         teacher: Union[str, None] = None,
         num_workers: int = 1,
-        prefetch_factor: int = 2
+        prefetch_factor: int = 2,
+        batch_size: int = 1
     ) -> None:
         super().__init__()
 
@@ -37,6 +38,7 @@ class BERTDataModule(pl.LightningDataModule):
         )
         self.teacher = teacher
         self.num_workers = num_workers
+        self.batch_size = batch_size
         self.prefetch_factor = prefetch_factor
         self.loaderClass = loaderClass
 
@@ -48,7 +50,8 @@ class BERTDataModule(pl.LightningDataModule):
             self.dataset.getSubset(self.trainSet), 
             teacher=self.teacher,
             num_workers=self.num_workers,
-            prefetch_factor=self.prefetch_factor
+            prefetch_factor=self.prefetch_factor,
+            batch_size=self.batch_size
         )
 
     def val_dataloader(self):
