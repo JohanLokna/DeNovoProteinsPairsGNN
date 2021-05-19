@@ -73,7 +73,7 @@ class IngrahamLoader(DataLoader):
         kwargs["shuffle"] = False
 
         super().__init__(
-            dataset=dataset
+            dataset=dataset,
             *args,
             **kwargs
         )
