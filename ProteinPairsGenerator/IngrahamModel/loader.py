@@ -36,6 +36,7 @@ class IngrahamLoader(DataLoader):
 
             if self.teacher:
                 teacherLabels = torch.zeros(B, L_max, self.nTokens)
+                print("OK")
 
             # Build the batch
             for i, (b, l) in enumerate(zip(batch, lengths)):
