@@ -34,9 +34,11 @@ class IngrahamLoader(DataLoader):
             mask = torch.zeros(B, L_max)
             valid = torch.zeros(B, L_max)
 
+            print("1\n\n\n")
             if self.teacher:
                 teacherLabels = torch.zeros(B, L_max, self.nTokens)
                 print("OK")
+            print("2\n\n\n")
 
             # Build the batch
             for i, (b, l) in enumerate(zip(batch, lengths)):
