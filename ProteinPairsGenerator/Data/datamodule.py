@@ -55,7 +55,7 @@ class BERTDataModule(pl.LightningDataModule):
         print(self.valSet)
         print(self.teacher)
         print(self.dataset.getSubset(self.valSet))
-        return self.loaderClass(self.dataset.getSubset(self.valSet), teacher=self.teacher)
+        return self.loaderClass(dataset=self.dataset.getSubset(self.valSet), teacher=self.teacher)
 
     def test_dataloader(self):
         return self.loaderClass(self.dataset.getSubset(self.testSet), teacher=self.teacher)
