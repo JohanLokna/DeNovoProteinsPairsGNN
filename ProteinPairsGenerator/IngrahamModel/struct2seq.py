@@ -150,16 +150,14 @@ class Struct2Seq(BERTModel):
         log_probs = F.log_softmax(logits, dim=-1)
         return log_probs
 
-    def step(self, batch):
+    def step(self, x):
 
-        (X, S, l, v), y, mask = batch
-        output = self(X, S, l, v)
-        
-        _, loss = loss_smoothed(y, output, mask, self.out_size)
+        output = self(x.coords, x.maskedSeq, x.lengths, x.valid)
+        _, loss = loss_smoothed(x.seq, output, x.mask, self.out_size)
 
         yPred = torch.argmax(output.data, 2)
-        nCorrect = ((yPred == y) * mask).sum()
-        nTotal = torch.sum(mask)
+        nCorrect = ((yPred == x.seq) * x.mask).sum()
+        nTotal = torch.sum(x.mask)
 
         return {
             "loss" : loss,

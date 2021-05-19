@@ -31,7 +31,7 @@ class IngrahamLoader(DataLoader):
             coords = torch.zeros(B, L_max, 3, 3)
             seq = torch.zeros(B, L_max, dtype=torch.long)
             maskedSeq = torch.zeros(B, L_max, dtype=torch.long)
-            mask = torch.zeros(B, L_max, dtype=torch.long)
+            mask = torch.zeros(B, L_max)
             valid = torch.zeros(B, L_max)
 
             if self.teacher:
@@ -56,6 +56,7 @@ class IngrahamLoader(DataLoader):
                 coords=coords,
                 seq=seq,
                 valid=valid,
+                lengths=lengths,
                 maskedSeq=maskedSeq,
                 mask=mask,
                 **({self.teacher: teacherLabels} if self.teacher else {})
