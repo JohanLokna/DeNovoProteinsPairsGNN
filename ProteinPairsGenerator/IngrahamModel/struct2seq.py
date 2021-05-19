@@ -167,9 +167,9 @@ class Struct2Seq(BERTModel):
             "nTotal" : nTotal
         }
 
-    # def configure_optimizers(self):
-    #     optimizer = NoamOpt.getStandard(self.parameters(), self.hidden_dim)
-    #     return {
-    #        'optimizer': optimizer,
-    #        'monitor': 'valLoss'
-    #     }
+    def configure_optimizers(self):
+        optimizer = NoamOpt.getStandard(self.parameters(), self.hidden_dim)
+        return {
+           'optimizer': optimizer,
+           'monitor': 'valLoss'
+        }
