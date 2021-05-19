@@ -5,4 +5,5 @@ class IngrahamDataModule(BERTDataModule):
 
     def __init__(self, *args, **kwargs):
           kwargs["loaderClass"] = IngrahamLoader
+          print(kwargs)
           super().__init__(*args, **kwargs)
