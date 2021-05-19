@@ -153,12 +153,7 @@ class Struct2Seq(BERTModel):
     def step(self, batch):
 
         (X, S, l, v), y, mask = batch
-
-        print("Ckpt 0")
-        print(*[x.shape for x in [X, S, v, y, mask]])
         output = self(X, S, l, v)
-
-        print("Ckpt 1")
         
         _, loss = loss_smoothed(y, output, mask, self.out_size)
 
