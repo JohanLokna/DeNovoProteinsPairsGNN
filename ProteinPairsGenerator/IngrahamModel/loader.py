@@ -62,7 +62,7 @@ class IngrahamLoader(DataLoader):
                 lengths=lengths,
                 maskedSeq=maskedSeq,
                 mask=mask,
-                **({self.teacher: teacherLabels} if self.teacher else {})
+                **({"teacherLabels": teacherLabels} if self.teacher else {})
             )
 
         # Ensure correct kwargs
