@@ -21,10 +21,12 @@ def getKDModel(baseModel : pl.LightningModule):
 
         def step(self, x):
             outDict = super().step(x)
+
+            print(self.output.shape)
             #lossTeacher = torch.mean(torch.sum(-log_softmax(self.output, dim=1) * softmax(x.teacherLabels, dim=1), dim=1)[x.mask])
 
             lossTeacher = torch.sum(-log_softmax(self.output, dim=1) * softmax(x.teacherLabels, dim=1), dim=1)
-            print(lossTeacher.shape, x.mask, sep="\n")
+            print(lossTeacher.shape, x.mask.shape, sep="\n")
             lossTeacher = lossTeacher[x.mask] if x.mask.dtype in [torch.long, torch.bool] else lossTeacher * x.mask
             lossTeacher = torch.mean(lossTeacher)
 
