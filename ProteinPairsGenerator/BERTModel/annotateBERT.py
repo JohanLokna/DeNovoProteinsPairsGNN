@@ -19,9 +19,9 @@ class Annotator(nn.Module):
             param.requires_grad = False
 
     def forward(self, inTensors):
-        inTensors = self.tokenizer.AA2BERT(inTensors).to(device=self.device)
+        inTensors = self.tokenizer.AA2BERT(inTensors).type_as(inTensors)
         outTensors = self.model(inTensors)[0]
-        return self.tokenizer.BERT2AA(outTensors).to(device=self.device)
+        return self.tokenizer.BERT2AA(outTensors).type_as(inTensors)
 
 
 class TAPEAnnotator(Annotator):
