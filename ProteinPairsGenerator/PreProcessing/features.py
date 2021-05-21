@@ -559,15 +559,14 @@ class TAPEFeatures(FeatureModule):
         self,
         featureName : str = "TAPE",
         dependencies : List[FeatureModule] = [],
-        *args,
-        **kwargs
+        device : str = "cuda:0" if torch.cuda.is_available() else "cpu"
     ) -> None:
 
         if len(dependencies)!= 1:
             warnings.warn("Dependencies in TAPEFeatures might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
-        self.annotator = TAPEAnnotator(*args, **kwargs)
+        self.annotator = TAPEAnnotator().to(device=device)
 
     def forward(
         self,

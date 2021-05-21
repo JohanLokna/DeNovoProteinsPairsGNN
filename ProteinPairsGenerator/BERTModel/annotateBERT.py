@@ -1,6 +1,5 @@
 from tape import ProteinBertForMaskedLM
 
-import torch
 from torch import nn
 
 from .utilsTAPE import AdaptedTAPETokenizer
@@ -11,22 +10,18 @@ class Annotator(nn.Module):
     def __init__(
         self,
         model : nn.Module,
-        tokenizer,
-        device : str = "cuda:1" if torch.cuda.is_available() else "cpu"
+        tokenizer
     ) -> None:
         super().__init__()
-        self.device = device
         self.tokenizer = tokenizer
         self.model = model
         for param in self.model.parameters():
             param.requires_grad = False
-        self.model = self.model.to(device=self.device)
-        print(self.device)
 
-    def __call__(self, inTensors):
+    def forward(self, inTensors):
         inTensors = self.tokenizer.AA2BERT(inTensors).to(device=self.device)
         outTensors = self.model(inTensors)[0]
-        return self.tokenizer.BERT2AA(outTensors)
+        return self.tokenizer.BERT2AA(outTensors).to(device=self.device)
 
 
 class TAPEAnnotator(Annotator):
