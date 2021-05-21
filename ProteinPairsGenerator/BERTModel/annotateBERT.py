@@ -21,6 +21,8 @@ class Annotator(nn.Module):
     def forward(self, inTensors):
         inTensors = self.tokenizer.AA2BERT(inTensors).type_as(inTensors)
         outTensors = self.model(inTensors)
+        print(outTensors, (x.shape for x in outTensors))
+        outTensors = outTensors[0]
         return self.tokenizer.BERT2AA(outTensors).type_as(inTensors)
 
 
