@@ -152,7 +152,7 @@ class Struct2Seq(BERTModel):
 
     def step(self, x):
 
-        output = self(x.coords, x.maskedSeq, x.lengths, x.valid)
+        output = self(0.01 * x.coords, x.maskedSeq, x.lengths, x.valid)
         _, loss = loss_smoothed(x.seq, output, x.mask, self.out_size)
 
         yPred = torch.argmax(output.data, 2)
