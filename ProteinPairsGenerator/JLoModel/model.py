@@ -7,7 +7,6 @@ from torch.nn.modules.container import ModuleList
 
 # Local imports
 from ProteinPairsGenerator.StrokachModel import StrokachModel
-from ProteinPairsGenerator.BERTModel import Annotator, AdaptedTAPETokenizer
 
 
 class UnSqueeze(nn.Module):
