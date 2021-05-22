@@ -16,7 +16,7 @@ class BERTHelper(nn.Module):
         self.model = ProteinBertModel.from_pretrained('bert-base')
 
     def forward(self, x):
-        return self.model(x.unsqueeze(0))[0, 1:-1].squeeze(0)
+        return self.model(x.unsqueeze(0))[0][0, 1:-1]
 
 
 class Net(StrokachModel):
