@@ -7,8 +7,10 @@ import torch
 from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
 
+# Local imports
+from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
-class StrokachLoader(DataLoader):
+class JLoLoader(DataLoader):
 
     def __init__(
         self,
@@ -22,6 +24,7 @@ class StrokachLoader(DataLoader):
         self.validFields = ["seq", "edge_index", "edge_attr", "maskBERT"]
         if self.teacher:
             self.validFields.append(self.teacher)
+        self.tokenizer = AdaptedTAPETokenizer()
 
         def updateElement(x):
 
@@ -33,6 +36,7 @@ class StrokachLoader(DataLoader):
             idx = torch.randint(len(x.maskBERT), (1,)).item()
             maskBERTList = x.__dict__.pop("maskBERT")
             x.maskedSeq, x.mask = maskBERTList[idx]
+            x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
             if self.teacher and self.teacher in x.__dict__.keys():
                 x.__dict__[self.teacher] = x.__dict__[self.teacher][idx]
                 x.__dict__["teacherLabels"] = x.__dict__.pop(self.teacher)
