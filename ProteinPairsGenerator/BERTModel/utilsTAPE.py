@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union, List
 
 import torch
 
@@ -14,9 +15,19 @@ class AdaptedTAPETokenizer(TAPETokenizer):
     def __init__(self):
         super().__init__("iupac")
 
-    def AA2BERT(self, inTensors: torch.Tensor) -> torch.Tensor:
-        enc = super().encode(tensor_to_seq(inTensors, AMINO_ACIDS_MAP))
-        return torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc)).unsqueeze(0)
+    def AA2BERT(self, inTensors: Union[torch.Tensor, List[torch.Tensor]]) -> torch.Tensor:
+
+        if isinstance(inTensors, torch.Tensor):
+            inTensors = [inTensors]
+
+        B, LMax = len(inTensors), max([torch.numel(seq) + 2 for seq in inTensors])
+        tokenizedTensos = torch.zeros(B, LMax, dtype=torch.long)
+
+        for i, seq in enumerate(inTensors):
+            enc = super().encode(tensor_to_seq(seq, AMINO_ACIDS_MAP))
+            tokenizedTensos[i] = torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc))
+
+        return tokenizedTensos
 
     def BERT2AA(self, inTensors: torch.Tensor) -> torch.Tensor:
-        return inTensors[:, 1:-1, self.AAColsBERT]
+        return torch.unbind(inTensors[:, 1:-1, self.AAColsBERT], dim=0)

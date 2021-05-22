@@ -559,21 +559,22 @@ class TAPEFeatures(FeatureModule):
         self,
         featureName : str = "TAPE",
         dependencies : List[FeatureModule] = [],
-        device : str = "cuda:0" if torch.cuda.is_available() else "cpu"
+        *args,
+        **kwargs
     ) -> None:
 
         if len(dependencies)!= 1:
             warnings.warn("Dependencies in TAPEFeatures might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
-        self.annotator = TAPEAnnotator().to(device=device)
+        self.annotator = TAPEAnnotator(*args, **kwargs)
 
     def forward(
         self,
         *args,
         **kwargs
     ) -> torch.Tensor:
-        return [self.annotator(seq) for seq, _ in self.dependencies[0].data]
+        return [self.annotator([seq])[0] for seq, _ in self.dependencies[0].data]
         
     def preFilter(self, *args, **kwargs) -> bool:
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
