@@ -3,7 +3,6 @@ from tape import ProteinBertModel
 
 # Torch imports
 from torch import nn
-from torch.nn.modules.container import ModuleList
 
 # Local imports
 from ProteinPairsGenerator.StrokachModel import StrokachModel
@@ -14,6 +13,8 @@ class BERTHelper(nn.Module):
     def __init__(self, hidden_size : int):
         super().__init__()
         self.model = ProteinBertModel.from_pretrained('bert-base')
+        for param in self.model.parameters():
+            param.requires_grad = False
         self.encode = nn.Sequential(
             nn.Linear(768, hidden_size),
             nn.LayerNorm(hidden_size)
