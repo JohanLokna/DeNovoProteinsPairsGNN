@@ -9,9 +9,14 @@ from torch.nn.modules.container import ModuleList
 from ProteinPairsGenerator.StrokachModel import StrokachModel
 
 
-class UnSqueeze(nn.Module):
+class BERTHelper(nn.Module):
+
+    def __init__(self):
+        super().__init__()
+        self.model = ProteinBertModel.from_pretrained('bert-base')
+
     def forward(self, x):
-        return x.squeeze(0)
+        return model(x).squeeze(0)
 
 
 class Net(StrokachModel):
@@ -21,4 +26,4 @@ class Net(StrokachModel):
         **kwargs
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.embed_x = ModuleList([ProteinBertModel.from_pretrained('bert-base'), UnSqueeze()])
+        self.embed_x = BERTHelper()
