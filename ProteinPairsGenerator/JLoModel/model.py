@@ -16,7 +16,6 @@ class BERTHelper(nn.Module):
         self.model = ProteinBertModel.from_pretrained('bert-base')
 
     def forward(self, x):
-        print(*(a.shape for a in self.model(x.unsqueeze(0))), sep='\n')
         return self.model(x.unsqueeze(0))[0].squeeze(0)
 
 
