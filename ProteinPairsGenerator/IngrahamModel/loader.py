@@ -3,14 +3,15 @@ from typing import Union
 
 # Pytorch imports
 import torch
-from torch.utils.data import DataLoader, Subset
-from torch.utils.data.distributed import DistributedSampler
+from torch.utils.data import Subset
 
 # Local imports
 from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE
+from ProteinPairsGenerator.Data import BERTLoader
 
-class IngrahamLoader(DataLoader):
+
+class IngrahamLoader(BERTLoader):
 
     def __init__(
         self,
@@ -64,14 +65,6 @@ class IngrahamLoader(DataLoader):
 
         # Ensure correct kwargs
         kwargs["collate_fn"] = featurize
-
-        if ("sampler" in kwargs) and isinstance(kwargs["sampler"], DistributedSampler):
-            rank = kwargs["sampler"].rank
-            size = kwargs["sampler"].num_replicas
-            newIndecies = [x for x in dataset.indices if x[0] % size == rank]
-            dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
-            kwargs["sampler"] = None
-        kwargs["shuffle"] = False
 
         super().__init__(
             dataset=dataset,

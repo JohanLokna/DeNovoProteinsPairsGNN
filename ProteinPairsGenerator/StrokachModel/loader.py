@@ -4,11 +4,12 @@ import warnings
 
 # Pytorch imports
 import torch
-from torch.utils.data import DataLoader, Subset
-from torch.utils.data.distributed import DistributedSampler
+from torch.utils.data import Subset
 
+# Local imports
+from ProteinPairsGenerator.Data import BERTLoader
 
-class StrokachLoader(DataLoader):
+class StrokachLoader(BERTLoader):
 
     def __init__(
         self,
@@ -23,7 +24,19 @@ class StrokachLoader(DataLoader):
         if self.teacher:
             self.validFields.append(self.teacher)
 
-        def updateElement(x):
+        # Ensure correct kwargs
+        if not (kwargs.pop("batch_size", None) in [1, None]):
+            warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
+        kwargs["batch_size"] = 1
+        kwargs["collate_fn"] = self.updateElement
+
+        super().__init__(
+            dataset=dataset,
+            *args,
+            **kwargs
+        )
+
+    def updateElement(self, x):
 
             # Extracting data from list and only use valid fields
             x = x[0]
@@ -38,23 +51,3 @@ class StrokachLoader(DataLoader):
                 x.__dict__["teacherLabels"] = x.__dict__.pop(self.teacher)
 
             return x
-
-        # Ensure correct kwargs
-        if not (kwargs.pop("batch_size", None) in [1, None]):
-            warnings.warn("Batch size can only be 1. Continuing with batch_size = 1.")
-        kwargs["batch_size"] = 1
-        kwargs["collate_fn"] = updateElement
-
-        if ("sampler" in kwargs) and isinstance(kwargs["sampler"], DistributedSampler):
-            rank = kwargs["sampler"].rank
-            size = kwargs["sampler"].num_replicas
-            newIndecies = [x for x in dataset.indices if x[0] % size == rank]
-            dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
-            kwargs["sampler"] = None
-        kwargs["shuffle"] = False
-
-        super().__init__(
-            dataset=dataset,
-            *args,
-            **kwargs
-        )

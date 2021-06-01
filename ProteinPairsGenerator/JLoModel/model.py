@@ -17,6 +17,7 @@ class BERTHelper(nn.Module):
             param.requires_grad = False
         self.encode = nn.Sequential(
             nn.Linear(768, hidden_size),
+            nn.ReLU(),
             nn.LayerNorm(hidden_size)
         )
 
