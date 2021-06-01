@@ -46,6 +46,6 @@ class TestProteinDesign:
 class TestProteinDesignStrokach(TestProteinDesign):
 
     def remask(self, x, *args, **kwargs) -> None:
-        assert(self.teacher == None)
+        assert(not "teacherLabels" in x.__dict__)
         x.maskedSeq, x.mask = maskBERT(x.seq, *args, **kwargs)
 
