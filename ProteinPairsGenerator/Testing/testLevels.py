@@ -1,5 +1,8 @@
+import torch
+
 # Local imports
 from ProteinPairsGenerator.BERTModel import maskBERT
+from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE 
 
 class TestProteinDesign:
 
@@ -39,13 +42,16 @@ class TestProteinDesign:
         print(*[k + " = "  + str(v) for k, v in results.items()], sep="\n")
         print("-" * 20)
 
-    def remask(self, x, *args, **kwargs) -> None:
+    def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
 
 
 class TestProteinDesignStrokach(TestProteinDesign):
 
-    def remask(self, x, *args, **kwargs) -> None:
+    def remask(self, x, **kwargs) -> None:
         assert(not "teacherLabels" in x.__dict__)
-        x.maskedSeq, x.mask = maskBERT(x.seq, *args, **kwargs)
+        if not "substitutionMatrix" in kwargs:
+            kwargs = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE), device=x.device)
+
+        x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
