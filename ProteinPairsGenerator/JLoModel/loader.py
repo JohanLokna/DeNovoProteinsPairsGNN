@@ -12,6 +12,10 @@ from ProteinPairsGenerator.StrokachModel import StrokachLoader
 
 class JLoLoader(StrokachLoader):
 
+    def __init__(self, dataset: Subset, teacher: Union[str, None], *args, **kwargs) -> None:
+        super().__init__(dataset, teacher=teacher, *args, **kwargs)
+        self.tokenizer = AdaptedTAPETokenizer()
+
     def updateElement(self, x):
         x = super().updateElement(x)
         x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
