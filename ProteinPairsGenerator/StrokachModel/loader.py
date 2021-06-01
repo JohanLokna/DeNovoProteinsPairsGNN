@@ -8,6 +8,7 @@ from torch.utils.data import Subset
 
 # Local imports
 from ProteinPairsGenerator.Data import BERTLoader
+from ProteinPairsGenerator.BERTModel import maskBERT
 
 class StrokachLoader(BERTLoader):
 
