@@ -34,7 +34,7 @@ class BERTDataModule(pl.LightningDataModule):
         self.testSet = testSet if not testSet is None else [root.joinpath("processed/testing")]
         self.dataset = ProteinNetDataset(
             root = root,
-            subsets = self.trainSet + self.valSet + self.trainSet
+            subsets = self.trainSet + self.valSet + self.testSet
         )
         self.teacher = teacher
         self.num_workers = num_workers
