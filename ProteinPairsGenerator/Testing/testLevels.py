@@ -51,7 +51,7 @@ class TestProteinDesignStrokach(TestProteinDesign):
     def remask(self, x, **kwargs) -> None:
         assert(not "teacherLabels" in x.__dict__)
         if not "substitutionMatrix" in kwargs:
-            kwargs = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE), device=x.device)
+            kwargs = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
