@@ -6,7 +6,7 @@ from pytorch_lightning.utilities.cli import LightningCLI
 
 class SwitchCLI(LightningCLI):
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, wrapper = None, *args, **kwargs) -> None:
 
       pattern = "--noFitting"
       self.noFitting = pattern in sys.argv

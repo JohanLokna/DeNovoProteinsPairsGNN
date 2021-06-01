@@ -20,7 +20,8 @@ class TestProteinDesign:
                 for _, x in self.dm.test_dataloader():
                     self.remask(x, **level)
                     stepResults.append(model.step(x))
-            self.postprocess(stepResults)
+            self.prettyPrint(level, self.postprocess(stepResults))
+
 
     def postprocess(self, stepResults) -> None:
         nTotal = 0
@@ -35,8 +36,11 @@ class TestProteinDesign:
     def prettyPrint(self, level, results):
         print("-" * 20)
         print(", ".join([k + " = " + str(v) for k, v in level.items()]))
-        print(*[k + " = "  + str(v) for k, v in level.items()], sep="\n")
+        print(*[k + " = "  + str(v) for k, v in results.items()], sep="\n")
         print("-" * 20)
+
+    def remask(self, x, *args, **kwargs) -> None:
+        raise NotImplementedError
 
 
 class TestProteinDesignStrokach(TestProteinDesign):
