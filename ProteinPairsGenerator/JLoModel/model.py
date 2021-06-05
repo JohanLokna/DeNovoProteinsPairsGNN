@@ -34,7 +34,7 @@ class Net(StrokachModel):
         super().__init__(*args, **kwargs)
         self.embed_x = BERTHelper(kwargs["hidden_size"])
 
-    def load_state_dict(state_dict):
+    def load_state_dict(state_dict, *args, **kwargs):
         state_dict["embed_x.encode.2.weight"] = state_dict.pop("embed_x.encode.1.weight")
         state_dict["embed_x.encode.2.bias"] = state_dict.pop("embed_x.encode.1.bias")
-        super().load_state_dict(state_dict)
+        super().load_state_dict(state_dict, *args, **kwargs)
