@@ -10,9 +10,8 @@ import torch
 
 #Local imports
 from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
-                                                    AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, AMINO_ACIDS, \
-                                                    CDRS_HEAVY, CDRS_LIGHT, \
-                                                    CHAINS_MAP
+                                                    AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, \
+                                                    CDRS_HEAVY, CDRS_LIGHT
 from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
 from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
 from ProteinPairsGenerator.PreProcessing.proteinNetParser import readPotein

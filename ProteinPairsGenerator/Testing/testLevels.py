@@ -2,7 +2,8 @@ import torch
 
 # Local imports
 from ProteinPairsGenerator.BERTModel import maskBERT
-from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE 
+from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE
+from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
 class TestProteinDesign:
 
@@ -54,4 +55,19 @@ class TestProteinDesignStrokach(TestProteinDesign):
             kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
+
+
+class TestProteinDesignJLo(TestProteinDesign):
+
+    def __init__(self, dm, levels, repeats) -> None:
+        self.tokenizer = AdaptedTAPETokenizer()
+        super().__init__(dm, levels, repeats)
+
+    def remask(self, x, **kwargs) -> None:
+        assert(not "teacherLabels" in x.__dict__)
+        if not "substitutionMatrix" in kwargs:
+            kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
+
+        x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
+        x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
 

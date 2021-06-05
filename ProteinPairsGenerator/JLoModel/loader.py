@@ -1,9 +1,7 @@
 # General imports
 from typing import Union
-import warnings
 
 # Pytorch imports
-import torch
 from torch.utils.data import Subset
 
 # Local imports
