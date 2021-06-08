@@ -518,7 +518,7 @@ class Normalize(FeatureModule):
         *args,
         **kwargs
     ) -> torch.Tensor:
-        return (self.dependencies[0].data - self.bias) * self.scale
+        return (self.dependencies[0].data - self.bias) / self.scale
         
     def preFilter(self, *args, **kwargs) -> bool:
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
