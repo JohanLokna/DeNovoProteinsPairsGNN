@@ -24,6 +24,6 @@ def getCorrectorModel(baseModel : pl.LightningModule):
         def forward(self, *args, **kwargs):
             preds = torch.argmax(super().forward(*args, **kwargs).data, 1)
             corrPreds = self.corrector(self.tokenizer.AA2BERT(preds))
-            return self.tokenizer.BERT2AA(corrPreds)
+            return self.tokenizer.BERT2AA(corrPreds)[0]
 
     return CorrectorModel
