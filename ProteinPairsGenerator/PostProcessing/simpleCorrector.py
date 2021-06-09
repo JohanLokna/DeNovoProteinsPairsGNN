@@ -22,7 +22,7 @@ def getCorrectorModel(baseModel : pl.LightningModule):
             self.corrector = ProteinBertForMaskedLM.from_pretrained('bert-base')
 
         def forward(self, *args, **kwargs):
-            preds = torch.argmax(super().__call__(*args, **kwargs).data, 1)
+            preds = torch.argmax(super().forward(*args, **kwargs).data, 1)
             corrPreds = self.corrector(self.tokenizer.AA2BERT(preds))
             return self.tokenizer.BERT2AA(corrPreds)
 
