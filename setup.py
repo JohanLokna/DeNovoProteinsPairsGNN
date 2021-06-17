@@ -29,7 +29,8 @@ setup(
       "mlflow",
       "tqdm",
       "biopython",
-      "Cython"
+      "Cython",
+      "bayesian-optimization"
     ]
 )
 

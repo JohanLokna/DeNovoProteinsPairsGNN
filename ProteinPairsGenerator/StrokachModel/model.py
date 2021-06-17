@@ -35,9 +35,11 @@ class Net(BERTModel):
         adj_input_size : int, 
         hidden_size : int, 
         output_size : int , 
-        N : int = 3
+        N : int = 3,
+        lr : float = 1e-4
     ) -> None:
         super().__init__()
+        self.lrInitial = lr
         self.criterion = nn.CrossEntropyLoss()
         self.embed_x = nn.Sequential(
             nn.Embedding(x_input_size, hidden_size),
@@ -84,7 +86,7 @@ class Net(BERTModel):
         return x
     
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-4)
+        optimizer = optim.Adam(self.parameters(), lr=self.lrInitial)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", verbose=True)
         return {
            'optimizer': optimizer,
