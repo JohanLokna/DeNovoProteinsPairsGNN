@@ -3,6 +3,25 @@ from .loader import StrokachLoader
 
 class StrokachDataModule(BERTDataModule):
 
-    def __init__(self, *args, **kwargs):
-          kwargs["loaderClass"] = StrokachLoader
-          super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        root : Union[Path, str],
+        trainSet: Union[Path, List[Path], None] = None,
+        valSet: Union[List[Path], None] = None,
+        testSet: Union[List[Path], None] = None,
+        teacher: Union[str, None] = None,
+        num_workers: int = 1,
+        prefetch_factor: int = 2,
+        batch_size: int = 1
+    ):
+          super().__init__(
+              root,
+              StrokachLoader,
+              trainSet,
+              valSet,
+              testSet,
+              teacher,
+              num_workers,
+              prefetch_factor,
+              batch_size
+          )
