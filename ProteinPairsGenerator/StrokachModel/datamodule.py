@@ -1,3 +1,8 @@
+# General imports
+from pathlib import Path
+from typing import Union, List
+
+# Local imports
 from ProteinPairsGenerator.Data import BERTDataModule
 from .loader import StrokachLoader
 
