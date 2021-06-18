@@ -40,9 +40,10 @@ def setupRun(
     root = Path("Experiments").joinpath(name)
     root.mkdir(parents=True)
     updatedConfig = root.joinpath("config.yaml")
+    logFile = root.joinpath("Logging") if logFile is None else str(logFile)
 
     # Load config
-    kwargs.update({"experiment_name": name, "save_dir": "Logging" if logFile is None else str(logFile)})
+    kwargs.update({"experiment_name": name})
     with updatedConfig.open("a") as out:
         for l in configFile.open().readlines():
             for k, v in kwargs.items():
@@ -59,7 +60,7 @@ def setupRun(
     os.system("cp /mnt/ds3lab-scratch/jlokna/OldStuff/ExpStrokach0.75/Logging {}".format(str(root)))
 
     # Get best result
-    tracker = MlflowClient(root.joinpath("Logging") if logFile is None else str(logFile))
+    tracker = MlflowClient(str(logFile))
     expId = tracker.list_experiments()[0].experiment_id
     runId = tracker.list_run_infos(expId)[0].run_id
     return (max if maximize else min)(tracker.get_metric_history(runId, metric))
