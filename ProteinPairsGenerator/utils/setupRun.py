@@ -20,7 +20,7 @@ def getFreeGPU(itrWait : float = 3e1, maxWait : float = 4.32e4):
 
         # Try to get a GPU which is free and not used by others
         for device in nvsmi.get_available_gpus():
-            if locks[int(device.id)].acquire(blocking=True, timeout=-1):
+            if locks[int(device.id)].acquire(timeout=-1):
                 return device
           
         time.sleep(itrWait)
