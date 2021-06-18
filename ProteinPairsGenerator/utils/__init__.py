@@ -1,3 +1,4 @@
 from .amino_acids import *
 from .cdr import *
-from .switchCLI import *
+from .setupRun import *
+from .bayesianHP import *

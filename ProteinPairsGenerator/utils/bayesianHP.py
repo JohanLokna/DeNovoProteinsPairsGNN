@@ -2,11 +2,7 @@
 from bayes_opt import BayesianOptimization, UtilityFunction
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
-import sys
 from multiprocessing import Pool
-
-# Bounded region of parameter space
-pbounds = {"hidden_size": (5, 9), "N": (2, 4), "alpha": (0, 5), "lr": (-6, -2)}
 
 def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1):
 
