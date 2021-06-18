@@ -2,9 +2,11 @@
 from bayes_opt import BayesianOptimization, UtilityFunction
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
+from bayes_opt.util import load_logs
 from multiprocessing import Pool
+from pathlib import Path
 
-def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1):
+def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, logPath : Path = Path("./logs.json")):
 
     optimizer = BayesianOptimization(
         f=None,
@@ -13,8 +15,11 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1):
         random_state=42,
     )
 
-    # Set up logger
-    logger = JSONLogger(path="./logs.json")
+    # Load state and set up logger
+    if logPath.exists():
+      load_logs(optimizer, logs=[logPath])
+
+    logger = JSONLogger(path=logPath)
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     # Set up objective
