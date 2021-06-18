@@ -8,6 +8,9 @@ def wrapperStrokach(kwargs):
         kwargs["N"] = int(kwargs["N"])
     if "lr" in kwargs:
         kwargs["lr"] = 10 ** kwargs["lr"]
+    
+    print("Running new experiment", kwargs, sep="\n", end="\n\n")
+
     return setupRun(**kwargs)
 
 

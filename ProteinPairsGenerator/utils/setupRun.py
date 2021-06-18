@@ -56,8 +56,7 @@ def setupRun(
     device = getFreeGPU()
 
     # Run
-    # os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out".format(device.id, str(root), str(runFile)))
-    os.system("cp /mnt/ds3lab-scratch/jlokna/OldStuff/ExpStrokach0.75/Logging -r {}".format(str(root)))
+    os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out".format(device.id, str(root), str(runFile)))
 
     # Get best result
     tracker = MlflowClient(str(logFile))
