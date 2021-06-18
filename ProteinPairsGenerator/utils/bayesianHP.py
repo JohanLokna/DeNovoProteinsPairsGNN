@@ -17,9 +17,9 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
 
     # Load state and set up logger
     if logPath.exists():
-      load_logs(optimizer, logs=[logPath])
+      load_logs(optimizer, logs=[str(logPath)])
 
-    logger = JSONLogger(path=logPath)
+    logger = JSONLogger(path=str(logPath))
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     # Set up objective
