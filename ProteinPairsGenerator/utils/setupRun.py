@@ -41,6 +41,7 @@ def setupRun(
     root.mkdir(parents=True)
     updatedConfig = root.joinpath("config.yaml")
     logFile = root.joinpath("Logging") if logFile is None else str(logFile)
+    logFile.mkdir(exist_ok=True)
 
     # Load config
     kwargs.update({"experiment_name": name})
