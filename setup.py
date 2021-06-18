@@ -30,7 +30,8 @@ setup(
       "tqdm",
       "biopython",
       "Cython",
-      "bayesian-optimization"
+      "bayesian-optimization",
+      "nvidia-smi"
     ]
 )
 
