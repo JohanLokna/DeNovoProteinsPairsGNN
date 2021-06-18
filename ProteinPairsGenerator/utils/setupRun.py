@@ -1,8 +1,10 @@
 # General imports
+from mlflow.tracking import MlflowClient
 import nvsmi
 import os
 from pathlib import Path
 import time
+from typing import Union
 
 def getFreeGPU(itrWait : float = 6e2, maxWait : float = 4.32e4):
     
@@ -22,7 +24,14 @@ def getFreeGPU(itrWait : float = 6e2, maxWait : float = 4.32e4):
 
     return None
 
-def setupRun(configFile : Path = Path("config.yaml"), runFile : Path = Path("../../../run.py"), **kwargs):
+def setupRun(
+        configFile : Path = Path("config.yaml"),
+        runFile : Path = Path("../../../run.py"),
+        logFile : Union[Path, None] = None,
+        metric : str = "valAcc",
+        maximize : bool = True,
+        **kwargs
+    ):
 
     # Get name
     name = "_".join(["{}={}".format(k, str(v)) for k, v in kwargs.items()])
@@ -33,7 +42,7 @@ def setupRun(configFile : Path = Path("config.yaml"), runFile : Path = Path("../
     updatedConfig = root.joinpath("config.yaml")
 
     # Load config
-    kwargs.update({"experiment_name": name})
+    kwargs.update({"experiment_name": name, "save_dir": "Logging" if logFile is None else str(logFile)})
     with updatedConfig.open("a") as out:
         for l in configFile.open().readlines():
             for k, v in kwargs.items():
@@ -47,3 +56,10 @@ def setupRun(configFile : Path = Path("config.yaml"), runFile : Path = Path("../
 
     # Run
     os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out".format(device.id, str(root), str(runFile)))
+
+    # Get best result
+    tracker = MlflowClient(root.joinpath("Logging") if logFile is None else str(logFile))
+    expId = tracker.list_experiments()[0].experiment_id
+    runId = tracker.list_run_infos(expId)[0].run_id
+    return (max if maximize else min)(tracker.get_metric_history(runId, metric))
+

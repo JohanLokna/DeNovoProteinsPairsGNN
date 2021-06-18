@@ -30,7 +30,7 @@ setup(
       "tqdm",
       "biopython",
       "Cython",
-      "bayesian-optimization",
+      "git+https://github.com/fmfn/BayesianOptimization.git",
       "nvsmi"
     ]
 )
