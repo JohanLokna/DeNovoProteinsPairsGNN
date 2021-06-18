@@ -1,9 +1,8 @@
 # General imports
 from pathlib import Path
-import shutil
 import os
 
-def runModel(configFile : Path = Path("config.yaml"), runFile : Path = Path("../run.py"), **kwargs):
+def runModel(configFile : Path = Path("config.yaml"), runFile : Path = Path("../../../run.py"), **kwargs):
 
     # Get name
     name = "_".join(["{}={}".format(k, str(v)) for k, v in kwargs.items()])
@@ -24,4 +23,4 @@ def runModel(configFile : Path = Path("config.yaml"), runFile : Path = Path("../
             out.write(l)
 
     # Run
-    # os.system("cd {} ; python3 {} --config config.yaml".format(str(root), str(runFile)))
+    os.system("cd {} ; python3 {} --config config.yaml".format(str(root), str(runFile)))

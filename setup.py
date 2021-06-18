@@ -31,7 +31,7 @@ setup(
       "biopython",
       "Cython",
       "bayesian-optimization",
-      "nvidia-smi"
+      "nvsmi"
     ]
 )
 
