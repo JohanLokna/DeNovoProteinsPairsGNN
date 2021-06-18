@@ -63,5 +63,5 @@ def setupRun(
     tracker = MlflowClient(str(logFile))
     expId = tracker.list_experiments()[0].experiment_id
     runId = tracker.list_run_infos(expId)[0].run_id
-    return (max if maximize else min)(tracker.get_metric_history(runId, metric))
+    return (max if maximize else min)(float(x) for x in tracker.get_metric_history(runId, metric))
 
