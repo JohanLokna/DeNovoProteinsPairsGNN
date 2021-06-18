@@ -20,7 +20,7 @@ def getFreeGPU(itrWait : float = 3e1, maxWait : float = 4.32e4):
 
         # Try to get a GPU which is free and not used by others
         for device in nvsmi.get_available_gpus():
-            if locks[device.id].acquire(blocking=True, timeout=-1):
+            if locks[int(device.id)].acquire(blocking=True, timeout=-1):
                 return device
           
         time.sleep(itrWait)
@@ -65,7 +65,7 @@ def setupRun(
     os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out 2>&1".format(device.id, str(root), str(runFile)))
     
     # Release lock on device
-    locks[device.id].release()
+    locks[int(device.id)].release()
 
     # Get best result
     tracker = MlflowClient(str(logFile))
