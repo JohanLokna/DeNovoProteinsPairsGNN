@@ -1,5 +1,6 @@
 # General imports
 from mlflow.tracking import MlflowClient
+from multiprocessing import Lock
 import nvsmi
 import os
 from pathlib import Path
@@ -7,20 +8,21 @@ from random import randint
 import time
 from typing import Union
 
-def getFreeGPU(itrWait : float = 6e2, maxWait : float = 4.32e4):
+locks = [Lock() for _ in nvsmi.get_gpus()]
+
+def getFreeGPU(itrWait : float = 3e1, maxWait : float = 4.32e4):
+
+    global locks
     
     endTime = time.time() + maxWait
 
     while time.time() < endTime:
 
-        # Get all free GPUs
-        freeGPU = next(nvsmi.get_available_gpus(), None)
-
-        # If there is an available GPU return this
-        if not (freeGPU is None):
-            return freeGPU
-
-        # Else sleep and iterate further
+        # Try to get a GPU which is free and not used by others
+        for device in nvsmi.get_available_gpus():
+            if locks[device.id].acquire(blocking=True, timeout=-1):
+                return device
+          
         time.sleep(itrWait)
 
     return None
@@ -33,6 +35,8 @@ def setupRun(
         maximize : bool = True,
         **kwargs
     ):
+
+    global locks
 
     # Get name
     name = "_".join(["{}={}".format(k, str(v)) for k, v in kwargs.items()])
@@ -54,12 +58,14 @@ def setupRun(
                     break
             out.write(l)
 
-    # Get free device - use time offset to avoid processing geting the same GPU
-    time.sleep(randint(0,120))
+    # Get free device
     device = getFreeGPU()
 
     # Run
     os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out 2>&1".format(device.id, str(root), str(runFile)))
+    
+    # Release lock on device
+    locks[device.id].release()
 
     # Get best result
     tracker = MlflowClient(str(logFile))
