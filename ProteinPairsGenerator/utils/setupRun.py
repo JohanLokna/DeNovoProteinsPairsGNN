@@ -3,6 +3,7 @@ from mlflow.tracking import MlflowClient
 import nvsmi
 import os
 from pathlib import Path
+from random import randint
 import time
 from typing import Union
 
@@ -53,7 +54,8 @@ def setupRun(
                     break
             out.write(l)
 
-    # Get free device
+    # Get free device - use time offset to avoid processing geting the same GPU
+    time.sleep(randint(0,120))
     device = getFreeGPU()
 
     # Run
