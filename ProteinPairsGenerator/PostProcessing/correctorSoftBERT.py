@@ -11,7 +11,7 @@ import pytorch_lightning as pl
 # Local imports
 from ProteinPairsGenerator.BERTModel import TAPETokenizer
 
-class CorrectorSoftBERT(pl.LightningModule, ProteinBertAbstractModel):
+class CorrectorSoftBERT(pl.LightningModule):
 
     def __init__(
         self, 
@@ -41,7 +41,7 @@ class CorrectorSoftBERT(pl.LightningModule, ProteinBertAbstractModel):
         return self.corrector(x_new)
 
 
-class CorrectorFullSoftBERT(CorrectorSoftBERT):
+class CorrectorFullSoftBERT(CorrectorSoftBERT, ProteinBertAbstractModel):
 
     def __init__(
         self, 
@@ -58,6 +58,8 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
             vocab_size=20,
             ignore_index=-1
         )
+
+        ProteinBertAbstractModel.__init__(self, self.bert.config())
 
         """ Make sure we are sharing the input and output embeddings. 
             Export to TorchScript can't handle parameter sharing so we are cloning them instead.
