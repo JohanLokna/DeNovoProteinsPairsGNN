@@ -70,4 +70,5 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         return self.bert(x, input_mask = torch.zeros_like(x))[0]
 
     def forward(self, x):
-        return super().forward(self.tokenizer.AA2BERT(x))
+        xEmbed = self.bert(self.tokenizer.AA2BERT(x))
+        return super().forward(xEmbed)
