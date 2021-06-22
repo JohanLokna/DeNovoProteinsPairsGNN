@@ -51,8 +51,8 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
 
     # Run optimization
     with ThreadPool(processes=nParalell) as pool:
-        pool.map(partial(runnerHelper, optimizer=optimizer, utility=utility, objective=wrapper, lock=lock), 
-                 [() for _ in range(nIter)])
+        pool.starmap(partial(runnerHelper, optimizer=optimizer, utility=utility, objective=wrapper, lock=lock), 
+                     [() for _ in range(nIter)])
 
 
     # # Run optimization
