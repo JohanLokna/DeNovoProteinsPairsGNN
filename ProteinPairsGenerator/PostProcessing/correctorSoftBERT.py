@@ -49,7 +49,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT, ProteinBertAbstractModel):
         N : int,
         dropout : float
     ) -> None:
-        CorrectorSoftBERT.__init__(hidden_size=hidden_size, input_size=768, N=N, dropout=dropout)
+        CorrectorSoftBERT.__init__(self, hidden_size=hidden_size, input_size=768, N=N, dropout=dropout)
 
         self.tokenizer = TAPETokenizer()
         self.bert = ProteinBertModel.from_pretrained('bert-base')
