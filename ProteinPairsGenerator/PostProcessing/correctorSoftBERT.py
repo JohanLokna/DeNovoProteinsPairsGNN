@@ -9,6 +9,7 @@ import pytorch_lightning as pl
 
 # Local imports
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
+from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
 class CorrectorSoftBERT(pl.LightningModule):
 
@@ -78,7 +79,9 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         return self.mlm(x)[0]
 
     def masker(self, x):
-        return self.bert(x)[0]
+        nullSeq = torch.empty_like(x[:, :, 0].squeeze(-1), requires_grad=False)
+        nullSeq.fill_(AMINO_ACIDS_MAP[AMINO_ACID_NULL])
+        return self.bert(self.tokenizer.AA2BERT(nullSeq))[0]
 
     def forward(self, x):
         xEmbed = self.bert(self.tokenizer.AA2BERT(x))[0]
