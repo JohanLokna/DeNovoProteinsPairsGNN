@@ -8,7 +8,7 @@ from torch import nn
 import pytorch_lightning as pl
 
 # Local imports
-from ProteinPairsGenerator.BERTModel import TAPETokenizer
+from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
 class CorrectorSoftBERT(pl.LightningModule):
 
@@ -50,7 +50,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
     ) -> None:
         super().__init__(hidden_size=hidden_size, input_size=768, N=N, dropout=dropout)
 
-        self.tokenizer = TAPETokenizer()
+        self.tokenizer = AdaptedTAPETokenizer()
         self.bert = ProteinBertModel.from_pretrained('bert-base')
         self.mlm = MLMHead(
             hidden_size=hidden_size, 
