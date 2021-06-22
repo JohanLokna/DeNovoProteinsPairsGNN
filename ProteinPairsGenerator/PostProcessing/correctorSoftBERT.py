@@ -65,7 +65,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         self.tokenizer = AdaptedTAPETokenizer()
         self.bert = ProteinBertModel.from_pretrained('bert-base')
         self.mlm = MLMHead(
-            hidden_size=hidden_size, 
+            hidden_size=768, 
             vocab_size=20,
             ignore_index=-1
         )
