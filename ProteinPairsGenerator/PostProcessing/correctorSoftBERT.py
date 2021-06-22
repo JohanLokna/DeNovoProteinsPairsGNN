@@ -1,5 +1,5 @@
 # General imports
-from tape import ProteinBertModel, 
+from tape import ProteinBertModel
 from tape.models.modeling_utils  import MLMHead
 
 # Pytorch imports
