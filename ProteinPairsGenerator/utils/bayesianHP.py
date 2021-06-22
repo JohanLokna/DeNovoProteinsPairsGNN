@@ -44,7 +44,7 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     # Set up objective
-    utility = UtilityFunction(kind="ucb", kappa=10)
+    utility = UtilityFunction(kind="ucb", kappa=12.5, xi=0.0)
 
     # Set up lock
     lock = Lock()
