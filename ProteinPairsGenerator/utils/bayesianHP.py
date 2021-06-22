@@ -5,6 +5,7 @@ from bayes_opt.event import Events
 from bayes_opt.util import load_logs
 from multiprocessing import Lock
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 
 def runnerHelper(optimizer, utility, objective, lock : Lock):
 
@@ -46,7 +47,7 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
     lock = Lock()
 
     # Run optimization
-    with Pool(processes=nParalell) as pool:
+    with ThreadPool(processes=nParalell) as pool:
         pool.map(wrapper, [(optimizer, utility, wrapper, lock) for _ in range(nIter)])
 
 
