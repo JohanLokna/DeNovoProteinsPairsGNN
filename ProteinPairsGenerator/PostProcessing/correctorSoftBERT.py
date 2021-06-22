@@ -44,7 +44,7 @@ class CorrectorSoftBERT(pl.LightningModule):
 
         p = self.switch(h)
 
-        print("p dim: ", x.shape)
+        print("p dim: ", p.shape)
         print("m dim: ", self.masker(x).shape)
 
         x_new = p * self.masker(x) + (1 - p) * x
