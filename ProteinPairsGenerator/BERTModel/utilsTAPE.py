@@ -31,6 +31,8 @@ class AdaptedTAPETokenizer(TAPETokenizer):
             else:
                 raise RuntimeError("Bad input tensor")
 
+        print(inTensors, len(inTensors[0].shape))
+
         LMax = max([seq.shape[1] + 2 for seq in inTensors])
         tokenizedTensos = torch.zeros(B, LMax, dtype=torch.long)
 
