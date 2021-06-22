@@ -20,12 +20,26 @@ class AdaptedTAPETokenizer(TAPETokenizer):
         if isinstance(inTensors, torch.Tensor):
             inTensors = [inTensors]
 
-        B, LMax = len(inTensors), max([torch.numel(seq) + 2 for seq in inTensors])
+        B = 0
+        for t in inTensors:
+            b = len(t.shape)
+            if b == 1:
+                t = t.unsqueeze(0)
+                B += 1
+            elif b == 2:
+                B += t.shape[0]
+            else:
+                raise RuntimeError("Bad input tensor")
+
+        LMax = max([seq.shape[1] + 2 for seq in inTensors])
         tokenizedTensos = torch.zeros(B, LMax, dtype=torch.long)
 
-        for i, seq in enumerate(inTensors):
-            enc = super().encode(tensor_to_seq(seq, AMINO_ACIDS_MAP))
-            tokenizedTensos[i] = torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc))
+        i = 0
+        for seq in inTensors:
+            for j in range(seq.shape[0]):
+                enc = super().encode(tensor_to_seq(seq[j], AMINO_ACIDS_MAP))
+                tokenizedTensos[i] = torch.from_numpy(np.where(enc == self.findValue, self.replaceValue, enc))
+                i += 1
 
         return tokenizedTensos
 
