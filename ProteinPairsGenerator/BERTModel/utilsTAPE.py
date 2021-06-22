@@ -21,17 +21,15 @@ class AdaptedTAPETokenizer(TAPETokenizer):
             inTensors = [inTensors]
 
         B = 0
-        for t in inTensors:
+        for i, t in enumerate(inTensors):
             b = len(t.shape)
             if b == 1:
-                t = t.unsqueeze(0)
+                t = inTensors[i].unsqueeze(0)
                 B += 1
             elif b == 2:
                 B += t.shape[0]
             else:
                 raise RuntimeError("Bad input tensor")
-
-        print([seq.shape for seq in inTensors])
 
         LMax = max([seq.shape[1] + 2 for seq in inTensors])
         tokenizedTensos = torch.zeros(B, LMax, dtype=torch.long)
