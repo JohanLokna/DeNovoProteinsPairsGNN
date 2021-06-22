@@ -13,8 +13,10 @@ def runnerHelper(optimizer, utility, objective, lock : Lock):
     with lock:
         point = optimizer.suggest(utility)
     
+    print(point)
+
     # Compute target
-    target = objective(point)
+    target = objective(**point)
     
     # Register result
     with lock:
