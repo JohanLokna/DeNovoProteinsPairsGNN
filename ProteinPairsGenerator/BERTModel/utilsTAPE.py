@@ -24,7 +24,7 @@ class AdaptedTAPETokenizer(TAPETokenizer):
         for i, t in enumerate(inTensors):
             b = len(t.shape)
             if b == 1:
-                t = inTensors[i].unsqueeze(0)
+                inTensors[i] = t.unsqueeze(0)
                 B += 1
             elif b == 2:
                 B += t.shape[0]
