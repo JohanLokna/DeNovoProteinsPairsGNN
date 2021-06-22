@@ -20,7 +20,7 @@ class CorrectorSoftBERT(pl.LightningModule):
         N : int,
         dropout : float
     ) -> None:
-        pl.LightningModule.__init__()
+        pl.LightningModule.__init__(self)
 
         self.detector = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=N, dropout=dropout, bidirectional=True)
         self.switch = nn.Sequential(
@@ -59,7 +59,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT, ProteinBertAbstractModel):
             ignore_index=-1
         )
 
-        ProteinBertAbstractModel.__init__(self, self.bert.config())
+        ProteinBertAbstractModel.__init__(self, self.bert.config)
 
         """ Make sure we are sharing the input and output embeddings. 
             Export to TorchScript can't handle parameter sharing so we are cloning them instead.
