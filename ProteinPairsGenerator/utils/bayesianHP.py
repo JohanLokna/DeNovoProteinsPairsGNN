@@ -3,6 +3,7 @@ from bayes_opt import BayesianOptimization, UtilityFunction
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
+from functools import partial
 from multiprocessing import Lock
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
@@ -50,7 +51,8 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
 
     # Run optimization
     with ThreadPool(processes=nParalell) as pool:
-        pool.map(runnerHelper, [(optimizer, utility, wrapper, lock) for _ in range(nIter)])
+        pool.map(partial(runnerHelper, optimizer=optimizer, utility=utility, objective=wrapper, lock=lock), 
+                 [() for _ in range(nIter)])
 
 
     # # Run optimization
