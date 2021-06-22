@@ -19,7 +19,7 @@ class CorrectorSoftBERT(pl.LightningModule):
         N : int,
         dropout : float
     ) -> None:
-        super.__init__()
+        super().__init__()
 
         self.detector = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=N, dropout=dropout, bidirectional=True)
         self.switch = nn.Sequential(
