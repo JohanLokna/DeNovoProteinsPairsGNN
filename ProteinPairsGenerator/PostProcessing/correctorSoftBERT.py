@@ -1,5 +1,6 @@
 # General imports
-from tape import ProteinBertModel, ProteinModel
+from tape import ProteinBertModel
+from tape.models.modeling_bert import ProteinBertAbstractModel
 from tape.models.modeling_utils  import MLMHead
 
 # Pytorch imports
@@ -10,7 +11,7 @@ import pytorch_lightning as pl
 # Local imports
 from ProteinPairsGenerator.BERTModel import TAPETokenizer
 
-class CorrectorSoftBERT(pl.LightningModule, ProteinModel):
+class CorrectorSoftBERT(pl.LightningModule, ProteinBertAbstractModel):
 
     def __init__(
         self, 
@@ -20,7 +21,7 @@ class CorrectorSoftBERT(pl.LightningModule, ProteinModel):
         dropout : float
     ) -> None:
         pl.LightningModule.__init__(self)
-        ProteinModel.__init__(self)
+        ProteinBertAbstractModel.__init__(self)
 
         self.detector = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=N, dropout=dropout, bidirectional=True)
         self.switch = nn.Sequential(
