@@ -3,8 +3,25 @@ from bayes_opt import BayesianOptimization, UtilityFunction
 from bayes_opt.logger import JSONLogger
 from bayes_opt.event import Events
 from bayes_opt.util import load_logs
-from multiprocessing import Pool
-from pathlib import Path
+from multiprocessing import Lock
+from multiprocessing.pool import ThreadPool
+
+def runnerHelper(optimizer, utility, objective, lock : Lock):
+
+    # Compute next point
+    with lock:
+        point = optimizer.suggest(utility)
+    
+    # Compute target
+    target = objective(point)
+    
+    # Register result
+    with lock:
+        optimizer.register(
+            params=point,
+            target=target,
+        )
+
 
 def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, logPath : Path = Path("./logs.json")):
 
@@ -25,16 +42,24 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
     # Set up objective
     utility = UtilityFunction(kind="ucb", kappa=2.5, xi=0.0)
 
+    # Set up lock
+    lock = Lock()
+
     # Run optimization
-    with Pool(processes=nIter) as pool:
+    with Pool(processes=nParalell) as pool:
+        pool.map(wrapper, [(optimizer, utility, wrapper, lock) for _ in range(nIter)])
 
-        # Run in paralell
-        points = [optimizer.suggest(utility) for _ in range(nParalell)]
-        targets = pool.map(wrapper, points)
 
-        # Register afterwards
-        for p, t in zip(points, targets):
-            optimizer.register(
-                params=p,
-                target=t,
-            )
+    # # Run optimization
+    # with Pool(processes=nParalell) as pool:
+
+    #     # Run in paralell
+    #     points = [optimizer.suggest(utility) for _ in range(nParalell)]
+    #     targets = pool.map(wrapper, points)
+
+    #     # Register afterwards
+    #     for p, t in zip(points, targets):
+    #         optimizer.register(
+    #             params=p,
+    #             target=t,
+    #         )

@@ -72,4 +72,3 @@ def setupRun(
     expId = tracker.list_experiments()[0].experiment_id
     runId = tracker.list_run_infos(expId)[0].run_id
     return (max if maximize else min)(x.value for x in tracker.get_metric_history(runId, metric))
-
