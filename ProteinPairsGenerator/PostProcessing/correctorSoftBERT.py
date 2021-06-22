@@ -34,8 +34,19 @@ class CorrectorSoftBERT(pl.LightningModule):
         raise NotImplementedError
 
     def forward(self, x):
+
+        print("x dim: ", x.shape)
+
         h, _ = self.detector(x)
+
+        
+        print("h dim: ", h.shape)
+
         p = self.switch(h)
+
+        print("p dim: ", x.shape)
+        print("m dim: ", self.masker(x).shape)
+
         x_new = p * self.masker(x) + (1 - p) * x
         return self.corrector(x_new)
 
