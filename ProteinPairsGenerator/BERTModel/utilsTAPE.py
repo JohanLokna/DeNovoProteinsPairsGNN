@@ -30,4 +30,4 @@ class AdaptedTAPETokenizer(TAPETokenizer):
         return tokenizedTensos
 
     def BERT2AA(self, inTensors: torch.Tensor) -> torch.Tensor:
-        return torch.unbind(inTensors[:, 1:-1, self.AAColsBERT], dim=0)
+        return inTensors[:, 1:-1, self.AAColsBERT]

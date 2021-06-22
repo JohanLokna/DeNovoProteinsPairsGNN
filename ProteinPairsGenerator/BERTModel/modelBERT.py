@@ -1,5 +1,4 @@
 # Pytorch imports
-import torch
 import pytorch_lightning as pl
 
 class BERTModel(pl.LightningModule):
