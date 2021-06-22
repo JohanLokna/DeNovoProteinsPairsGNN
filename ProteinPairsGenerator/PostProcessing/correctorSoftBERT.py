@@ -21,7 +21,6 @@ class CorrectorSoftBERT(pl.LightningModule, ProteinBertAbstractModel):
         dropout : float
     ) -> None:
         pl.LightningModule.__init__(self)
-        ProteinBertAbstractModel.__init__(self)
 
         self.detector = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=N, dropout=dropout, bidirectional=True)
         self.switch = nn.Sequential(
