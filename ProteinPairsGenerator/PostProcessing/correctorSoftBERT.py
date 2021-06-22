@@ -65,8 +65,8 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         self.tokenizer = AdaptedTAPETokenizer()
         self.bert = ProteinBertModel.from_pretrained('bert-base')
         self.mlm = MLMHead(
-            hidden_size=768, 
-            vocab_size=20,
+            hidden_size=self.bert.config.hidden_size, 
+            vocab_size=self.bert.config.vocab_size,
             ignore_index=-1
         )
 
@@ -76,7 +76,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         self.bert._tie_or_clone_weights(self.mlm.decoder, self.bert.embeddings.word_embeddings)
 
     def corrector(self, x):
-        return self.mlm(x)[0]
+        return self.tokenizer.BERT2AA(self.mlm(x)[0])
 
     def masker(self, x):
         nullSeq = torch.empty_like(x[:, :, 0].squeeze(-1), requires_grad=False)
