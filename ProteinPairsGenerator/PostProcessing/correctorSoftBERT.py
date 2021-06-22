@@ -20,7 +20,7 @@ class CorrectorSoftBERT(pl.LightningModule):
         N : int,
         dropout : float
     ) -> None:
-        pl.LightningModule.__init__(self)
+        super().__init__(self)
 
         self.detector = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=N, dropout=dropout, bidirectional=True)
         self.switch = nn.Sequential(
@@ -49,7 +49,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT, ProteinBertAbstractModel):
         N : int,
         dropout : float
     ) -> None:
-        super().__init__(hidden_size=hidden_size, input_size=768, N=N, dropout=dropout)
+        CorrectorSoftBERT.__init__(hidden_size=hidden_size, input_size=768, N=N, dropout=dropout)
 
         self.tokenizer = TAPETokenizer()
         self.bert = ProteinBertModel.from_pretrained('bert-base')
