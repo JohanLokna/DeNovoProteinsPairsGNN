@@ -81,8 +81,8 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
     def masker(self, x):
         nullSeq = torch.empty_like(x[:, :, 0].squeeze(-1), requires_grad=False)
         nullSeq.fill_(AMINO_ACIDS_MAP[AMINO_ACID_NULL])
-        return self.bert(self.tokenizer.AA2BERT(nullSeq))[0]
+        return self.bert(self.tokenizer.AA2BERT(nullSeq))[0][:, 1:-1]
 
     def forward(self, x):
-        xEmbed = self.bert(self.tokenizer.AA2BERT(x))[0]
+        xEmbed = self.bert(self.tokenizer.AA2BERT(x))[0][:, 1:-1]
         return super().forward(xEmbed)
