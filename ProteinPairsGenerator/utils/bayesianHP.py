@@ -45,8 +45,9 @@ def runBayesianHP(
     def runnerHelper(point = None):
 
         # Compute next point
-        with (point is None) and lock:
-            point = optimizer.suggest(utility)
+        if point is None:
+            with lock:
+                point = optimizer.suggest(utility)
 
         # Compute target
         target = wrapper(point)
