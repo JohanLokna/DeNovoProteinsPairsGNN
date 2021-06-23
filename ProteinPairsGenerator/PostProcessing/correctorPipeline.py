@@ -32,6 +32,6 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
 
         def step(self, x):
             self.baseModel.step(x)
-            return self.step(GeneralData(x=self.output, y=x.seq))
+            return super().step(GeneralData(x=self.output, y=x.seq))
 
     return CorrectorPipeline
