@@ -42,8 +42,8 @@ class CorrectorSoftBERT(BERTModel):
 
     def criterion(self, p : torch.Tensor, yHat : torch.Tensor, x : torch.Tensor, y : torch.Tensor):
         g = (x != y).type_as(p)
-        print(p.shape, g.shape, yHat.shape, y.shape)
-        return self.alpha * self.bce(p, g) + (1 - self.alpha) * self.ce(yHat, y)
+        return self.alpha * self.bce(p, g) \
+             + (1 - self.alpha) * self.ce(yHat.view((-1,) + yHat.shape[2:]), y.view((-1,) + yHat.shape[2:]))
 
     def forward(self, x):
         h, _ = self.detector(x)
