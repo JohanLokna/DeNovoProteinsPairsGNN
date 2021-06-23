@@ -15,14 +15,14 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
 
     class CorrectorPipeline(corrector):
 
-        def __init__(self, baseModel : nn.Module, classDim : int, checkpoint : Union[None, Path], *args, **kwargs) -> None:
+        def __init__(self, baseModel : nn.Module, classDim : int, checkpoint : Union[None, str], *args, **kwargs) -> None:
             super().__init__(*args, **kwargs)
             self.classDim = classDim
             self.baseModel = baseModel
 
             # Load model if checkpoint is provided
             if checkpoint:
-                self.baseModel.load_from_checkpoint(checkpoint_path=str(checkpoint))
+                self.baseModel.load_from_checkpoint(checkpoint_path=checkpoint)
 
             # Freeze base model
             for param in self.baseModel.parameters():
