@@ -47,9 +47,9 @@ class CorrectorSoftBERT(BERTModel):
 
     def forward(self, x):
         h, _ = self.detector(x)
-        p = self.switch(h)
+        p = self.switch(h).squeeze(0)
         x_new = p * self.masker(x) + (1 - p) * x
-        return self.corrector(x_new), p.squeeze(0)
+        return self.corrector(x_new), p
 
     def configure_optimizers(self):
         optimizer = optim.Adam(self.parameters(), lr=1e-4)
@@ -106,6 +106,9 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
 
     def corrector(self, x):
         return self.tokenizer.BERT2AA(self.mlm(x)[0])
+
+    def criterion(self, p : torch.Tensor, yHat : torch.Tensor, x : torch.Tensor, y : torch.Tensor):
+        super().criterion(p[1:-1], yHat, x, y)
 
     def masker(self, x):
         nullSeq = torch.empty_like(x[:, 1:-1, 0].squeeze(-1), requires_grad=False)
