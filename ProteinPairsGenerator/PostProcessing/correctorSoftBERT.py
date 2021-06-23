@@ -42,10 +42,6 @@ class CorrectorSoftBERT(BERTModel):
 
     def criterion(self, p : torch.Tensor, yHat : torch.Tensor, x : torch.Tensor, y : torch.Tensor):
         g = (x != y).type_as(p)
-        # print(p.shape, g.shape, yHat.shape, y.shape)
-        print(self.bce(p, g))
-        print(self.ce(yHat.view((-1,) + yHat.shape[2:]), y.view((-1,) + y.shape[2:])))
-        print(self.alpha)
         return self.alpha * self.bce(p, g) \
              + (1 - self.alpha) * self.ce(yHat.view((-1,) + yHat.shape[2:]), y.view((-1,) + y.shape[2:]))
 
@@ -112,7 +108,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         return self.tokenizer.BERT2AA(self.mlm(x)[0])
 
     def criterion(self, p : torch.Tensor, yHat : torch.Tensor, x : torch.Tensor, y : torch.Tensor):
-        super().criterion(p[:, 1:-1], yHat, x, y)
+        return super().criterion(p[:, 1:-1], yHat, x, y)
 
     def masker(self, x):
         nullSeq = torch.empty_like(x[:, 1:-1, 0].squeeze(-1), requires_grad=False)
