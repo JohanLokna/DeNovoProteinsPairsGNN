@@ -66,7 +66,7 @@ class CorrectorSoftBERT(BERTModel):
         yHat, p = self(x.x)
         loss = self.criterion(p, yHat, x.x, x.y)
 
-        yPred = torch.argmax(yHat.data, 1)
+        yPred = torch.argmax(yHat.data, -1)
         nCorrect = (yPred == x.y).sum()
         nTotal = torch.numel(yPred)
 
