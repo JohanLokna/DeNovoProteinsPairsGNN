@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 
 
 class BERTModel(pl.LightningModule):
-    def __init__(self, extraLogging : List[tuple]) -> None:
+    def __init__(self, extraLogging : List[tuple] = []) -> None:
         super().__init__()
         self.extraLogging = extraLogging
     
