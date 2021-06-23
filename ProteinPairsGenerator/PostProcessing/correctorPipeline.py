@@ -1,7 +1,6 @@
 # Pytorch imports
 import torch
 import torch.nn as nn
-from torch.nn.functional import softmax, log_softmax
 import pytorch_lightning as pl
 
 # Local imports
