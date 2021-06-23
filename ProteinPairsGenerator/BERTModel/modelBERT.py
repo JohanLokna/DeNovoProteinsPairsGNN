@@ -24,7 +24,9 @@ class BERTModel(pl.LightningModule):
         self.log(phase + "Acc", nCorrect / nTotal, on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
         for name, f in self.extraLogging:
-            self.log(phase + name, f(outputs), on_step=False, on_epoch=True, prog_bar=False, logger=True)
+            self.log(phase + name, f(outputs), 
+                     on_step=False, on_epoch=True, 
+                     prog_bar=False if phase == "train" else True, logger=True)
 
     def training_step(self, batch, idx):
         return self.step(batch)
