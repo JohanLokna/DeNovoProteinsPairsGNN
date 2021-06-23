@@ -81,10 +81,10 @@ class CorrectorSoftBERT(BERTModel):
         nTotal = torch.numel(yPred)
 
         # Extra metrics
-        r2r = (x.x == x.y) & (yPred == x.y)
-        r2w = (x.x == x.y) & (yPred != x.y)
-        w2r = (x.x != x.y) & (yPred == x.y)
-        w2w = (x.x != x.y) & (yPred != x.y)
+        r2r = ((x.x == x.y) & (yPred == x.y)).sum()
+        r2w = ((x.x == x.y) & (yPred != x.y)).sum()
+        w2r = ((x.x != x.y) & (yPred == x.y)).sum()
+        w2w = ((x.x != x.y) & (yPred != x.y)).sum()
 
         return {
             "loss" : loss,
