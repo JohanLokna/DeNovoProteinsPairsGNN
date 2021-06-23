@@ -52,11 +52,7 @@ def setupRun(
     kwargs.update({"experiment_name": name})
     with updatedConfig.open("a") as out:
         for l in configFile.open().readlines():
-            for k, v in kwargs.items():
-                if k + ": " in l:
-                    l = l.split(": ")[0] + ": " + str(v) + "\n"
-                    break
-            out.write(l)
+            out.write(l.format(**kwargs))
 
     # Get free device
     device = getFreeGPU()
