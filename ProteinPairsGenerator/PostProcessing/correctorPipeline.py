@@ -1,3 +1,7 @@
+# General imports
+from pathlib import Path
+from typing import Union
+
 # Pytorch imports
 import torch
 import torch.nn as nn
@@ -11,10 +15,14 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
 
     class CorrectorPipeline(corrector):
 
-        def __init__(self, baseModel : nn.Module, classDim : int, *args, **kwargs) -> None:
+        def __init__(self, baseModel : nn.Module, classDim : int, checkpoint : Union[None, Path], *args, **kwargs) -> None:
             super().__init__(*args, **kwargs)
             self.classDim = classDim
             self.baseModel = baseModel
+
+            # Load model if checkpoint is provided
+            if checkpoint:
+                self.baseModel.load_from_checkpoint(checkpoint_path=str(checkpoint))
 
             # Freeze base model
             for param in self.baseModel.parameters():
