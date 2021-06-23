@@ -22,7 +22,15 @@ class CorrectorSoftBERT(BERTModel):
         alpha : float,
         lr : float
     ) -> None:
-        super().__init__()
+
+        extraLogging = [
+          ("R2R", lambda outputs: sum([o["R2R"]  for o in outputs]) / sum([o["nTotal"]  for o in outputs])),
+          ("R2W", lambda outputs: sum([o["R2W"]  for o in outputs]) / sum([o["nTotal"]  for o in outputs])),
+          ("W2R", lambda outputs: sum([o["W2R"]  for o in outputs]) / sum([o["nTotal"]  for o in outputs])),
+          ("W2W", lambda outputs: sum([o["W2W"]  for o in outputs]) / sum([o["nTotal"]  for o in outputs]))
+        ]
+
+        super().__init__(extraLogging=extraLogging)
 
         self.lrInitial = lr
 
@@ -72,10 +80,20 @@ class CorrectorSoftBERT(BERTModel):
         nCorrect = (yPred == x.y).sum()
         nTotal = torch.numel(yPred)
 
+        # Extra metrics
+        r2r = (x.x == x.y) & (yPred == x.y)
+        r2w = (x.x == x.y) & (yPred != x.y)
+        w2r = (x.x != x.y) & (yPred == x.y)
+        w2w = (x.x != x.y) & (yPred != x.y)
+
         return {
             "loss" : loss,
             "nCorrect" : nCorrect,
-            "nTotal" : nTotal
+            "nTotal" : nTotal,
+            "R2R" : r2r,
+            "R2W" : r2w,
+            "W2R" : w2r,
+            "W2W" : w2w
         }
 
 
