@@ -48,7 +48,7 @@ class CorrectorSoftBERT(BERTModel):
         h, _ = self.detector(x)
         p = self.switch(h)
         x_new = p * self.masker(x) + (1 - p) * x
-        return self.corrector(x_new), p
+        return self.corrector(x_new), p.squeeze(0)
 
     def configure_optimizers(self):
         optimizer = optim.Adam(self.parameters(), lr=1e-4)
