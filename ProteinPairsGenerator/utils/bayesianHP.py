@@ -9,22 +9,6 @@ from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import List
 
-def runnerHelper(optimizer, utility, objective, lock : Lock, point = None):
-
-    # Compute next point
-    with (point is None) and lock:
-        point = optimizer.suggest(utility)
-
-    # Compute target
-    target = objective(point)
-    
-    # Register result
-    with lock:
-        optimizer.register(
-            params=point,
-            target=target,
-        )
-
 
 def runBayesianHP(
     pbounds: dict,
@@ -57,10 +41,26 @@ def runBayesianHP(
     # Set up lock
     lock = Lock()
 
+    # Helper for running
+    def runnerHelper(point = None):
+
+        # Compute next point
+        with (point is None) and lock:
+            point = optimizer.suggest(utility)
+
+        # Compute target
+        target = wrapper(point)
+        
+        # Register result
+        with lock:
+            optimizer.register(
+                params=point,
+                target=target,
+            )
+
     # Run optimization
     with ThreadPool(processes=nParalell) as pool:
-        pool.starmap(partial(runnerHelper, optimizer=optimizer, utility=utility, objective=wrapper, lock=lock), 
-                     fixedPoints + [() for _ in range(nIter - len(fixedPoints))])
+        pool.starmap(runnerHelper, fixedPoints + [() for _ in range(nIter - len(fixedPoints))])
 
 
     # # Run optimization
