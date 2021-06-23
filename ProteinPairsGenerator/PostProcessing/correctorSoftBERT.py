@@ -19,9 +19,12 @@ class CorrectorSoftBERT(BERTModel):
         input_size : int,
         N : int,
         dropout : float,
-        alpha : float
+        alpha : float,
+        lr : float
     ) -> None:
         super().__init__()
+
+        self.lrInitial = lr
 
         self.detector = nn.GRU(input_size=input_size, hidden_size=hidden_size, num_layers=N, dropout=dropout, bidirectional=True)
         self.switch = nn.Sequential(
@@ -52,7 +55,7 @@ class CorrectorSoftBERT(BERTModel):
         return self.corrector(x_new), p.squeeze(-1)
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-4)
+        optimizer = optim.Adam(self.parameters(), lr=self.lrInitial)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "max", verbose=True)
         return {
            'optimizer': optimizer,
@@ -83,9 +86,10 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         hidden_size : int,
         N : int,
         dropout : float,
-        alpha : float
+        alpha : float,
+        lr : float
     ) -> None:
-        super().__init__(hidden_size=hidden_size, input_size=768, N=N, dropout=dropout, alpha=alpha)
+        super().__init__(hidden_size=hidden_size, input_size=768, N=N, dropout=dropout, alpha=alpha, lr=lr)
 
         self.tokenizer = AdaptedTAPETokenizer()
         self.bert = ProteinBertModel.from_pretrained('bert-base')

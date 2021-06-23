@@ -7,11 +7,12 @@ from functools import partial
 from multiprocessing import Lock
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
+from typing import List
 
-def runnerHelper(optimizer, utility, objective, lock : Lock):
+def runnerHelper(optimizer, utility, objective, lock : Lock, point = None):
 
     # Compute next point
-    with lock:
+    with (point is None) and lock:
         point = optimizer.suggest(utility)
 
     # Compute target
@@ -25,7 +26,16 @@ def runnerHelper(optimizer, utility, objective, lock : Lock):
         )
 
 
-def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, logPath : Path = Path("./logs.json")):
+def runBayesianHP(
+    pbounds: dict,
+    wrapper,
+    nIter : int = 1,
+    nParalell : int = 1,
+    logPath : Path = Path("./logs.json"),
+    fixedPoints : List[dict] = []
+) -> None:
+
+    assert len(fixedPoints) <= nIter
 
     optimizer = BayesianOptimization(
         f=None,
@@ -50,7 +60,7 @@ def runBayesianHP(pbounds: dict, wrapper, nIter : int = 1, nParalell : int = 1, 
     # Run optimization
     with ThreadPool(processes=nParalell) as pool:
         pool.starmap(partial(runnerHelper, optimizer=optimizer, utility=utility, objective=wrapper, lock=lock), 
-                     [() for _ in range(nIter)])
+                     fixedPoints + [() for _ in range(nIter - len(fixedPoints))])
 
 
     # # Run optimization
