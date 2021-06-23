@@ -23,7 +23,6 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
             # Load model if checkpoint is provided
             if checkpoint:
                 cpkt = torch.load(checkpoint)
-                print(cpkt)
                 self.baseModel.load_state_dict(cpkt["state_dict"])
 
             # Freeze base model

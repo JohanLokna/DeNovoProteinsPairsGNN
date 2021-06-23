@@ -105,7 +105,7 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
         self.bert._tie_or_clone_weights(self.mlm.decoder, self.bert.embeddings.word_embeddings)
 
     def corrector(self, x):
-        return self.tokenizer.BERT2AA(self.mlm(x)[0])
+        return self.tokenizer.BERT2AA(self.mlm(x)[0]).to(self.device)
 
     def criterion(self, p : torch.Tensor, yHat : torch.Tensor, x : torch.Tensor, y : torch.Tensor):
         return super().criterion(p[:, 1:-1], yHat, x, y)
@@ -113,8 +113,8 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
     def masker(self, x):
         nullSeq = torch.empty_like(x[:, 1:-1, 0].squeeze(-1), requires_grad=False)
         nullSeq.fill_(AMINO_ACIDS_MAP[AMINO_ACID_NULL])
-        return self.bert(self.tokenizer.AA2BERT(nullSeq))[0]
+        return self.bert(self.tokenizer.AA2BERT(nullSeq).to(self.device))[0]
 
     def forward(self, x):
-        xEmbed = self.bert(self.tokenizer.AA2BERT(x))[0]
+        xEmbed = self.bert(self.tokenizer.AA2BERT(x).to(self.device))[0]
         return super().forward(xEmbed)
