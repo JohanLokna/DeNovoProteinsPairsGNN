@@ -1,5 +1,5 @@
 # General imports
-from pathlib import Path
+from copy import deepcopy
 from typing import Union
 
 # Pytorch imports
@@ -40,7 +40,15 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
             baseModel.forward = wrapper.__get__(baseModel, type(baseModel))
 
         def step(self, x):
+
+            xOld = deepcopy(x)
+
             self.baseModel.step(x)
+
+            print(xOld.seq)
+            print(x.seq)
+            print(self.output)
+
             return super().step(GeneralData(x=self.output, y=x.seq))
 
     return CorrectorPipeline
