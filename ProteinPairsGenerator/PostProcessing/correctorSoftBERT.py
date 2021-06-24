@@ -73,18 +73,23 @@ class CorrectorSoftBERT(BERTModel):
     
     def step(self, x):
 
+        # Get results and use mask
         yHat, p = self(x.x)
-        loss = self.criterion(p, yHat, x.x, x.y)
+        p, yHat, x, y = p[x.mask], yHat[x.mask], x.x[x.mask], x.y[x.mask]
 
+        # Compute loss
+        loss = self.criterion(p, yHat, x, y)
+
+        # Compute standard metrics
         yPred = torch.argmax(yHat.data, -1)
-        nCorrect = (yPred == x.y).sum()
+        nCorrect = (yPred == y).sum()
         nTotal = torch.numel(yPred)
 
-        # Extra metrics
-        r2r = ((x.x == x.y) & (yPred == x.y)).sum()
-        r2w = ((x.x == x.y) & (yPred != x.y)).sum()
-        w2r = ((x.x != x.y) & (yPred == x.y)).sum()
-        w2w = ((x.x != x.y) & (yPred != x.y)).sum()
+        # Compute extra metrics
+        r2r = ((x == y) & (yPred == y)).sum()
+        r2w = ((x == y) & (yPred != y)).sum()
+        w2r = ((x != y) & (yPred == y)).sum()
+        w2w = ((x != y) & (yPred != y)).sum()
 
         return {
             "loss" : loss,

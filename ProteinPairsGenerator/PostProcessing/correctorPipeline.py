@@ -51,6 +51,6 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
             print(x.seq)
             print(self.output)
 
-            return super().step(GeneralData(x=self.output, y=x.seq))
+            return super().step(GeneralData(x=self.output, y=x.seq, mask=x.mask))
 
     return CorrectorPipeline
