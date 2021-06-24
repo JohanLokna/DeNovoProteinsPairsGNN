@@ -71,12 +71,13 @@ class CorrectorSoftBERT(BERTModel):
            'monitor': 'valLoss'
        }
     
-    def step(self, x):
+    def step(self, input):
 
         # Get results and use mask
-        yHat, p = self(x.x)
-        mask = x.mask if len(x.mask.shape) == 2 else x.mask.unsqueeze(0)
-        p, yHat, x, y = p[mask], yHat[mask], x.x[mask], x.y[mask]
+        yHat, p = self(input.x)
+        print(p.shape, yHat.shape, input.x.shape, input.y.shape)
+        mask = input.mask if len(input.mask.shape) == 2 else input.mask.unsqueeze(0)
+        p, yHat, x, y = p[mask], yHat[mask], input.x[mask], input.y[mask]
 
         # Compute loss
         loss = self.criterion(p, yHat, x, y)
