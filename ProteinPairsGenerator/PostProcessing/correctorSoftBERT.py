@@ -75,7 +75,6 @@ class CorrectorSoftBERT(BERTModel):
 
         # Get results and use mask
         yHat, p = self(input.x)
-        print(p.shape, yHat.shape, input.x.shape, input.y.shape)
         mask = input.mask if len(input.mask.shape) == 2 else input.mask.unsqueeze(0)
         p, yHat, x, y = p[mask], yHat[mask], input.x[mask], input.y[mask]
 
@@ -146,4 +145,5 @@ class CorrectorFullSoftBERT(CorrectorSoftBERT):
 
     def forward(self, x):
         xEmbed = self.bert(self.tokenizer.AA2BERT(x).to(self.device))[0]
-        return super().forward(xEmbed)
+        output, p = super().forward(xEmbed)
+        return output, p[:, 1:-1]
