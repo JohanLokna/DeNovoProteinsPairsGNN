@@ -43,7 +43,9 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
 
             xOld = deepcopy(x)
 
-            self.baseModel.step(x)
+            d = self.baseModel.step(x)
+
+            print(d)
 
             print(xOld.seq)
             print(x.seq)
