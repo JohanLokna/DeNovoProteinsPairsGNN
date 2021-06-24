@@ -40,17 +40,7 @@ def getCorrectorPipeline(corrector : pl.LightningModule):
             baseModel.forward = wrapper.__get__(baseModel, type(baseModel))
 
         def step(self, x):
-
-            xOld = deepcopy(x)
-
-            d = self.baseModel.step(x)
-
-            print(d)
-
-            print(xOld.seq)
-            print(x.seq)
-            print(self.output)
-
+            self.baseModel.step(x)
             return super().step(GeneralData(x=self.output, y=x.seq, mask=x.mask))
 
     return CorrectorPipeline
