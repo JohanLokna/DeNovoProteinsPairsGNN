@@ -75,9 +75,9 @@ class CorrectorSoftBERT(BERTModel):
 
         # Get results and use mask
         yHat, p = self(input.x)
-        print(p.shape, yHat.shape, input.x.shape, input.y.shape)
-        mask = input.mask if len(input.mask.shape) == 2 else input.mask.unsqueeze(0)
-        p, yHat, x, y = p[mask], yHat[mask], input.x[mask], input.y[mask]
+        adaptedMask = input.mask if len(input.mask.shape) == 2 else input.mask.unsqueeze(0)
+        p, yHat = p[adaptedMask], yHat[adaptedMask], 
+        x, y = input.x[input.mask], input.y[input.mask]
 
         # Compute loss
         loss = self.criterion(p, yHat, x, y)
