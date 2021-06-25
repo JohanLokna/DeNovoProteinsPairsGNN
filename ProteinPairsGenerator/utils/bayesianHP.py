@@ -16,7 +16,10 @@ def runBayesianHP(
     nIter : int = 1,
     nParalell : int = 1,
     logPath : Path = Path("./logs.json"),
-    fixedPoints : List[dict] = []
+    fixedPoints : List[dict] = [],
+    kind : str = "ucb",
+    kappa : float = 100,
+    xi : float = 0.1
 ) -> None:
 
     assert len(fixedPoints) <= nIter
@@ -36,7 +39,7 @@ def runBayesianHP(
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     # Set up objective
-    utility = UtilityFunction(kind="ucb", kappa=50, xi=0.1)
+    utility = UtilityFunction(kind=kind, kappa=kappa, xi=xi)
 
     # Set up lock
     lock = Lock()
