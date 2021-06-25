@@ -36,7 +36,7 @@ def runBayesianHP(
     optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
 
     # Set up objective
-    utility = UtilityFunction(kind="ucb", kappa=10, xi=0.1)
+    utility = UtilityFunction(kind="ucb", kappa=50, xi=0.1)
 
     # Set up lock
     lock = Lock()
