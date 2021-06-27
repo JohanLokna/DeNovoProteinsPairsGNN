@@ -4,7 +4,7 @@ from tqdm.notebook import tqdm
 
 # Library code
 from ProteinPairsGenerator.IngrahamModel import IngrahamDataModule
-from ProteinPairsGenerator.IngrahamV2.model import Struct2Seq
+from ProteinPairsGenerator.IngrahamV2.model import IngrahamV2Model
 
 def loss_nll(S, log_probs, mask):
     """ Negative log probabilities """
@@ -28,7 +28,7 @@ def loss_smoothed(S, log_probs, mask, weight=0.1, vocab_size = 21):
     return loss, loss_av
 
 device = "cuda:0"
-model = Struct2Seq(20, 128, 128, 128, 3, 3, 20, 30, "full", 0, 0.1, True, False).to(device)
+model = IngrahamV2Model(20, 128, 128, 128, 3, 3, 20, 30, "full", 0, 0.1, True, False).to(device)
 optimizer = optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 criterion = torch.nn.NLLLoss(reduction='none')
 

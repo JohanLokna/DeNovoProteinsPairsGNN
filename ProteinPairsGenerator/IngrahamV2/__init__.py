@@ -1,1 +1,1 @@
-from .model import Struct2Seq as IngrahamModel
+from .model import Struct2Seq as IngrahamV2Model
