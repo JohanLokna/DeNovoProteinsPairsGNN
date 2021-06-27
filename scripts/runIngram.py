@@ -1,10 +1,10 @@
 import numpy as np
 import torch
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 # Library code
 from ProteinPairsGenerator.IngrahamModel import IngrahamDataModule
-from ProteinPairsGenerator.IngrahamV2.model import IngrahamV2Model
+from ProteinPairsGenerator.IngrahamV2 import IngrahamV2Model
 
 def loss_nll(S, log_probs, mask):
     """ Negative log probabilities """
@@ -15,7 +15,7 @@ def loss_nll(S, log_probs, mask):
     loss_av = torch.sum(loss * mask) / torch.sum(mask)
     return loss, loss_av
 
-def loss_smoothed(S, log_probs, mask, weight=0.1, vocab_size = 21):
+def loss_smoothed(S, log_probs, mask, weight=0.1, vocab_size = 20):
     """ Negative log probabilities """
     S_onehot = torch.nn.functional.one_hot(S, num_classes = vocab_size).float()
 
@@ -28,11 +28,11 @@ def loss_smoothed(S, log_probs, mask, weight=0.1, vocab_size = 21):
     return loss, loss_av
 
 device = "cuda:0"
-model = IngrahamV2Model(20, 128, 128, 128, 3, 3, 20, 30, "full", 0, 0.1, True, False).to(device)
+model = IngrahamV2Model(20, 128, 128, 128, 3, 3, 21, 30, "full", 0, 0.1, True, False).to(device)
 optimizer = optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 criterion = torch.nn.NLLLoss(reduction='none')
 
-dm = IngrahamDataModule("proteinNetNew").to(device)
+dm = IngrahamDataModule("proteinNetNew")
 loader_train, loader_validation = dm.train_dataloader(), dm.val_dataloader()
 
 epochs = 100

@@ -13,7 +13,7 @@ class Struct2Seq(nn.Module):
         hidden_dim : int, 
         num_encoder_layers : int = 3, 
         num_decoder_layers : int = 3,
-        vocab_input : int = 20, 
+        vocab_input : int = 21,
         k_neighbors : int = 30, 
         protein_features : str = 'full', 
         augment_eps : float = 0.,

@@ -83,6 +83,7 @@ class ProteinFeatures(nn.Module):
         D_mu = D_mu.view([1,1,1,-1])
         D_sigma = (D_max - D_min) / D_count
         D_expand = torch.unsqueeze(D, -1)
+        print(D_expand, D_mu, D_sigma)
         RBF = torch.exp(-((D_expand - D_mu) / D_sigma)**2)
 
         return RBF
