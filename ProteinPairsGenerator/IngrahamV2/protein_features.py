@@ -17,8 +17,8 @@ class PositionalEncodings(nn.Module):
         N_batch = E_idx.size(0)
         N_nodes = E_idx.size(1)
         N_neighbors = E_idx.size(2)
-        ii = torch.arange(N_nodes, dtype=torch.float32).view((1, -1, 1))
-        d = (E_idx.float() - ii).unsqueeze(-1)
+        ii = torch.arange(N_nodes).view((1, -1, 1)).type_as(E_idx)
+        d = (E_idx - ii).unsqueeze(-1).float()
         # Original Transformer frequencies
         frequency = torch.exp(
             torch.arange(0, self.num_embeddings, 2, dtype=torch.float32)
