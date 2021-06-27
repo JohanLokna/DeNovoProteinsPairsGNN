@@ -21,7 +21,7 @@ class PositionalEncodings(nn.Module):
         d = (E_idx - ii).unsqueeze(-1).float()
         # Original Transformer frequencies
         frequency = torch.exp(
-            torch.arange(0, self.num_embeddings, 2, dtype=torch.float32)
+            torch.arange(0, self.num_embeddings, 2).type_as(d)
             * -(np.log(10000.0) / self.num_embeddings)
         )
 
