@@ -32,7 +32,7 @@ model = IngrahamV2Model(20, 128, 128, 128, 3, 3, 21, 30, "full", 0, 0.1, True, F
 optimizer = optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 criterion = torch.nn.NLLLoss(reduction='none')
 
-dm = IngrahamDataModule("proteinNetNew")
+dm = IngrahamDataModule("proteinNetNew", batch_size = 16)
 loader_train, loader_validation = dm.train_dataloader(), dm.val_dataloader()
 
 epochs = 100
