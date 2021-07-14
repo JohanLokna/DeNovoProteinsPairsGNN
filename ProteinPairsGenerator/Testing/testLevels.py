@@ -1,3 +1,5 @@
+from tqdm import tqdm
+
 import torch
 
 # Local imports
@@ -21,7 +23,7 @@ class TestProteinDesign:
         for level in self.levels:
             stepResults = []
             for _ in range(self.repeats):
-                for x in self.dm.test_dataloader():
+                for x in tqdm(self.dm.test_dataloader()):
                     self.remask(x, **level)
                     stepResults.append(model.step(x))
             self.prettyPrint(level, self.postprocess(stepResults))
