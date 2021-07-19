@@ -195,7 +195,19 @@ class ProteinNetDataset(Dataset):
         return self.totalLength
 
     def get(self, idx):
-        return self.index_select(idx)
+
+        # Switch between tuple for selection one index
+        # and list to get batch
+
+        if isinstance(idx, tuple):
+            return self.index_select(idx)
+        
+        elif isinstance(idx, list):
+            for subIdx in idx:
+                yield self.index_select(subIdx)
+        
+        else:
+            raise NotImplementedError
 
     def index_select(self, allIdx):
 

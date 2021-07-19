@@ -28,7 +28,6 @@ class TestProteinDesign:
                     stepResults.append(model.step(x))
             self.prettyPrint(level, self.postprocess(stepResults))
 
-
     def postprocess(self, stepResults) -> None:
         nTotal = 0
         nCorrect = 0
