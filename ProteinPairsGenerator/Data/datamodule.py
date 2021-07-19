@@ -1,6 +1,6 @@
 # General imports
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Optional, Callable
 
 # Pytorch imports
 import torch
@@ -16,16 +16,18 @@ class BERTDataModule(pl.LightningDataModule):
         self,
         root : Union[Path, str],
         loaderClass,
-        trainSet: Union[Path, List[Path], None] = None,
-        valSet: Union[List[Path], None] = None,
-        testSet: Union[List[Path], None] = None,
-        teacher: Union[str, None] = None,
+        trainSet: Optional[Union[Path, List[Path]]] = None,
+        valSet: Optional[List[Path]] = None,
+        testSet: Optional[List[Path]] = None,
+        teacher: Optional[str] = None,
         num_workers: int = 1,
         prefetch_factor: int = 2,
-        batch_size: int = 1
+        batch_size: int = 1,
+        batch_builder: Optional[Callable] = None
     ) -> None:
         super().__init__()
 
+        # Ensure that root is of type Path
         if isinstance(root, str):
             root = Path(root)
 
@@ -42,12 +44,27 @@ class BERTDataModule(pl.LightningDataModule):
         self.prefetch_factor = prefetch_factor
         self.loaderClass = loaderClass
 
+        # Set up batches
+
+        # Ensure that either batch size 1 is used or  
+        if batch_size != 1 and not (batch_builder is None):
+            raise RuntimeError("Bad batching")
+
+        indeciesList = [self.dataset.getSubset(self.trainSet), 
+                        self.dataset.getSubset(self.valSet), 
+                        self.dataset.getSubset(self.testSet)]
+
+        if batch_builder is None:
+            self.train_indices, self.val_indices, self.test_indices = indeciesList
+        else:
+            self.train_indices, self.val_indices, self.test_indices = [batch_builder(indecies) for indecies in indeciesList]
+
     def setup(self, stage=None):
         pass
 
     def train_dataloader(self):
         return self.loaderClass(
-            self.dataset.getSubset(self.trainSet), 
+            dataset=self.train_indices,
             teacher=self.teacher,
             num_workers=self.num_workers,
             prefetch_factor=self.prefetch_factor,
@@ -55,10 +72,10 @@ class BERTDataModule(pl.LightningDataModule):
         )
 
     def val_dataloader(self):
-        return self.loaderClass(dataset=self.dataset.getSubset(self.valSet), teacher=self.teacher)
+        return self.loaderClass(dataset=self.val_indices, teacher=self.teacher)
 
     def test_dataloader(self):
-        return self.loaderClass(self.dataset.getSubset(self.testSet), teacher=self.teacher)
+        return self.loaderClass(dataset=self.test_indices, teacher=self.teacher)
 
     def transfer_batch_to_device(self, x, device):
         x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items() if isinstance(v, torch.Tensor))
