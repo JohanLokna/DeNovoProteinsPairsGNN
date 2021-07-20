@@ -17,7 +17,9 @@ def batchAccordingToSize(subset : Subset, cutoffSize : int = 5000):
     currBatch = []
 
     for idx in subset.indices:
-        currCount += torch.numel(subset.dataset.get(idx))
+        print(idx)
+        print(subset.dataset.get(idx))
+        currCount += torch.numel(subset.dataset.get(idx).seq)
         currBatch.append(idx)
 
         if cutoffSize >= cutoffSize:
