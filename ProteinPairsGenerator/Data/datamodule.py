@@ -31,6 +31,7 @@ class BERTDataModule(pl.LightningDataModule):
         if isinstance(root, str):
             root = Path(root)
 
+        # Set up datsets
         self.trainSet = trainSet if not trainSet is None else [root.joinpath("processed/training_100")]
         self.valSet = valSet if not valSet is None else [root.joinpath("processed/validation")]
         self.testSet = testSet if not testSet is None else [root.joinpath("processed/testing")]
@@ -38,18 +39,19 @@ class BERTDataModule(pl.LightningDataModule):
             root = root,
             subsets = self.trainSet + self.valSet + self.testSet
         )
+
+        # Set up members
         self.teacher = teacher
         self.num_workers = num_workers
         self.batch_size = batch_size
         self.prefetch_factor = prefetch_factor
         self.loaderClass = loaderClass
 
-        # Set up batches
-
         # Ensure that either batch size 1 is used or  
         if batch_size != 1 and not (batch_builder is None):
             raise RuntimeError("Bad batching")
 
+        # Set up batches
         indeciesList = [self.dataset.getSubset(self.trainSet), 
                         self.dataset.getSubset(self.valSet), 
                         self.dataset.getSubset(self.testSet)]
@@ -57,7 +59,7 @@ class BERTDataModule(pl.LightningDataModule):
         if batch_builder is None:
             self.train_indices, self.val_indices, self.test_indices = indeciesList
         else:
-            self.train_indices, self.val_indices, self.test_indices = [batch_builder(indecies) for indecies in indeciesList]
+            self.train_indices, self.val_indices, self.test_indices = [batch_builder(self.dataset, indices) for indices in indeciesList]
 
     def setup(self, stage=None):
         pass
