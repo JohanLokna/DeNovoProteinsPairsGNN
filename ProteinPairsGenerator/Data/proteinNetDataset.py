@@ -194,7 +194,7 @@ class ProteinNetDataset(Dataset):
     def len(self):
         return self.totalLength
 
-    def __get__(self, idx):
+    def __getitem__(self, idx):
 
         # Switch between tuple for selection one index
         # and list to get batch
