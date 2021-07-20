@@ -31,19 +31,19 @@ def loss_smoothed(S, log_probs, mask, vocab_size, weight=0.1):
 class Struct2Seq(BERTModel):
     def __init__(
         self, 
-        in_size, 
-        node_features, 
-        edge_features,
-        hidden_dim, 
-        num_encoder_layers=3, 
-        num_decoder_layers=3,
-        out_size=20, 
-        k_neighbors=30,
-        protein_features='full',
-        augment_eps=0.,
-        dropout=0.1, 
-        forward_attention_decoder=True, 
-        use_mpnn=False
+        in_size : int, 
+        node_features : int, 
+        edge_features : int,
+        hidden_dim : int, 
+        num_encoder_layers : int =3, 
+        num_decoder_layers : int =3,
+        out_size : int = 20, 
+        k_neighbors : int = 30,
+        protein_features : str = 'full',
+        augment_eps : float = 0.,
+        dropout : float = 0.1, 
+        forward_attention_decoder : bool = True, 
+        use_mpnn : bool = False
     ) -> None:
         """ Graph labeling network """
         super(Struct2Seq, self).__init__()
