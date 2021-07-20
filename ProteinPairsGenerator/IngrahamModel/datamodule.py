@@ -10,7 +10,7 @@ from torch.utils.data import Subset
 from ProteinPairsGenerator.Data import BERTDataModule
 from .loader import IngrahamLoader
 
-def batchAccordingToSize(subset : Subset, cutoffSize : int = 2500):
+def batchAccordingToSize(subset : Subset, cutoffSize : int = 1000):
     newIndices = []
 
     currCount = 0
