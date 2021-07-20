@@ -26,6 +26,10 @@ class IngrahamLoader(BERTLoader):
 
         def featurize(batch):
 
+            # Flatten batch
+            batch = [x for sub in batch if isinstance(sub, list) for x in sub] + [sub for sub in batch if not isinstance(sub, list)]
+
+            # Set up data
             B = len(batch)
             lengths = [torch.numel(b.seq) for b in batch]
             L_max = max(lengths)
