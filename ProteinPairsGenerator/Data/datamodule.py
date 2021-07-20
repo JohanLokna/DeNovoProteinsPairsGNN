@@ -59,7 +59,7 @@ class BERTDataModule(pl.LightningDataModule):
         if batch_builder is None:
             self.train_indices, self.val_indices, self.test_indices = indeciesList
         else:
-            self.train_indices, self.val_indices, self.test_indices = [batch_builder(self.dataset, indices) for indices in indeciesList]
+            self.train_indices, self.val_indices, self.test_indices = [batch_builder(indices) for indices in indeciesList]
 
     def setup(self, stage=None):
         pass

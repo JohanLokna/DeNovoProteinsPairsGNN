@@ -4,29 +4,27 @@ from typing import Union, Optional, List
 
 # Torch imports
 import torch
+from torch.utils.data import Subset
 
 # Local imports
 from ProteinPairsGenerator.Data import BERTDataModule
 from .loader import IngrahamLoader
 
-def batchAccordingToSize(dataset, indices, cutoffSize = 5000):
+def batchAccordingToSize(subset : Subset, cutoffSize : int = 5000):
     newIndices = []
 
     currCount = 0
     currBatch = []
 
-    for idx in indices:
-        print(indices)
-        print(idx)
-        print(dataset.get(idx))
-        currCount += torch.numel(dataset.get(idx))
+    for idx in subset.indices:
+        currCount += torch.numel(subset.dataset.get(idx))
         currBatch.append(idx)
 
         if cutoffSize >= cutoffSize:
             newIndices.append(currBatch)
             currCount, currBatch = 0, []
 
-    return newIndices
+    return Subset(subset.dataset, newIndices)
 
 
 class IngrahamDataModule(BERTDataModule):
