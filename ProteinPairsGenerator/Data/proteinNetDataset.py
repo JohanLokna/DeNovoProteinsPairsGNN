@@ -206,12 +206,11 @@ class ProteinNetDataset(Dataset):
             print(self.index_select(idx))
             return self.index_select(idx)
         
-        # elif isinstance(idx, list):
-        #     for subIdx in idx:
-        #         yield self.index_select(subIdx)
+        elif isinstance(idx, list):
+            return [self.index_select(subIdx) for subIdx in idx]
         
-        # else:
-        #     raise NotImplementedError
+        else:
+            raise NotImplementedError
 
     def index_select(self, allIdx):
 
