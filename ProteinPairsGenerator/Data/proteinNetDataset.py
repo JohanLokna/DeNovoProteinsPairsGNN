@@ -198,6 +198,7 @@ class ProteinNetDataset(Dataset):
 
         # Switch between tuple for selection one index
         # and list to get batch
+        print(idx)
 
         if isinstance(idx, tuple):
             return self.index_select(idx)
