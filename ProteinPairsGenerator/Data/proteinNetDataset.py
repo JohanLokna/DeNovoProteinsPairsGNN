@@ -202,8 +202,9 @@ class ProteinNetDataset(Dataset):
         print(idx)
         print(isinstance(idx, tuple))
 
-        # if isinstance(idx, tuple):
-        #     return self.index_select(idx)
+        if isinstance(idx, tuple):
+            print(self.index_select(idx))
+            return self.index_select(idx)
         
         # elif isinstance(idx, list):
         #     for subIdx in idx:
