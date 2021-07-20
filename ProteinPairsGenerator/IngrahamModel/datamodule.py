@@ -16,6 +16,7 @@ def batchAccordingToSize(dataset, indices, cutoffSize = 5000):
     currBatch = []
 
     for idx in indices:
+        print(idx)
         print(dataset.get(idx))
         currCount += torch.numel(dataset.get(idx))
         currBatch.append(idx)
