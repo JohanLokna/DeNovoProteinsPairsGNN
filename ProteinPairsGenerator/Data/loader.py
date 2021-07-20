@@ -15,7 +15,8 @@ class BERTLoader(DataLoader):
         if ("sampler" in kwargs) and isinstance(kwargs["sampler"], DistributedSampler):
             rank = kwargs["sampler"].rank
             size = kwargs["sampler"].num_replicas
-            newIndecies = [x for x in dataset.indices if x[0] % size == rank]
+            newIndecies = [x for x in dataset.indices if (isinstance(x, tuple) and x[0] % size == rank) \
+                                                      or (isinstance(x, list) and isinstance(x[0], tuple) and x[0][0] % size == rank)]
             dataset = Subset(dataset=dataset.dataset, indices=newIndecies)
             kwargs["sampler"] = None
         kwargs["shuffle"] = False
