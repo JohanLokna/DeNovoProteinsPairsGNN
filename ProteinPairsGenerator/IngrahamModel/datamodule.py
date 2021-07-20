@@ -24,8 +24,6 @@ def batchAccordingToSize(subset : Subset, cutoffSize : int = 5000):
             newIndices.append(currBatch)
             currCount, currBatch = 0, []
 
-    
-
     if currCount > 0:
         newIndices.append(currBatch)
 
