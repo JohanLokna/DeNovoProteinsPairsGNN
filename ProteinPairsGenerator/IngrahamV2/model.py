@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from .self_attention import *
 from .protein_features import ProteinFeatures
 
+
 class Struct2Seq(nn.Module):
     def __init__(self, 
         vocab_output : int,
