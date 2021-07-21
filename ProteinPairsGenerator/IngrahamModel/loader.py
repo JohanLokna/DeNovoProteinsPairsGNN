@@ -46,7 +46,7 @@ class IngrahamLoader(BERTLoader):
             for i, (b, l) in enumerate(zip(batch, lengths)):
 
                 # Standard features
-                coords[i, :l] = b.coords / 100 # Fix this
+                coords[i, :l] = torch.swapaxes(b.coords, 1, 2) / 100 # Fix this
                 seq[i, :l] = b.seq
                 valid[i, :l] = 1.0
 
