@@ -10,19 +10,21 @@ from torch.utils.data import Subset
 from ProteinPairsGenerator.Data import BERTDataModule
 from .loader import IngrahamLoader
 
-def batchAccordingToSize(subset : Subset, cutoffSize : int = 750):
+def batchAccordingToSize(subset : Subset, cutoffSize : int = 500):
     newIndices = []
 
     currCount = 0
     currBatch = []
 
     for idx in subset.indices:
-        currCount += torch.numel(subset.dataset[idx].seq)
-        currBatch.append(idx)
+        currSize = torch.numel(subset.dataset[idx].seq)
 
-        if currCount >= cutoffSize:
+        if currCount + currSize >= cutoffSize:
             newIndices.append(currBatch)
             currCount, currBatch = 0, []
+
+        currBatch.append(idx)
+        currCount += currSize
 
     if currCount > 0:
         newIndices.append(currBatch)
