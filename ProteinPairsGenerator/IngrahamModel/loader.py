@@ -49,7 +49,6 @@ class IngrahamLoader(BERTLoader):
                 coords[i, :l] = torch.transpose(b.coords, 1, 2) / 100 # Fix this
                 seq[i, :l] = b.seq
                 valid[i, :l] = 1.0
-                valid[i, :, ] = torch.zeros(3)
 
                 # Randomly selecet masked sequence
                 idx = torch.randint(len(b.maskBERT), (1,)).item()
