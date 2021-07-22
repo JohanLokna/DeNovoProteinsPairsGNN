@@ -453,7 +453,8 @@ class ProteinNetRecord(FeatureModule):
             "getPrimary": lambda x: ProteinNetField(featureName=x, fieldName="primary", dependencies=[self]),
             "getCoordsN": lambda x: ProteinNetField(featureName=x, fieldName="N", dependencies=[self]),
             "getCoordsCA": lambda x: ProteinNetField(featureName=x, fieldName="CA", dependencies=[self]),
-            "getCoordsC": lambda x: ProteinNetField(featureName=x, fieldName="C", dependencies=[self])
+            "getCoordsC": lambda x: ProteinNetField(featureName=x, fieldName="C", dependencies=[self]),
+            "getMask": lambda x: ProteinNetField(featureName=x, fieldName="mask", dependencies=[self])
         })
 
         super().__init__(featureName)

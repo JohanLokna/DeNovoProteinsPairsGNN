@@ -317,7 +317,7 @@ class ProteinNetDataset(Dataset):
         )
 
          # Get only get sequences where all positions are well defined
-        mask = reader.getCoordsCA("mask")
+        mask = reader.getMask("mask")
         constraintAllValid = Constraint(
             featureName = "constraintAllValid",
             constraint = lambda x: torch.all(x).item(),
