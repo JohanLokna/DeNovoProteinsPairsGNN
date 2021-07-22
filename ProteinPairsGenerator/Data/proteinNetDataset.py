@@ -268,10 +268,18 @@ class ProteinNetDataset(Dataset):
         cartDist = CartesianDistances(dependencies=[coordsCA])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
 
-        # Coords
+        # Get coords and scale them to fit Ingraham Model
         coords = StackedFeatures(
             featureName = "coords",
-            dependencies = [coordsN, coordsCA, coordsC]
+            dependencies = [coordsN, coordsCA, coordsC],
+            dim = 1
+        )
+
+        coordsScaled = Normalize(
+            bias = 0,
+            scale = 100,
+            featureName = "coordsScaled",
+            dependencies = [coords]
         )
 
         # Construct edge relations
@@ -284,7 +292,7 @@ class ProteinNetDataset(Dataset):
             dependencies = [closeNeighbours]
         )
 
-        # Construct edge attributes
+        # Construct edge attributes and normalize them
         stackedDist = StackedFeatures(
             dependencies = [cartDist, seqDist]
         )
@@ -307,10 +315,13 @@ class ProteinNetDataset(Dataset):
             constraint = lambda attr: attr.shape[0] < 200000,
             dependencies = [edgeAttr]
         )
-        constraintMinLength = Constraint(
-            featureName = "constraintMinLength",
-            constraint = lambda attr: attr.shape[0] > 50,
-            dependencies = [nodeAttr]
+
+         # Get only get sequences where all positions are well defined
+        mask = reader.getCoordsCA("mask")
+        constraintAllValid = Constraint(
+            featureName = "constraintAllValid",
+            constraint = lambda x: torch.all(x).item(),
+            dependencies = [mask]
         )
 
         # Get BERT masking
@@ -325,7 +336,7 @@ class ProteinNetDataset(Dataset):
             device = device
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coords, constraintMaxSize, constraintMinLength]
+        return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coordsScaled, constraintMaxSize, constraintAllValid]
 
     @staticmethod
     def collate(data_list):

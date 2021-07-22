@@ -366,20 +366,22 @@ class StackedFeatures(FeatureModule):
     def __init__(
         self,
         featureName : str = "stack",
-        dependencies : List[FeatureModule] = []
+        dependencies : List[FeatureModule] = [],
+        dim : int = -1
     ) -> None:
 
         if len(dependencies) == 0:
             warnings.warn("Dependencies in StackedFeatures might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
+        self.dim = dim
 
     def forward(
         self,
         *args,
         **kwargs
     ) -> torch.Tensor:
-        return torch.stack([d.data for d in self.dependencies], dim=-1)
+        return torch.stack([d.data for d in self.dependencies], dim=self.dim)
 
     def preFilter(self, *args, **kwargs) -> bool:
         return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])

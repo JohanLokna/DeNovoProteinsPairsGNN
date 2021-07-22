@@ -40,8 +40,8 @@ def readPotein(inFile) -> Dict:
             record["CA"] = coords[:, 1::3].transpose(0, 1)
             record["C"] = coords[:, 2::3].transpose(0, 1)
         elif "[MASK]" in line:
-            # Not yet implemented - just skipping lines
-            inFile.readline()
+            mask = torch.BoolTensor([x == "+" for x in inFile.readline()[:-1]])
+            record["mask"] = mask
         elif "\n" in line:
             return record
         else:
