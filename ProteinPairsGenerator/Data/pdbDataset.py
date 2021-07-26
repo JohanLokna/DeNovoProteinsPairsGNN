@@ -1,7 +1,7 @@
 # General imports
 import pandas as pd
 from pathlib import Path
-from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
+from prody import fetchPDBviaHTTP, pathPDBFolder, confProDy
 from typing import List, Optional
 
 # PyTorch imports
@@ -29,6 +29,9 @@ class PDBDataset(BaseDataset):
         self.pdbFolder = pdbFolder if not pdbFolder is None else root.joinpath("raw")
         self.pdbFolder.mkdir(parents=True, exist_ok=True)
         pathPDBFolder(folder=self.pdbFolder, divided=False)
+
+        # Silence prody
+        confProDy(verbosity='none')
 
         # Set up preprocessing
         gen = DataGeneratorList(features=features, batchSize=batchSize)
@@ -92,6 +95,31 @@ class PDBDataset(BaseDataset):
         coordsCA = ProdySelect("ca")
         cartDist = CartesianDistances(dependencies=[coordsCA])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
+
+        # Construct edge relations
+        closeNeighbours = CloseNeighbours(
+            threshold = 12,
+            dependencies = [cartDist]
+        )
+        edgeIdx = EdgeIndecies(
+            featureName = "edge_index",
+            dependencies = [closeNeighbours]
+        )
+
+        # Construct edge attributes and normalize them
+        stackedDist = StackedFeatures(
+            dependencies = [cartDist, seqDist]
+        )
+        edgeAttrUnnormal = EdgeAttributes(
+            dependencies = [stackedDist, closeNeighbours]
+        )
+        edgeAttr = Normalize(
+            bias = torch.Tensor([7.5759e+00, 1.4498e-08]), # Should be zero in second coordinate but roundoff error
+            scale = torch.Tensor([3.680696, 1.166342]),
+            featureName = "edge_attr",
+            dependencies = [edgeAttrUnnormal]
+        )
+
 
 
         return [backboneCoords]
