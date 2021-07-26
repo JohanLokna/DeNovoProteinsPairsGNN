@@ -162,7 +162,7 @@ class ProdySequence(FeatureModule):
 
         # Set up dependecies
         if len(dependencies) != 1:
-            warnings.warn("Dependencies in SequencePDB might be errornous!", UserWarning)
+            warnings.warn("Dependencies in ProdySequence might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
     
@@ -199,9 +199,15 @@ class ProdyTitle(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "title"
+        featureName : str = "title",
+        dependencies : List[FeatureModule] = []
     ) -> None:
-        super().__init__(featureName)
+
+        # Set up dependecies
+        if len(dependencies) != 1:
+            warnings.warn("Dependencies in ProdyTitle might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
     
     def forward(
         self,

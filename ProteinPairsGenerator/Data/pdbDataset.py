@@ -74,8 +74,7 @@ class PDBDataset(BaseDataset):
 
                 # Coalate and save each chunk
                 data, slices = self.collate(dataList)
-                newName = self.newProcessedFile()
-                torch.save((data, slices), outDir.joinpath(newName))
+                torch.save((data, slices), outDir.joinpath("pdbData.pt"))
 
             # Add to finished subsets
             self.subsets.append(outDir)
@@ -92,7 +91,7 @@ class PDBDataset(BaseDataset):
         nodeAttr = ProdySequence("seq", dependencies=[pdb])
 
         # Get distances within protein, used for Strokach
-        coordsCA = ProdySelect("ca")
+        coordsCA = ProdySelect("ca", dependencies=[pdb])
         cartDist = CartesianDistances(dependencies=[coordsCA])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
 
@@ -121,7 +120,7 @@ class PDBDataset(BaseDataset):
         )
 
         # Get title for reference
-        title = ProdyTitle("title")
+        title = ProdyTitle("title", dependencies=[pdb])
 
         # Restrict sequence lenght
         constraintMaxSize = Constraint(
