@@ -14,7 +14,7 @@ from torch_geometric.data import Dataset
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
 
-class ProteinNetDataset(Dataset):
+class BaseDataset(Dataset):
 
     def __init__(
         self,

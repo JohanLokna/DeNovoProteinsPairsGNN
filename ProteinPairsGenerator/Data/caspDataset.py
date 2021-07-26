@@ -10,7 +10,7 @@ import torch
 from ProteinPairsGenerator.Data import BaseDataset
 from ProteinPairsGenerator.PreProcessing import *
 
-class ProteinNetDataset(BaseDataset):
+class CaspDataset(BaseDataset):
 
     def __init__(
         self,
