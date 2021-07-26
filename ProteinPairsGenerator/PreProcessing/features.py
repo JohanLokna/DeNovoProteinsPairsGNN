@@ -114,14 +114,13 @@ class ProdyBackboneCoords(FeatureModule):
         super().__init__(featureName, dependencies=dependencies)
     
     def forward(
-        self, 
-        pdb : AtomGroup,
+        self,
         *args,
         **kwargs
     ) -> torch.Tensor:
         
         # Get backbone coords
-        coords = pdb.backbone.getCoordsets(0)
+        coords = self.dependencies[0].data.backbone.getCoordsets(0)
 
         print(coords.shape)
 
