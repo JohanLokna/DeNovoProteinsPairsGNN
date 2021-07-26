@@ -49,7 +49,7 @@ class FeatureModule:
         self.data = None
         self.setDataId()
 
-    def forward(self, *args, **kwargs) -> torch.Tensor:
+    def forward(self, *args, **kwargs):
         raise NotImplementedError
 
     def preFilter(self, *args, **kwargs) -> bool:
@@ -93,10 +93,35 @@ class ProdyPDB(FeatureModule):
         pdb,
         *args,
         **kwargs
-    ) -> torch.Tensor:
+    ):
         
         # Get sequence
         return parsePDB(pdb)
+
+
+class ProdySelect(FeatureModule):
+
+    def __init__(
+        self,
+        selectSequence : str,
+        featureName : str = "prodySelect",
+        dependencies : List[FeatureModule] = []
+    ) -> None:
+
+        self.selectSequence = selectSequence
+
+        # Set up dependecies
+        if len(dependencies) != 1:
+            warnings.warn("Dependencies in ProdySelect might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
+    
+    def forward(
+        self,
+        *args,
+        **kwargs
+    ):
+        return self.dependencies[0].data.select(self.selectSequence)
 
 
 class ProdyBackboneCoords(FeatureModule):
@@ -122,9 +147,9 @@ class ProdyBackboneCoords(FeatureModule):
         # Get backbone coords
         coords = self.dependencies[0].data.backbone.getCoordsets(0)
 
-        print(coords.shape)
-
-        return coords
+        # Reshape to [seqDim, atomDim, spatialDim]
+        # Atm ordering in atomDim is: N, CA, C, O
+        return torch.from_numpy(coords).reshape((-1, 4, 3))
 
 
 class ProdySequence(FeatureModule):

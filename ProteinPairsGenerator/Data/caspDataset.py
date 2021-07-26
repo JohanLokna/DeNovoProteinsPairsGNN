@@ -149,11 +149,11 @@ class CaspDataset(BaseDataset):
         )
 
          # Get only get sequences where all positions are well defined
-        mask = reader.getMask("mask")
+        validityMask = reader.getMask("mask")
         constraintAllValid = Constraint(
             featureName = "constraintAllValid",
             constraint = lambda x: torch.all(x).item(),
-            dependencies = [mask]
+            dependencies = [validityMask]
         )
 
         # Get BERT masking

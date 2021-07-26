@@ -82,6 +82,16 @@ class PDBDataset(BaseDataset):
 
         pdb = ProdyPDB()
 
-        backboneCoords = ProdyBackboneCoords(dependencies=[pdb])
+        # Backbone coords for Ingraham
+        backboneCoords = ProdyBackboneCoords("coordsScaled", dependencies=[pdb])
+
+        # Get sequence attributes for Strokach
+        nodeAttr = ProdySequence("seq", dependencies=[pdb])
+
+        # Get distances within protein, used for Strokach
+        coordsCA = ProdySelect("ca")
+        cartDist = CartesianDistances(dependencies=[coordsCA])
+        seqDist = SequenceDistances(dependencies=[nodeAttr])
+
 
         return [backboneCoords]
