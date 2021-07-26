@@ -96,7 +96,7 @@ class ProdyPDB(FeatureModule):
     ) -> AtomGroup:
         
         # Get sequence
-        return parsePDB(pdb)
+        return parsePDB(pdb).select("chain A")
 
 
 class ProdySelect(FeatureModule):
