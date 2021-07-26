@@ -181,9 +181,15 @@ class ProdyCartesianCoordinates(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "cartCoords"
+        featureName : str = "cartCoords",
+        dependencies : List[FeatureModule] = []
     ) -> None:
-        super().__init__(featureName)
+
+        # Set up dependecies
+        if len(dependencies) != 1:
+            warnings.warn("Dependencies in ProdyCartesianCoordinates might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
     
     def forward(
         self,

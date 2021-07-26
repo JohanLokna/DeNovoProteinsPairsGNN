@@ -91,7 +91,8 @@ class PDBDataset(BaseDataset):
         nodeAttr = ProdySequence("seq", dependencies=[pdb])
 
         # Get distances within protein, used for Strokach
-        coordsCA = ProdySelect("ca", dependencies=[pdb])
+        ca = ProdySelect("ca", dependencies=[pdb])
+        coordsCA = ProdyCartesianCoordinates(dependencies=[ca])
         cartDist = CartesianDistances(dependencies=[coordsCA])
         seqDist = SequenceDistances(dependencies=[nodeAttr])
 
