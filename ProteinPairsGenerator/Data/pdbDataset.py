@@ -67,7 +67,7 @@ class PDBDataset(BaseDataset):
             outDir.mkdir(parents=True, exist_ok=True)
 
             # Iterate over chunks
-            for dataList in self.pre_transform(self.pdbDict[outDir.name]):
+            for dataList in self.pre_transform([{"pdb": pdb} for pdb in self.pdbDict[outDir.name]]):
 
                 # Coalate and save each chunk
                 data, slices = self.collate(dataList)

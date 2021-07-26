@@ -59,12 +59,12 @@ class DataGeneratorList(DataGenerator):
 
     def __call__(
         self,
-        l : List,
+        kwargsList : List,
     ):
 
         dataList = []
-        for x in tqdm(l):
-            self.addDataPoint(dataList=dataList, *[x])
+        for kwargs in tqdm(kwargsList):
+            self.addDataPoint(dataList=dataList, **kwargs)
 
             if not self.batchSize is None and len(dataList) >= self.batchSize:
                 yield dataList
