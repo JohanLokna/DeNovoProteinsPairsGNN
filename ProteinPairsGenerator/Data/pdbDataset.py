@@ -75,34 +75,8 @@ class PDBDataset(BaseDataset):
     @staticmethod
     def getGenericFeatures():
 
-        # Get sequence attributes
-        nodeAttr = SequencePDB(featureName = "x")
+        pdb = ProdyPDB()
 
-        # Construct coordinates & distances
-        coords = CartesianCoordinatesPDB()
-        cartDist = CartesianDistances(dependencies=[coords])
-        seqDist = SequenceDistances(dependencies=[nodeAttr])
+        backboneCoords = ProdyBackboneCoords(dependencies=[pdb])
 
-        # Construct edge relations
-        closeNeighbours = CloseNeighbours(
-            threshold = 12,
-            dependencies = [cartDist]
-        )
-        edgeIdx = EdgeIndecies(
-            featureName = "edge_index",
-            dependencies = [closeNeighbours]
-        )
-
-        # Construct edge attributes
-        stackedDist = StackedFeatures(
-            dependencies = [cartDist, seqDist]
-        )
-        edgeAttr = EdgeAttributes(
-            featureName = "edge_attr",
-            dependencies = [stackedDist, closeNeighbours]
-        )
-
-        # Construct title
-        title = Title()
-
-        return [nodeAttr, edgeAttr, edgeIdx, title]
+        return [backboneCoords]

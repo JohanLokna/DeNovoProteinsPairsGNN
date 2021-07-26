@@ -1,7 +1,5 @@
 # General imports
-from pathlib import Path
-from prody import AtomGroup, ANM
-from prody.atomic.select import Select
+from prody import AtomGroup, parsePDB
 from typing import List, IO
 import warnings
 
@@ -9,10 +7,7 @@ import warnings
 import torch
 
 #Local imports
-from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, \
-                                                    AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, \
-                                                    CDRS_HEAVY, CDRS_LIGHT
-from ProteinPairsGenerator.utils.cdr import getHeavyCDR, getLightCDR
+from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
 from ProteinPairsGenerator.PreProcessing.proteinNetParser import readPotein
 
@@ -58,7 +53,7 @@ class FeatureModule:
         raise NotImplementedError
 
     def preFilter(self, *args, **kwargs) -> bool:
-        raise NotImplementedError
+        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies] + [True])
 
     def runDependencies(self, *args, **kwargs) -> bool:
 
@@ -85,114 +80,80 @@ class FeatureModule:
 
 # Modules used for computing features
 
-class SequencePDB(FeatureModule):
+class ProdyPDB(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "seq"
+        featureName : str = "prodyPDB"
     ) -> None:
         super().__init__(featureName)
     
     def forward(
         self, 
-        pdb : AtomGroup,
+        pdb,
         *args,
         **kwargs
     ) -> torch.Tensor:
         
         # Get sequence
-        return seq_to_tensor(pdb.getSequence(), mapping=AMINO_ACIDS_MAP)
-
-    def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs
+        return parsePDB(pdb)
 
 
-class SequencePDBwithCDR(FeatureModule):
+class ProdyBackboneCoords(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "seqCDR",
-        hmmerpath : str = "/usr/bin/",
+        featureName : str = "prodyBackboneCoords",
         dependencies : List[FeatureModule] = []
     ) -> None:
-        
-        self.hmmerpath = hmmerpath
 
         # Set up dependecies
-        if len(dependencies) == 0:
-            dependencies = [Sequence()]
-        elif len(dependencies) != 1 or dependencies[0].featureName != "seq":
-            warnings.warn("Dependencies in SequenceCDR might be errornous!", UserWarning)
+        if len(dependencies) != 1:
+            warnings.warn("Dependencies in ProdyBackboneCoords might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
     
     def forward(
-        self,
+        self, 
         pdb : AtomGroup,
-        Lchain : List[str] = [],
-        Hchain : List[str] = [],
         *args,
         **kwargs
     ) -> torch.Tensor:
+        
+        # Get backbone coords
+        coords = pdb.backbone.getCoordsets(0)
 
-        # Get sequence
-        seq = self.dependencies[0].data
+        print(coords.shape)
 
-        # Mask CDR in light chains in seq
-        for c in Lchain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          for i, cdr in enumerate(getLightCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
-            seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_LIGHT[i]]
-
-        # Mask CDR in heavy chains in seq
-        for c in Hchain:
-          idx = Select().getIndices(pdb, "chain {}".format(c))
-          for i, cdr in enumerate(getHeavyCDR(pdb.select("chain {}".format(c)).getSequence(), hmmerpath=self.hmmerpath)):
-            seq[idx[cdr]] = AMINO_ACIDS_MAP[CDRS_HEAVY[i]]
-
-        return seq
-
-    def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs \
-           and "Lchain" in kwargs \
-           and "Hchain" in kwargs \
-           and set(kwargs["Lchain"] + kwargs["Hchain"]) <= set(kwargs["pdb"].getChids()) \
-           and set(kwargs["pdb"].getSequence()) <= set(AMINO_ACIDS_BASE)
+        return coords
 
 
-class Modes(FeatureModule):
+class ProdySequence(FeatureModule):
 
     def __init__(
         self,
-        featureName : str = "modes",
-        nModes : int = 20,
-        maxNodes : int = 5000
+        featureName : str = "seq",
+        dependencies : List[FeatureModule] = []
     ) -> None:
-        self.nModes = nModes
-        self.maxNodes = maxNodes
-        super().__init__(featureName)
 
+        # Set up dependecies
+        if len(dependencies) != 1:
+            warnings.warn("Dependencies in SequencePDB might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
+    
     def forward(
         self, 
         pdb : AtomGroup,
         *args,
         **kwargs
     ) -> torch.Tensor:
-
-        # ANM set up mode calculations
-        pdbANM = ANM(pdb)
-        pdbANM.buildHessian(pdb)
-        pdbANM.calcModes(self.nModes)
-
-        # Make into array and reshape to [numAtoms, -1]
-        modes = torch.from_numpy(pdbANM.getArray())
-        return modes.view(pdb.numAtoms(), -1)
-
-    def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs and kwargs["pdb"].numAtoms() <= self.maxNodes
+        
+        # Get sequence
+        return seq_to_tensor(self.dependencies[0].data.getSequence(), mapping=AMINO_ACIDS_MAP)
 
 
-class CartesianCoordinatesPDB(FeatureModule):
+class CartesianCoordinatesPDB(FeatureModule): 
 
     def __init__(
         self,
@@ -223,9 +184,7 @@ class CartesianDistances(FeatureModule):
     ) -> None:
         
         # Set up dependecies
-        if len(dependencies) == 0:
-            dependencies = [CartesianCoordinates()]
-        elif len(dependencies) != 1:
+        if len(dependencies) != 1:
             warnings.warn("Dependencies in CartesianDistances might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
@@ -257,7 +216,7 @@ class SequenceDistances(FeatureModule):
         if len(dependencies) == 0:
             dependencies = [Sequence()]
         elif len(dependencies) != 1:
-            warnings.warn("Dependencies in SequenceCDR might be errornous!", UserWarning)
+            warnings.warn("Dependencies in SequenceDistances might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
     
