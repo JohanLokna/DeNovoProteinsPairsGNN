@@ -5,7 +5,6 @@ import json
 import os
 from pathlib import Path
 from random import choices
-from shutil import copyfile
 import string
 from typing import List, Union, Tuple
 
