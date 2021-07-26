@@ -16,14 +16,14 @@ class PDBDataset(BaseDataset):
     def __init__(
         self,
         root : Path,
-        pbdDict : dict,
+        pdbDict : dict,
         features : List[FeatureModule] = [],
         batchSize : Optional[int] = None,
         pdbFolder : Optional[Union[str, Path]] = None
     ) -> None:
 
         # Set pdb dict
-        self.pdbDict = pbdDict
+        self.pdbDict = pdbDict
         
         # Set up PDB folder
         self.pdbFolder = pdbFolder if not pdbFolder is None else root.joinpath("raw")
@@ -34,7 +34,7 @@ class PDBDataset(BaseDataset):
         gen = DataGeneratorList(features=features, batchSize=batchSize)
 
         # Initialize supra class
-        super().__init__(root, [Path(k) for k in self.pbdDict.keys()], gen)
+        super().__init__(root, [Path(k) for k in self.pdbDict.keys()], gen)
 
     @property
     def raw_file_names(self) -> List[Path]:
