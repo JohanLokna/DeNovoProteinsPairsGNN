@@ -21,16 +21,16 @@ class CaspDataset(BaseDataset):
         caspVersion : int = 12,
     ) -> None:
 
-        # Lenght og name used for storing batched files
-        self.nameSize = 6
-
         # Ensure that the used casp version is valid
         self.caspVersion = caspVersion
         if not self.caspVersion in list(range(7, 12 + 1)):
             raise Exception("CASP version is invalid")
 
+        # Set up preprocessing
+        gen = DataGeneratorFile(features=features, batchSize=batchSize)
+
         # Initialize supra class
-        super().__init__(root, subsets, features, batchSize)
+        super().__init__(root, subsets, gen)
 
     @property
     def casp_dir(self):

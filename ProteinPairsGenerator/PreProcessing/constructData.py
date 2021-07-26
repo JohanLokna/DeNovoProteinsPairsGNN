@@ -1,7 +1,6 @@
-import math
 import os
 from multiprocessing import Pool
-from typing import List, Union, IO, Generator
+from typing import List, Optional, Union, IO
 
 # Local imports
 from .features import FeatureModule
@@ -19,7 +18,7 @@ class DataGenerator:
         self,
         features : List[FeatureModule],
         pool : Union[Pool, None] = None,
-        batchSize : [int, None] = None
+        batchSize : Optional[int] = None
     ) -> None:
         self.features = features
         self.batchSize = batchSize
@@ -45,7 +44,7 @@ class DataGenerator:
         # Append correctly computed features
         dataList.append(GeneralData(**{f.featureName: f.data for f in self.features if f.save}))
 
-    def __call__(self, *args, **kwargs ) -> Generator[List[GeneralData], None, None]:
+    def __call__(self, *args, **kwargs ):
         raise NotImplementedError
 
 
@@ -61,7 +60,7 @@ class DataGeneratorList(DataGenerator):
     def __call__(
         self,
         kwargsList : List,
-    ) -> Generator[List[GeneralData], None, None]:
+    ):
 
         dataList = []
         for kwargs in tqdm(kwargsList):
@@ -87,7 +86,7 @@ class DataGeneratorFile(DataGenerator):
     def __call__(
         self,
         inPath : IO,
-    ) -> Generator[List[GeneralData], None, None]:
+    ):
 
         dataList = []
         inFile = open(str(inPath), 'r')

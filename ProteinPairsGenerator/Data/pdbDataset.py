@@ -2,64 +2,39 @@
 import pandas as pd
 from pathlib import Path
 from prody import fetchPDBviaHTTP, pathPDBFolder, parsePDB, AtomGroup
-from typing import List, Mapping, Callable, Union, Generator, Any
+from typing import List, Optional
 
 # PyTorch imports
 import torch
-from torch_geometric.data import InMemoryDataset
 
 # Local imports
+from ProteinPairsGenerator.Data import BaseDataset
 from ProteinPairsGenerator.PreProcessing import *
 
-class PDBDataset(InMemoryDataset):
+class PDBDataset(BaseDataset):
 
     def __init__(
         self,
-        root : Union[Path, None],
-        pdbs : pd.DataFrame,
-        features : List[FeatureModule],
-        device : str = "cuda:0" if torch.cuda.is_available() else "cpu",
-        pdbFolder : Union[Path, None] = None
+        root : Path,
+        pbdDict : dict,
+        features : List[FeatureModule] = [],
+        batchSize : Optional[int] = None,
+        pdbFolder : Optional[Union[str, Path]] = None
     ) -> None:
 
-        # Set up root
-        root.mkdir(parents=True, exist_ok=True)
-
-        # Set up PDB
-        self.pdbs = pdbs
-
+        # Set pdb dict
+        self.pbdDict = pbdDict
+        
         # Set up PDB folder
         self.pdbFolder = pdbFolder if not pdbFolder is None else root.joinpath("raw")
         self.pdbFolder.mkdir(parents=True, exist_ok=True)
         pathPDBFolder(folder=self.pdbFolder, divided=False)
-        
+
         # Set up preprocessing
-        gen = DataGeneratorList(features = features)
+        gen = DataGeneratorList(features=features, batchSize=batchSize)
 
-        # Initialize super class and complete set up
-        super().__init__(root=root, transform=None, pre_transform=gen, pre_filter=None)
-        self.data, self.slices = torch.load(self.processed_file_names[0])
-
-    @property
-    def processed_dir(self):
-        return self.root.joinpath("processed")
-
-    @property
-    def processed_file_names(self) -> List[Path]:
-        return [self.processed_dir.joinpath("processed.pt") ]    
-
-    @property
-    def raw_dir(self):
-        return self.root.joinpath("raw")
-
-    @property
-    def raw_file_names(self) -> List[Path]:
-            return [self.raw_dir.joinpath(pdb + ".pdb.gz") for pdb in self.pdbs.index.values.tolist()]
-
-    @property
-    def finished_processing(self) -> bool:
-          return all([f.exists() for f in self.processed_file_names])
-
+        # Initialize supra class
+        super().__init__(root, [Path(k) for k in self.pbdDict.keys()], gen)
 
     def download(self, force=False) -> None:
 
@@ -68,7 +43,8 @@ class PDBDataset(InMemoryDataset):
             return
 
         print("Downloading ...")
-        fetchPDBviaHTTP(*self.pdbs.index.values.tolist(), compressed=True)
+        for k in self.processing_queue:
+            fetchPDBviaHTTP(*self.pdbDict[k.name], compressed=True)
 
     def process(self, force=False) -> None:
 
@@ -77,13 +53,24 @@ class PDBDataset(InMemoryDataset):
             return
 
         # Create list of DataPDB from the dataframe containing all pdbs
-        dataList = self.pre_transform(
-          [{"pdb": parsePDB(pdb).ca, **metaData.to_dict()} for pdb, metaData in self.pdbs.iterrows()]
-        )
+        while len(self.processing_queue) > 0:
 
-        # Coalate and save
-        data, slices = self.collate(dataList)
-        torch.save((data, slices), self.processed_file_names[0])
+            # Get input file and output directory
+            outDir = self.processing_queue.pop()
+
+            # Make output directory
+            outDir.mkdir(parents=True, exist_ok=True)
+
+            # Iterate over chunks
+            for dataList in self.pre_transform(self.pbdDict[outDir.name]):
+
+                # Coalate and save each chunk
+                data, slices = self.collate(dataList)
+                newName = self.newProcessedFile()
+                torch.save((data, slices), outDir.joinpath(newName))
+
+            # Add to finished subsets
+            self.subsets.append(outDir)
 
     @staticmethod
     def getGenericFeatures():

@@ -1,5 +1,3 @@
-from typing import Union, Dict
-
 from torch_geometric.data import Data
 
 class GeneralData(Data):

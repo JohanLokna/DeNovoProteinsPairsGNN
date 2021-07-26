@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from random import choices
 import string
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Optional
 
 # PyTorch imports
 import torch
@@ -16,12 +16,14 @@ from ProteinPairsGenerator.PreProcessing import *
 
 class BaseDataset(Dataset):
 
+    # Lenght og name used for storing batched files
+    nameSize = 6
+
     def __init__(
         self,
         root : Path,
         subsets : List[Path],
-        features : List[FeatureModule] = [],
-        batchSize : Union[int, None] = None
+        gen : DataGenerator
     ) -> None:
 
         # Pre-initialize root to avoid erros
@@ -40,9 +42,6 @@ class BaseDataset(Dataset):
                     raise Exception("All exisiting subsets must refer to a directory")
             else:
                 self.processing_queue.append(self.processed_dir.joinpath(p.name))
-
-        # Set up preprocessing
-        gen = DataGeneratorFile(features=features, batchSize=batchSize)
 
         # Initialize super class and complete set up
         Dataset.__init__(self, root=root, transform=None, pre_transform=gen, pre_filter=None)
