@@ -23,7 +23,7 @@ class PDBDataset(BaseDataset):
     ) -> None:
 
         # Set pdb dict
-        self.pbdDict = pbdDict
+        self.pdbDict = pbdDict
         
         # Set up PDB folder
         self.pdbFolder = pdbFolder if not pdbFolder is None else root.joinpath("raw")
@@ -39,7 +39,7 @@ class PDBDataset(BaseDataset):
     @property
     def raw_file_names(self) -> List[Path]:
         return [self.pdbFolder.joinpath(pdb + ".pdb.gz") \
-                for _, v in self.pbdDict.items() for pdb in v]
+                for _, v in self.pdbDict.items() for pdb in v]
 
     def download(self, force=False) -> None:
 
@@ -67,7 +67,7 @@ class PDBDataset(BaseDataset):
             outDir.mkdir(parents=True, exist_ok=True)
 
             # Iterate over chunks
-            for dataList in self.pre_transform(self.pbdDict[outDir.name]):
+            for dataList in self.pre_transform(self.pdbDict[outDir.name]):
 
                 # Coalate and save each chunk
                 data, slices = self.collate(dataList)
