@@ -93,7 +93,7 @@ class ProdyPDB(FeatureModule):
         pdb,
         *args,
         **kwargs
-    ):
+    ) -> AtomGroup:
         
         # Get sequence
         return parsePDB(pdb)
@@ -120,7 +120,7 @@ class ProdySelect(FeatureModule):
         self,
         *args,
         **kwargs
-    ):
+    ) -> AtomGroup:
         return self.dependencies[0].data.select(self.selectSequence)
 
 
@@ -177,7 +177,7 @@ class ProdySequence(FeatureModule):
         return seq_to_tensor(self.dependencies[0].data.getSequence(), mapping=AMINO_ACIDS_MAP)
 
 
-class CartesianCoordinatesPDB(FeatureModule): 
+class ProdyCartesianCoordinates(FeatureModule): 
 
     def __init__(
         self,
@@ -186,17 +186,31 @@ class CartesianCoordinatesPDB(FeatureModule):
         super().__init__(featureName)
     
     def forward(
-        self, 
-        pdb : AtomGroup,
+        self,
         *args,
         **kwargs
     ) -> torch.Tensor:
 
         # Get Cartesian coordinates
-        return torch.from_numpy(pdb.getCoordsets(0))
+        return torch.from_numpy(self.dependencies[0].data.getCoordsets(0))
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return "pdb" in kwargs
+
+class ProdyTitle(FeatureModule): 
+
+    def __init__(
+        self,
+        featureName : str = "title"
+    ) -> None:
+        super().__init__(featureName)
+    
+    def forward(
+        self,
+        *args,
+        **kwargs
+    ) -> str:
+
+        # Get Cartesian coordinates
+        return self.dependencies[0].data.getTitle()
 
 
 class CartesianDistances(FeatureModule):

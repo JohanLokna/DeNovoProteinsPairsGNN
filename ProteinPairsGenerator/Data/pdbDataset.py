@@ -81,12 +81,12 @@ class PDBDataset(BaseDataset):
             self.subsets.append(outDir)
 
     @staticmethod
-    def getGenericFeatures():
+    def getGenericFeatures(device : str = "cuda:0" if torch.cuda.is_available() else "cpu"):
 
         pdb = ProdyPDB()
 
         # Backbone coords for Ingraham
-        backboneCoords = ProdyBackboneCoords("coordsScaled", dependencies=[pdb])
+        coordsScaled = ProdyBackboneCoords("coordsScaled", dependencies=[pdb])
 
         # Get sequence attributes for Strokach
         nodeAttr = ProdySequence("seq", dependencies=[pdb])
@@ -120,6 +120,26 @@ class PDBDataset(BaseDataset):
             dependencies = [edgeAttrUnnormal]
         )
 
+        # Get title for reference
+        title = ProdyTitle("title")
 
+        # Restrict sequence lenght
+        constraintMaxSize = Constraint(
+            featureName = "constraintMaxSize",
+            constraint = lambda attr: attr.shape[0] < 200000,
+            dependencies = [edgeAttr]
+        )
 
-        return [backboneCoords]
+        # Get BERT masking
+        mask = MaskBERT(
+            dependencies = [nodeAttr],
+            nMasks = 4
+        )
+
+        # Get TAPE annotation
+        tape = TAPEFeatures(
+            dependencies = [mask],
+            device = device
+        )
+
+        return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coordsScaled, constraintMaxSize]
