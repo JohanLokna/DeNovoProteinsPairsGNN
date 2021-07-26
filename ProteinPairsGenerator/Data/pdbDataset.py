@@ -36,6 +36,11 @@ class PDBDataset(BaseDataset):
         # Initialize supra class
         super().__init__(root, [Path(k) for k in self.pbdDict.keys()], gen)
 
+    @property
+    def raw_file_names(self) -> List[Path]:
+        return [self.pdbFolder.joinpath(pdb + ".pdb.gz") \
+                for _, v in self.pbdDict.items() for pdb in v]
+
     def download(self, force=False) -> None:
 
         if not force and self.finished_processing:
