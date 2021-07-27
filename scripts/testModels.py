@@ -5,7 +5,7 @@ from ProteinPairsGenerator.Testing import TestProteinDesignJLo, TestProteinDesig
 from ProteinPairsGenerator.JLoModel import JLoDataModule, JLoModel
 from ProteinPairsGenerator.StrokachModel import StrokachDataModule, StrokachModel
 
-root = Path("proteinNetTestinng")
+root = Path("proteinNetTesting")
 subset = [root.joinpath("processed/testing")]
 device = "cuda:{}".format(sys.argv[1] if len(sys.argv) > 1 else "0")
 

@@ -23,7 +23,7 @@ class TestProteinDesign:
 
     def run(self, model) -> None:
 
-        model = model.to(device=self.device)
+        model.to(device=self.device)
 
         for level in self.levels:
             stepResults = []
