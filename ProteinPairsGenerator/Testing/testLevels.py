@@ -19,12 +19,16 @@ class TestProteinDesign:
         self.levels = levels
         self.repeats = repeats
 
-    def run(self, model) -> None:
+    def run(self, model, dm, device = "cpu") -> None:
+
+        model = model.to(device=device)
+
         for level in self.levels:
             stepResults = []
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()):
                     self.remask(x, **level)
+                    x = self.dm.transfer_batch_to_device(x, device)
                     stepResults.append(model.step(x))
             self.prettyPrint(level, self.postprocess(stepResults))
 
