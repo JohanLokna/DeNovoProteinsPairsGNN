@@ -1,47 +1,47 @@
 {
   "data": [
-    "5jzr",
-    "5fjl",
-    "5j5v",
-    "5sy1",
-    "5d9g",
-    "2n64",
-    "5uw2",
-    "5j4a",
-    "5jmb",
-    "6da6",
-    "5nsj",
-    "5unb",
-    "5jmu",
-    "5g3q",
-    "5t87",
-    "5fhy",
-    "5jo9",
-    "4ymp",
-    "5nv4",
-    "5idj",
-    "5hkq",
-    "5aot",
-    "3jb5",
-    "5a7d",
-    "5g5n",
-    "6e9n",
-    "5mqp",
-    "6cp8",
-    "5uvn",
-    "5ere",
-    "5aoz",
-    "5m2o",
-    "5tf2",
-    "5jzr",
-    "5sy1",
-    "6f03",
-    "5d9g",
-    "5fhy",
-    "5xi8",
-    "5kkp",
-    "5ko9",
-    "5lev",
-    "5tj4"
+    {"pdb": "5jzr", "chain":
+    {"pdb": "5fjl", "chain":
+    {"pdb": "5j5v", "chain":
+    {"pdb": "5sy1", "chain":
+    {"pdb": "5d9g", "chain":
+    {"pdb": "2n64", "chain":
+    {"pdb": "5uw2", "chain":
+    {"pdb": "5j4a", "chain":
+    {"pdb": "5jmb", "chain":
+    {"pdb": "6da6", "chain":
+    {"pdb": "5nsj", "chain":
+    {"pdb": "5unb", "chain":
+    {"pdb": "5jmu", "chain":
+    {"pdb": "5g3q", "chain":
+    {"pdb": "5t87", "chain":
+    {"pdb": "5fhy", "chain":
+    {"pdb": "5jo9", "chain":
+    {"pdb": "4ymp", "chain":
+    {"pdb": "5nv4", "chain":
+    {"pdb": "5idj", "chain":
+    {"pdb": "5hkq", "chain":
+    {"pdb": "5aot", "chain":
+    {"pdb": "3jb5", "chain":
+    {"pdb": "5a7d", "chain":
+    {"pdb": "5g5n", "chain":
+    {"pdb": "6e9n", "chain":
+    {"pdb": "5mqp", "chain":
+    {"pdb": "6cp8", "chain":
+    {"pdb": "5uvn", "chain":
+    {"pdb": "5ere", "chain":
+    {"pdb": "5aoz", "chain":
+    {"pdb": "5m2o", "chain":
+    {"pdb": "5tf2", "chain":
+    {"pdb": "5jzr", "chain":
+    {"pdb": "5sy1", "chain":
+    {"pdb": "6f03", "chain":
+    {"pdb": "5d9g", "chain":
+    {"pdb": "5fhy", "chain":
+    {"pdb": "5xi8", "chain":
+    {"pdb": "5kkp", "chain":
+    {"pdb": "5ko9", "chain":
+    {"pdb": "5lev", "chain":
+    {"pdb": "5tj4", "chain":
   ]
 }
