@@ -14,21 +14,23 @@ class TestProteinDesign:
         dm,
         levels,
         repeats,
+        device = "cpu"
     ) -> None:
         self.dm = dm
         self.levels = levels
         self.repeats = repeats
+        self.device = device
 
-    def run(self, model, dm, device = "cpu") -> None:
+    def run(self, model) -> None:
 
-        model = model.to(device=device)
+        model = model.to(device=self.device)
 
         for level in self.levels:
             stepResults = []
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()):
                     self.remask(x, **level)
-                    x = self.dm.transfer_batch_to_device(x, device)
+                    x = self.dm.transfer_batch_to_device(x, self.device)
                     stepResults.append(model.step(x))
             self.prettyPrint(level, self.postprocess(stepResults))
 
