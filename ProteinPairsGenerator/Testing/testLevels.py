@@ -29,6 +29,10 @@ class TestProteinDesign:
             stepResults = []
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()):
+
+                    x.edge_attr = x.edge_attr.float()
+                    x.edge_index = x.edge_attr.float()
+
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
                     stepResults.append(model.step(x))
