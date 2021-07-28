@@ -32,6 +32,10 @@ class TestProteinDesign:
 
                     x.edge_attr = x.edge_attr.float()
                     x.edge_index = x.edge_index.float()
+                    x.mask = x.mask.long()
+                    x.seq = x.seq.long()
+                    x.maskedSeq = x.maskedSeq.long()
+
 
                     # print(x)
 
