@@ -40,11 +40,11 @@ class TestProteinDesign:
 
                     res = {k: v.cpu() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
-                    stepResults.append(res)
+                    # stepResults.append(res)
 
                     # print(stepResults)
 
-                    del x
+                    del x, res
 
             self.prettyPrint(level, self.postprocess(stepResults))
 
