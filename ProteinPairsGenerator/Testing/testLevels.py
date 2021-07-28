@@ -33,6 +33,8 @@ class TestProteinDesign:
                     x.edge_attr = x.edge_attr.float()
                     x.edge_index = x.edge_attr.float()
 
+                    print(x)
+
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
                     stepResults.append(model.step(x))
