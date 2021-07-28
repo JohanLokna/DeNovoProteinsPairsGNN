@@ -11,7 +11,6 @@ class TestProteinDesign:
 
     def __init__(
         self,
-        dm,
         levels,
         repeats,
         device = "cpu"
@@ -72,9 +71,9 @@ class TestProteinDesignBasicEmbedding(TestProteinDesign):
 
 class TestProteinDesignBERTEmbedding(TestProteinDesign):
 
-    def __init__(self, dm, levels, repeats, device = "cpu") -> None:
+    def __init__(self, levels, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(dm, levels, repeats, device)
+        super().__init__(levels, repeats, device)
 
     def remask(self, x, **kwargs) -> None:
         assert(not "teacherLabels" in x.__dict__)
