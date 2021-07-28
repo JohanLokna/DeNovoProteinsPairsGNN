@@ -31,9 +31,9 @@ class TestProteinDesign:
                 for x in tqdm(self.dm.test_dataloader()):
 
                     x.edge_attr = x.edge_attr.float()
-                    x.edge_index = x.edge_attr.float()
+                    x.edge_index = x.edge_index.float()
 
-                    print(x)
+                    # print(x)
 
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
