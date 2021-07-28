@@ -30,8 +30,10 @@ class TestProteinDesign:
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()) if verbose else self.dm.test_dataloader():
 
-                    if torch.numel(x.seq) > 2500 or torch.numel(x.edge_attr) > 2e4:
+                    if torch.numel(x.seq) > 2500 or torch.numel(x.edge_attr) > 1.5e4:
                         continue
+                    
+                    print(x)
 
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
