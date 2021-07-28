@@ -33,6 +33,8 @@ class TestProteinDesign:
                     if torch.numel(x.seq) > 2500:
                         continue
 
+                    print(x)
+
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
                     stepResults.append(model.step(x))
