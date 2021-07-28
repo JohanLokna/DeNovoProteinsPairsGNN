@@ -46,7 +46,7 @@ class IngrahamLoader(BERTLoader):
             for i, (b, l) in enumerate(zip(batch, lengths)):
 
                 # Standard features
-                coords[i, :l] = b.coordsScaled
+                coords[i, :l] = b.coordsScaled[:, :3, :]
                 seq[i, :l] = b.seq
                 valid[i, :l] = 1.0
 
