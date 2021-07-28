@@ -70,9 +70,9 @@ class TestProteinDesignStrokach(TestProteinDesign):
 
 class TestProteinDesignJLo(TestProteinDesign):
 
-    def __init__(self, dm, levels, repeats) -> None:
+    def __init__(self, dm, levels, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(dm, levels, repeats)
+        super().__init__(dm, levels, repeats, device)
 
     def remask(self, x, **kwargs) -> None:
         assert(not "teacherLabels" in x.__dict__)
