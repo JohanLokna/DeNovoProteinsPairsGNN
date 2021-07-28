@@ -21,14 +21,14 @@ class TestProteinDesign:
         self.repeats = repeats
         self.device = device
 
-    def run(self, model) -> None:
+    def run(self, model, verbose = False) -> None:
 
         model.to(device=self.device)
 
         for level in self.levels:
             stepResults = []
             for _ in range(self.repeats):
-                for x in tqdm(self.dm.test_dataloader()):
+                for x in tqdm(self.dm.test_dataloader()) if verbose else self.dm.test_dataloader():
 
                     if torch.numel(x.seq) != 246:
                         continue
