@@ -34,12 +34,6 @@ class TestProteinDesign:
                         continue
 
                     x.edge_attr = x.edge_attr.float()
-                    # x.edge_index = x.edge_index.long()
-                    # x.mask = x.mask.long()
-                    # x.seq = x.seq.long()
-                    # x.maskedSeq = x.maskedSeq.long()
-
-                    print(x)
 
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
