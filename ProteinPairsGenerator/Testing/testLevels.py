@@ -30,6 +30,9 @@ class TestProteinDesign:
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()):
 
+                    if torch.numel(x.seq) > 2500:
+                        continue
+
                     x.edge_attr = x.edge_attr.float()
                     # x.edge_index = x.edge_index.long()
                     # x.mask = x.mask.long()
