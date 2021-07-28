@@ -31,7 +31,7 @@ class TestProteinDesign:
                 for x in tqdm(self.dm.test_dataloader()):
 
                     x.edge_attr = x.edge_attr.float()
-                    x.edge_index = x.edge_index.float()
+                    x.edge_index = x.edge_index.long()
                     x.mask = x.mask.long()
                     x.seq = x.seq.long()
                     x.maskedSeq = x.maskedSeq.long()
