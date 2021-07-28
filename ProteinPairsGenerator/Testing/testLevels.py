@@ -30,19 +30,12 @@ class TestProteinDesign:
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()) if verbose else self.dm.test_dataloader():
 
-                    if torch.numel(x.seq) > 2500:
-                        continue
-
-                    print(x)
-
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
 
                     res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
                     stepResults.append(res)
-
-                    # print(stepResults[-1])
 
                     del x, res
 
