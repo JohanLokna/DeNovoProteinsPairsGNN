@@ -41,8 +41,8 @@ class PDBDataset(BaseDataset):
 
     @property
     def raw_file_names(self) -> List[Path]:
-        return [self.pdbFolder.joinpath(pdb + ".pdb.gz") \
-                for _, v in self.pdbDict.items() for pdb in v]
+        return [self.pdbFolder.joinpath(protein["pdb"] + ".pdb.gz") \
+                for _, v in self.pdbDict.items() for protein in v]
 
     def download(self, force=False) -> None:
 
