@@ -59,7 +59,7 @@ class TestProteinDesign:
         raise NotImplementedError
 
 
-class TestProteinDesignBasicEmbedding(TestProteinDesign):
+class TestProteinDesignStrokach(TestProteinDesign):
 
     def remask(self, x, **kwargs) -> None:
         assert(not "teacherLabels" in x.__dict__)
@@ -69,7 +69,19 @@ class TestProteinDesignBasicEmbedding(TestProteinDesign):
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
 
-class TestProteinDesignBERTEmbedding(TestProteinDesign):
+class TestProteinDesignIngrham(TestProteinDesign):
+
+    def remask(self, x, **kwargs) -> None:
+        assert(not "teacherLabels" in x.__dict__)
+        if not "substitutionMatrix" in kwargs:
+            kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
+
+        for i in range(x.seq.shape[0]):
+            l = x.lengths[i]
+            x.maskedSeq[i, :l], x.mask[i, :l] = maskBERT(x.seq[i, :l], **kwargs)
+
+
+class TestProteinDesignJLo(TestProteinDesign):
 
     def __init__(self, levels, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()
