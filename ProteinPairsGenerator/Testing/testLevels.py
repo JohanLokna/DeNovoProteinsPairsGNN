@@ -39,6 +39,8 @@ class TestProteinDesign:
                     x = self.dm.transfer_batch_to_device(x, self.device)
                     stepResults.append(model.step(x))
 
+                    print(stepResults)
+
                     del x
 
             self.prettyPrint(level, self.postprocess(stepResults))
