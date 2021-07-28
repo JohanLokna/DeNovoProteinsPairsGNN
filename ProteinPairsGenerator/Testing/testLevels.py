@@ -62,7 +62,6 @@ class TestProteinDesign:
 class TestProteinDesignStrokach(TestProteinDesign):
 
     def remask(self, x, **kwargs) -> None:
-        assert(not "teacherLabels" in x.__dict__)
         if not "substitutionMatrix" in kwargs:
             kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
@@ -72,7 +71,6 @@ class TestProteinDesignStrokach(TestProteinDesign):
 class TestProteinDesignIngrham(TestProteinDesign):
 
     def remask(self, x, **kwargs) -> None:
-        assert(not "teacherLabels" in x.__dict__)
         if not "substitutionMatrix" in kwargs:
             kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
@@ -88,7 +86,6 @@ class TestProteinDesignJLo(TestProteinDesign):
         super().__init__(levels, repeats, device)
 
     def remask(self, x, **kwargs) -> None:
-        assert(not "teacherLabels" in x.__dict__)
         if not "substitutionMatrix" in kwargs:
             kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
