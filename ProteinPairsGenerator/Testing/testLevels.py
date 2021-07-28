@@ -30,10 +30,8 @@ class TestProteinDesign:
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()):
 
-                    if torch.numel(x.seq) > 2500 or torch.numel(x.edge_attr) > 2e4:
+                    if not (x.title in ["FM#T0864", "5d9g"]):
                         continue
-
-                    x.edge_attr = x.edge_attr.float()
 
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
