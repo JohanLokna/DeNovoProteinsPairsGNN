@@ -36,7 +36,7 @@ class TestProteinDesign:
                     # x.seq = x.seq.long()
                     # x.maskedSeq = x.maskedSeq.long()
 
-                    # print(x)
+                    print(x)
 
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
