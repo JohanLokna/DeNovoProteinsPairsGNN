@@ -96,7 +96,7 @@ class ProdyPDB(FeatureModule):
     ) -> AtomGroup:
         
         # Get sequence
-        return parsePDB(pdb) #.select("chain A")
+        return parsePDB(pdb).select("chain A")
 
 
 class ProdySelect(FeatureModule):
@@ -149,7 +149,7 @@ class ProdyBackboneCoords(FeatureModule):
 
         # Reshape to [seqDim, atomDim, spatialDim]
         # Atm ordering in atomDim is: N, CA, C, O
-        return torch.from_numpy(coords).reshape((-1, 4, 3))
+        return torch.from_numpy(coords).reshape((-1, 4, 3)).float()
 
 
 class ProdySequence(FeatureModule):
@@ -198,7 +198,7 @@ class ProdyCartesianCoordinates(FeatureModule):
     ) -> torch.Tensor:
 
         # Get Cartesian coordinates
-        return torch.from_numpy(self.dependencies[0].data.getCoordsets(0))
+        return torch.from_numpy(self.dependencies[0].data.getCoordsets(0)).float()
 
 
 class ProdyTitle(FeatureModule): 
