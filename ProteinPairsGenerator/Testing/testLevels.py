@@ -16,22 +16,21 @@ class TestProteinDesign:
         repeats,
         device = "cpu"
     ) -> None:
-        self.dm = dm
         self.levels = levels
         self.repeats = repeats
         self.device = device
 
-    def run(self, model, verbose = False) -> None:
+    def run(self, model, dm, verbose = False) -> None:
 
         model.to(device=self.device)
 
         for level in self.levels:
             stepResults = []
             for _ in range(self.repeats):
-                for x in tqdm(self.dm.test_dataloader()) if verbose else self.dm.test_dataloader():
+                for x in tqdm(dm.test_dataloader()) if verbose else dm.test_dataloader():
 
                     self.remask(x, **level)
-                    x = self.dm.transfer_batch_to_device(x, self.device)
+                    x = dm.transfer_batch_to_device(x, self.device)
 
                     res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
@@ -61,7 +60,7 @@ class TestProteinDesign:
         raise NotImplementedError
 
 
-class TestProteinDesignStrokach(TestProteinDesign):
+class TestProteinDesignBasicEmbedding(TestProteinDesign):
 
     def remask(self, x, **kwargs) -> None:
         assert(not "teacherLabels" in x.__dict__)
@@ -71,7 +70,7 @@ class TestProteinDesignStrokach(TestProteinDesign):
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
 
-class TestProteinDesignJLo(TestProteinDesign):
+class TestProteinDesignBERTEmbedding(TestProteinDesign):
 
     def __init__(self, dm, levels, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()

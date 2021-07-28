@@ -1,19 +1,12 @@
-from __future__ import print_function
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-import pytorch_lightning as pl
 import numpy as np
-import copy
-
-from matplotlib import pyplot as plt
 
 from .self_attention import gather_edges, gather_nodes, Normalize
 
-
-class PositionalEncodings(pl.LightningModule):
+class PositionalEncodings(nn.Module):
     def __init__(self, num_embeddings, period_range=[2,1000]):
         super(PositionalEncodings, self).__init__()
         self.num_embeddings = num_embeddings
@@ -24,26 +17,19 @@ class PositionalEncodings(pl.LightningModule):
         N_batch = E_idx.size(0)
         N_nodes = E_idx.size(1)
         N_neighbors = E_idx.size(2)
-        ii = torch.arange(N_nodes, dtype=torch.float32, device=E_idx.device).view((1, -1, 1))
-        d = (E_idx.float() - ii).unsqueeze(-1)
+        ii = torch.arange(N_nodes).view((1, -1, 1)).type_as(E_idx)
+        d = (E_idx - ii).unsqueeze(-1).float()
         # Original Transformer frequencies
         frequency = torch.exp(
-            torch.arange(0, self.num_embeddings, 2, dtype=torch.float32, device=E_idx.device)
+            torch.arange(0, self.num_embeddings, 2).type_as(d)
             * -(np.log(10000.0) / self.num_embeddings)
         )
-        # Grid-aligned
-        # frequency = 2. * np.pi * torch.exp(
-        #     -torch.linspace(
-        #         np.log(self.period_range[0]), 
-        #         np.log(self.period_range[1]),
-        #         self.num_embeddings / 2
-        #     )
-        # )
+
         angles = d * frequency.view((1,1,1,-1))
         E = torch.cat((torch.cos(angles), torch.sin(angles)), -1)
         return E
 
-class ProteinFeatures(pl.LightningModule):
+class ProteinFeatures(nn.Module):
     def __init__(self, edge_features, node_features, num_positional_embeddings=16,
         num_rbf=16, top_k=30, features_type='full', augment_eps=0., dropout=0.1):
         """ Extract protein features """
@@ -61,6 +47,7 @@ class ProteinFeatures(pl.LightningModule):
             'coarse': (3, num_positional_embeddings + num_rbf + 7),
             'full': (6, num_positional_embeddings + num_rbf + 7),
             'dist': (6, num_positional_embeddings + num_rbf),
+            'hbonds': (3, 2 * num_positional_embeddings),
         }
 
         # Positional encoding
@@ -76,7 +63,6 @@ class ProteinFeatures(pl.LightningModule):
 
     def _dist(self, X, mask, eps=1E-6):
         """ Pairwise euclidean distances """
-        
         # Convolutional network on NCHW
         mask_2D = torch.unsqueeze(mask,1) * torch.unsqueeze(mask,2)
         dX = torch.unsqueeze(X,1) - torch.unsqueeze(X,2)
@@ -94,11 +80,11 @@ class ProteinFeatures(pl.LightningModule):
         # Distance radial basis function
         D_min, D_max, D_count = 0., 20., self.num_rbf
         D_mu = torch.linspace(D_min, D_max, D_count).type_as(D)
-        D_mu = D_mu.view([1,1,1,-1]).type_as(D)
+        D_mu = D_mu.view([1,1,1,-1])
         D_sigma = (D_max - D_min) / D_count
         D_expand = torch.unsqueeze(D, -1)
         RBF = torch.exp(-((D_expand - D_mu) / D_sigma)**2)
-        
+
         return RBF
 
     def _quaternions(self, R):
@@ -127,8 +113,45 @@ class ProteinFeatures(pl.LightningModule):
         w = torch.sqrt(F.relu(1 + diag.sum(-1, keepdim=True))) / 2.
         Q = torch.cat((xyz, w), -1)
         Q = F.normalize(Q, dim=-1)
-        
+
         return Q
+
+    def _contacts(self, D_neighbors, E_idx, mask_neighbors, cutoff=8):
+        """ Contacts """
+        D_neighbors = D_neighbors.unsqueeze(-1)
+        neighbor_C = mask_neighbors * (D_neighbors < cutoff).type(torch.float32)
+        return neighbor_C
+
+    def _hbonds(self, X, E_idx, mask_neighbors, eps=1E-3):
+        """ Hydrogen bonds and contact map
+        """
+        X_atoms = dict(zip(['N', 'CA', 'C', 'O'], torch.unbind(X, 2)))
+
+        # Virtual hydrogens
+        X_atoms['C_prev'] = F.pad(X_atoms['C'][:,1:,:], (0,0,0,1), 'constant', 0)
+        X_atoms['H'] = X_atoms['N'] + F.normalize(
+             F.normalize(X_atoms['N'] - X_atoms['C_prev'], -1)
+          +  F.normalize(X_atoms['N'] - X_atoms['CA'], -1)
+        , -1)
+
+        def _distance(X_a, X_b):
+            return torch.norm(X_a[:,None,:,:] - X_b[:,:,None,:], dim=-1)
+
+        def _inv_distance(X_a, X_b):
+            return 1. / (_distance(X_a, X_b) + eps)
+
+        # DSSP vacuum electrostatics model
+        U = (0.084 * 332) * (
+              _inv_distance(X_atoms['O'], X_atoms['N'])
+            + _inv_distance(X_atoms['C'], X_atoms['H'])
+            - _inv_distance(X_atoms['O'], X_atoms['H'])
+            - _inv_distance(X_atoms['C'], X_atoms['N'])
+        )
+
+        HB = (U < -0.5).type(torch.float32)
+        neighbor_HB = mask_neighbors * gather_edges(HB.unsqueeze(-1),  E_idx)
+
+        return neighbor_HB
 
     def _orientations_coarse(self, X, E_idx, eps=1e-6):
         # Pair features
@@ -181,7 +204,6 @@ class ProteinFeatures(pl.LightningModule):
         return AD_features, O_features
 
     def _dihedrals(self, X, eps=1e-7):
-
         # First 3 coordinates are N, CA, C
         X = X[:,:,:3,:].reshape(X.shape[0], 3*X.shape[1], 3)
 
@@ -203,6 +225,7 @@ class ProteinFeatures(pl.LightningModule):
         # This scheme will remove phi[0], psi[-1], omega[-1]
         D = F.pad(D, (1,2), 'constant', 0)
         D = D.view((D.size(0), int(D.size(1)/3), 3))
+        phi, psi, omega = torch.unbind(D,-1)
 
         # Lift angle representations to the circle
         D_features = torch.cat((torch.cos(D), torch.sin(D)), 2)
@@ -217,7 +240,7 @@ class ProteinFeatures(pl.LightningModule):
 
         # Build k-Nearest Neighbors graph
         X_ca = X[:,:,1,:]
-        D_neighbors, E_idx, _ = self._dist(X_ca, mask)
+        D_neighbors, E_idx, mask_neighbors = self._dist(X_ca, mask)
 
         # Pairwise features
         AD_features, O_features = self._orientations_coarse(X_ca, E_idx)
@@ -230,6 +253,18 @@ class ProteinFeatures(pl.LightningModule):
             # Coarse backbone features
             V = AD_features
             E = torch.cat((E_positional, RBF, O_features), -1)
+        elif self.features_type == 'hbonds':
+            # Hydrogen bonds and contacts
+            neighbor_HB = self._hbonds(X, E_idx, mask_neighbors)
+            neighbor_C = self._contacts(D_neighbors, E_idx, mask_neighbors)
+            # Dropout
+            neighbor_C = self.dropout(neighbor_C)
+            neighbor_HB = self.dropout(neighbor_HB)
+            # Pack
+            V = mask.unsqueeze(-1) * torch.ones_like(AD_features)
+            neighbor_C = neighbor_C.expand(-1,-1,-1, int(self.num_positional_embeddings / 2))
+            neighbor_HB = neighbor_HB.expand(-1,-1,-1, int(self.num_positional_embeddings / 2))
+            E = torch.cat((E_positional, neighbor_C, neighbor_HB), -1)
         elif self.features_type == 'full':
             # Full backbone angles
             V = self._dihedrals(X)

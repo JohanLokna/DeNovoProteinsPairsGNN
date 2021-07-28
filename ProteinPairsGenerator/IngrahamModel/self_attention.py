@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import pytorch_lightning as pl
 
 # The following gather functions
 def gather_edges(edges, neighbor_idx):
@@ -37,7 +36,7 @@ def cat_neighbors_nodes(h_nodes, h_neighbors, E_idx):
     return h_nn
 
 
-class Normalize(pl.LightningModule):
+class Normalize(nn.Module):
     def __init__(self, features, epsilon=1e-6):
         super(Normalize, self).__init__()
         self.gain = nn.Parameter(torch.ones(features))
@@ -58,7 +57,7 @@ class Normalize(pl.LightningModule):
         return gain * (x - mu) / (sigma + self.epsilon) + bias
 
 
-class TransformerLayer(pl.LightningModule):
+class TransformerLayer(nn.Module):
     def __init__(self, num_hidden, num_in, num_heads=4, dropout=0.1):
         super(TransformerLayer, self).__init__()
         self.num_heads = num_heads
@@ -168,8 +167,8 @@ class NeighborAttention(nn.Module):
 
     def _masked_softmax(self, attend_logits, mask_attend, dim=-1):
         """ Numerically stable masked softmax """
-        negative_inf = torch.tensor(np.finfo(np.float32).min, device=attend_logits.device)
-        attend_logits = torch.where(mask_attend > 0, attend_logits, negative_inf)
+        negative_inf = np.finfo(np.float32).min
+        attend_logits = torch.where(mask_attend > 0, attend_logits, torch.tensor(negative_inf).type_as(attend_logits))
         attend = F.softmax(attend_logits, dim)
         attend = mask_attend * attend
         return attend
@@ -212,7 +211,6 @@ class NeighborAttention(nn.Module):
 
     def step(self, t, h_V, h_E, E_idx, mask_attend=None):
         """ Self-attention for a specific time step t
-
         Args:
             h_V:            Node features           [N_batch, N_nodes, N_hidden]
             h_E:            Neighbor features       [N_batch, N_nodes, K, N_in]
@@ -222,7 +220,7 @@ class NeighborAttention(nn.Module):
             h_V_t:            Node update
         """
         # Dimensions
-        n_batch, _, n_neighbors = h_E.shape[:3]
+        n_batch, n_nodes, n_neighbors = h_E.shape[:3]
         n_heads = self.num_heads
         d = self.num_hidden / n_heads
 

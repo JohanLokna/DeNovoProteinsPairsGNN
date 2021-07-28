@@ -23,7 +23,7 @@
     {"pdb": "5hkq", "chains": ["A", "I"]},
     {"pdb": "5aot", "chains": ["A"]},
     {"pdb": "3jb5", "chains": ["A"]},
-    {"pdb": "5a7d", "chains": ["A", "D", "I", "L"]},
+    {"pdb": "5a7d", "chains": ["B", "D", "I", "L"]},
     {"pdb": "5g5n", "chains": ["A", "B"]},
     {"pdb": "6e9n", "chains": ["A"]},
     {"pdb": "5mqp", "chains": ["A"]},
