@@ -38,9 +38,9 @@ class TestProteinDesign:
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
 
-                    res = {k: v.cpu() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
+                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
-                    # stepResults.append(res)
+                    stepResults.append(res)
 
                     # print(stepResults[-1])
 
