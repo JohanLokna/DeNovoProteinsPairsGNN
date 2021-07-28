@@ -84,4 +84,3 @@ class TestProteinDesignJLo(TestProteinDesign):
 
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
         x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
-

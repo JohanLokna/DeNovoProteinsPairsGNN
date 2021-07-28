@@ -124,6 +124,29 @@ class ProdySelect(FeatureModule):
         return self.dependencies[0].data.select(self.selectSequence)
 
 
+class ProdySelectChain(FeatureModule):
+
+    def __init__(
+        self,
+        featureName : str = "prodySelectChain",
+        dependencies : List[FeatureModule] = []
+    ) -> None:
+
+        # Set up dependecies
+        if len(dependencies) != 1:
+            warnings.warn("Dependencies in ProdySelect might be errornous!", UserWarning)
+
+        super().__init__(featureName, dependencies=dependencies)
+    
+    def forward(
+        self,
+        chain,
+        *args,
+        **kwargs
+    ) -> AtomGroup:
+        return self.dependencies[0].data.select("chain " + chain)
+
+
 class ProdyBackboneCoords(FeatureModule):
 
     def __init__(

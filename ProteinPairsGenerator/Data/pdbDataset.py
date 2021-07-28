@@ -52,7 +52,7 @@ class PDBDataset(BaseDataset):
 
         print("Downloading ...")
         for k in self.processing_queue:
-            fetchPDBviaHTTP(*self.pdbDict[k.name], compressed=True)
+            fetchPDBviaHTTP(*[protein["pdb"] for protein in self.pdbDict[k.name]], compressed=True)
 
     def process(self, force=False) -> None:
 
@@ -70,7 +70,7 @@ class PDBDataset(BaseDataset):
             outDir.mkdir(parents=True, exist_ok=True)
 
             # Iterate over chunks
-            for dataList in self.pre_transform([{"pdb": pdb} for pdb in self.pdbDict[outDir.name]]):
+            for dataList in self.pre_transform([{"pdb": protein["pdb"], "chain": c} for protein in self.pdbDict[outDir.name] for c in protein["chains"]]):
 
                 # Coalate and save each chunk
                 data, slices = self.collate(dataList)
@@ -82,7 +82,8 @@ class PDBDataset(BaseDataset):
     @staticmethod
     def getGenericFeatures(device : str = "cuda:0" if torch.cuda.is_available() else "cpu"):
 
-        pdb = ProdyPDB()
+        pdbRaw = ProdyPDB()
+        pdb = ProdySelectChain(dependencies=[pdbRaw])
 
         # Backbone coords for Ingraham
         coordsScaled = ProdyBackboneCoords("coordsScaled", dependencies=[pdb])
