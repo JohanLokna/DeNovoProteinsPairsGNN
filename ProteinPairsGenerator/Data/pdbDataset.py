@@ -112,8 +112,8 @@ class PDBDataset(BaseDataset):
             dependencies = [stackedDist, closeNeighbours]
         )
         edgeAttr = Normalize(
-            bias = torch.Tensor([7.5759e+00, 1.4498e-08]), # Should be zero in second coordinate but roundoff error
-            scale = torch.Tensor([3.680696, 1.166342]),
+            bias = torch.Tensor([7.5759e+00, 1.4498e-06]), # Should be zero in second coordinate but roundoff error
+            scale = torch.Tensor([3.680696, 116.166342]),
             featureName = "edge_attr",
             dependencies = [edgeAttrUnnormal]
         )
