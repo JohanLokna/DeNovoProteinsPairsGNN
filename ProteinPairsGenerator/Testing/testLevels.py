@@ -30,8 +30,8 @@ class TestProteinDesign:
             for _ in range(self.repeats):
                 for x in tqdm(self.dm.test_dataloader()):
 
-                    if not (x.title in ["FM#T0864", "5d9g"]):
-                        continue
+                    # if not (x.title in ["FM#T0864", "5d9g"]):
+                        # continue
 
                     self.remask(x, **level)
                     x = self.dm.transfer_batch_to_device(x, self.device)
