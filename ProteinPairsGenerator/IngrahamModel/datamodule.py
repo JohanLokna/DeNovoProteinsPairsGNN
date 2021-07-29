@@ -42,7 +42,8 @@ class IngrahamDataModule(BERTDataModule):
         testSet: Optional[List[Path]] = None,
         teacher: Optional[str] = None,
         num_workers: int = 1,
-        prefetch_factor: int = 2
+        prefetch_factor: int = 2,
+        cutoffSize: int = 1500
     ):
           super().__init__(
               root,
@@ -54,5 +55,5 @@ class IngrahamDataModule(BERTDataModule):
               num_workers,
               prefetch_factor,
               batch_size = 1,
-              batch_builder = batchAccordingToSize
+              batch_builder = lambda x: batchAccordingToSize(x, cutoffSize)
           )
