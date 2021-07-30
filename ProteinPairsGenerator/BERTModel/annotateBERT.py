@@ -1,4 +1,5 @@
 from tape import ProteinBertForMaskedLM
+from typing import Optional
 
 import torch
 from torch import nn
@@ -22,9 +23,9 @@ class Annotator(nn.Module):
             param.requires_grad = False
         self.model = self.model.to(device=self.device)
 
-    def __call__(self, inTensors):
+    def __call__(self, inTensors, mask : Optional[torch.Tensor] = None):
         inTensors = self.tokenizer.AA2BERT(inTensors).to(device=self.device)
-        outTensors = self.model(inTensors)[0]
+        outTensors = self.model(inTensors, mask=mask)[0]
         return self.tokenizer.BERT2AA(outTensors)
 
 
