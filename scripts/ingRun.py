@@ -113,10 +113,6 @@ def featurize(batch, device, useBERT : bool = False):
         indices = np.asarray([alphabet.index(a) for a in b['seq']], dtype=np.int32)
         STrue[i, :l] = indices
 
-        if np.any(indices == 20):
-            print(b["seq"])
-            print(alphabet)
-
         mask[i, :l] = 1.0
         if useBERT:
             indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long), torch.ones(nTokens, nTokens))
