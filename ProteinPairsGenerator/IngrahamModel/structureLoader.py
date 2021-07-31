@@ -22,12 +22,12 @@ def featurize(batch):
 
     
     # Helpers
-    nTokens = 20
+    nTokens = len(AMINO_ACIDS_BASE)
 
     # Build the batch
     for i, (b, l) in enumerate(zip(batch, lengths)):
         # Standard features
-        coords[i, :l] = torch.from_numpy(np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1), dtype=torch.float)
+        coords[i, :l] = torch.from_numpy(np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1).float()
         seq[i, :l] = seq_to_tensor(b["seq"], AMINO_ACIDS_MAP)
         valid[i, :l] = 1.0
 
