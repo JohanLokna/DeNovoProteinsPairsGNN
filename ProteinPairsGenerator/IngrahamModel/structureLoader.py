@@ -4,7 +4,7 @@ import json, time
 import torch
 
 from ProteinPairsGenerator.Data import GeneralData
-from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE, AMINO_ACID_NULL
+from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP
 from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
 
 def featurize(batch):
@@ -21,16 +21,16 @@ def featurize(batch):
 
     
     # Helpers
-    alphabet = ''.join(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
-    nTokens = len(alphabet) - 1
-    mask = torch.zeros(B, L_max, dtype=torch.float32)
+    nTokens = 20
 
     # Build the batch
     for i, (b, l) in enumerate(zip(batch, lengths)):
 
+        print(b)
+
         # Standard features
         coords[i, :l] = torch.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
-        seq[i, :l] = torch.LongTensor([alphabet.index(a) for a in b['seq']])
+        seq[i, :l] = seq_to_tensor(b["seq"], AMINO_ACIDS_MAP)
         valid[i, :l] = 1.0
 
         # Randomly selecet masked sequence
