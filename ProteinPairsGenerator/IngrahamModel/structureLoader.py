@@ -35,6 +35,8 @@ def featurize(batch):
         indices = np.asarray([alphabet.index(a) for a in b['seq']], dtype=np.int32)
         STrue[i, :l] = indices
 
+        print(np.max(indices))
+
         mask[i, :l] = 1.0
         indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long).detach(), torch.ones(nTokens, nTokens))
         maskLoss[i, :l] = maskWithBert
