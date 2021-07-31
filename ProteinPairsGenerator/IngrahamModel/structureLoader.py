@@ -51,6 +51,9 @@ def featurize(batch):
     SMasked = torch.from_numpy(SMasked)
     X = torch.from_numpy(X)
     lengths = torch.from_numpy(lengths)
+
+    print(torch.max(STrue))
+
     return GeneralData(coords=X.float(), seq=STrue.long(), maskedSeq=SMasked.long(), valid=mask.long(), mask=maskLoss.long(), lengths=lengths.long())
 
 
