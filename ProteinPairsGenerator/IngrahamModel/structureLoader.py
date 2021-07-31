@@ -34,7 +34,9 @@ def featurize(batch):
         # Randomly masked sequence
         maskedSeq[i, :l], mask[i, :l] = maskBERT(seq[i, :l].detach(), torch.ones(nTokens, nTokens))
 
-        print(torch.max(seq))
+        if torch.max(seq).item() == 20:
+            print(b["seq"])
+            print("x" in b["seq"].lower())
 
     return GeneralData(
         coords=coords,
