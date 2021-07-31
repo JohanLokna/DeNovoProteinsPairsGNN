@@ -32,7 +32,7 @@ def featurize(batch):
         valid[i, :l] = 1.0
 
         # Randomly masked sequence
-        maskedSeq[i, :l], mask[i, :l] = maskBERT(seq.detach(), torch.ones(nTokens, nTokens))
+        maskedSeq[i, :l], mask[i, :l] = maskBERT(seq[i, :l].detach(), torch.ones(nTokens, nTokens))
 
     return GeneralData(
         coords=coords,
