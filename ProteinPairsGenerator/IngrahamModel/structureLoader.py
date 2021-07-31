@@ -2,6 +2,7 @@ import numpy as np
 import json, time
 
 import torch
+from torch._C import dtype
 
 from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, AMINO_ACID_NULL
@@ -26,7 +27,7 @@ def featurize(batch):
     # Build the batch
     for i, (b, l) in enumerate(zip(batch, lengths)):
         # Standard features
-        coords[i, :l] = torch.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
+        coords[i, :l] = torch.from_numpy(np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1), dtype=torch.float)
         seq[i, :l] = seq_to_tensor(b["seq"], AMINO_ACIDS_MAP)
         valid[i, :l] = 1.0
 
