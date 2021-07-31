@@ -4,12 +4,12 @@ import sys
 
 import torch
 
-from ProteinPairsGenerator.IngrahamModel import IngrahamModelKD, IngrahamDataModule, StructureDataset, StructureLoader
+from ProteinPairsGenerator.IngrahamModel import IngrahamModel, IngrahamDataModule, StructureDataset, StructureLoader
 from ProteinPairsGenerator.Testing import TestProteinDesignIngrham
 
 
 device = "cuda:{}".format(sys.argv[1] if len(sys.argv) > 1 else "0")
-model = IngrahamModelKD(0.0, 20, 128, 128, 128, 3, 3, 21, 30, "full", 0, 0.1, True, False).to(device)
+model = IngrahamModel(20, 128, 128, 128, 3, 3, 21, 30, "full", 0, 0.1, True, False).to(device)
 optimizer = model.configure_optimizers()["optimizer"]
 
 # Load the dataset

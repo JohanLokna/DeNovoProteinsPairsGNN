@@ -133,3 +133,4 @@ class StructureLoader():
         for b_idx in self.clusters:
             batch = [self.dataset[i] for i in b_idx]
             batch = featurize(batch)
+            return batch
