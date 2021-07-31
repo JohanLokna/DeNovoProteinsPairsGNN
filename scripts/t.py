@@ -20,7 +20,7 @@ loader_train = StructureLoader(d, batch_size=batch_tokens)
 # Testing
 root = Path("../proteinNetNew")
 testing = [Path("../proteinNetTesting").joinpath("processed/testing")]
-dm = IngrahamDataModule(root, testSet=testing, teacher="TAPE")
+dm = IngrahamDataModule(root, trainSet=testing, testSet=testing, teacher="TAPE")
 testerIngraham = TestProteinDesignIngrham([{"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}], 40, device)
 
 epochs = 100
