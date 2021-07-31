@@ -49,7 +49,7 @@ def featurize(batch):
     # Conversion
     STrue = torch.from_numpy(STrue)
     SMasked = torch.from_numpy(SMasked)
-    X = torch.from_numpy(X)
+    X = torch.from_numpy(X).float()
     return GeneralData(coords=X, seq=STrue, maskedSeq=SMasked, valid=mask, mask=maskLoss, lengths=lengths)
 
 

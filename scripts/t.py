@@ -33,7 +33,7 @@ for e in range(epochs):
     for batch in tqdm(loader_train):
 
         optimizer.zero_grad()
-        loss = model.step(batch)["loss"]
+        loss = model.step(dm.transfer_batch_to_device(batch, device))["loss"]
         loss.backward()
         optimizer.step()
 
@@ -43,7 +43,7 @@ for e in range(epochs):
         validation_weights, validation_correct = 0, 0
         for _, batch in enumerate(dm.val_dataloader()):
             
-            outDict = model.step(batch)
+            outDict = model.step(dm.transfer_batch_to_device(batch, device))
 
             # Accumulate
             validation_correct += outDict["nCorrect"]
