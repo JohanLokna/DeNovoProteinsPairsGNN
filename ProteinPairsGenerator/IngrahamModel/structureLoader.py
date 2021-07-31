@@ -50,6 +50,7 @@ def featurize(batch):
     STrue = torch.from_numpy(STrue)
     SMasked = torch.from_numpy(SMasked)
     X = torch.from_numpy(X)
+    lengths = torch.from_numpy(lengths)
     return GeneralData(coords=X.float(), seq=STrue.long(), maskedSeq=SMasked.long(), valid=mask.long(), mask=maskLoss.long(), lengths=lengths.long())
 
 
