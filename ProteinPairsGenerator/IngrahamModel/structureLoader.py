@@ -100,7 +100,7 @@ def featurize(batch):
 class StructureDataset():
     def __init__(self, jsonl_file, max_length, verbose=False, truncate=None):
         
-        alphabet = ''.join(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
+        alphabet = ''.join(AMINO_ACIDS_BASE)
         alphabet_set = set([a for a in alphabet])
         discard_count = {
             'bad_chars': 0,
