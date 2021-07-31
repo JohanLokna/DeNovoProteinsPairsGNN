@@ -11,7 +11,7 @@ def featurize(batch):
 
     # Set up data
     B = len(batch)
-    lengths = [torch.numel(b.seq) for b in batch]
+    lengths = [torch.numel(b["seq"]) for b in batch]
     L_max = max(lengths)
     coords = torch.zeros(B, L_max, 4, 3, dtype=torch.float)
     seq = torch.zeros(B, L_max, dtype=torch.long)
