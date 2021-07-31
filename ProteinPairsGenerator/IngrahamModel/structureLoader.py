@@ -36,7 +36,7 @@ def featurize(batch):
         STrue[i, :l] = indices
 
         mask[i, :l] = 1.0
-        indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long), torch.ones(nTokens, nTokens))
+        indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long).detach(), torch.ones(nTokens, nTokens))
         maskLoss[i, :l] = maskWithBert
         indices = indicesBert.detach().cpu().numpy()
 
