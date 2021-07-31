@@ -1,7 +1,5 @@
 import numpy as np
 import json, time
-from tqdm import tqdm
-import sys
 
 import torch
 
@@ -10,53 +8,91 @@ from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE, AMINO_ACID_NULL
 from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
 
 def featurize(batch):
-    """ Pack and pad batch into torch tensors """
-    alphabet = ''.join(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
-    B = len(batch)
-    lengths = np.array([len(b['seq']) for b in batch], dtype=np.int32)
-    L_max = max([len(b['seq']) for b in batch])
-    X = np.zeros([B, L_max, 4, 3])
-    STrue = np.zeros([B, L_max], dtype=np.int32)
-    SMasked = np.zeros([B, L_max], dtype=np.int32)
 
-    nTokens = len(alphabet)
+    # Set up data
+    B = len(batch)
+    lengths = [torch.numel(b.seq) for b in batch]
+    L_max = max(lengths)
+    coords = torch.zeros(B, L_max, 4, 3, dtype=torch.float)
+    seq = torch.zeros(B, L_max, dtype=torch.long)
+    maskedSeq = torch.zeros(B, L_max, dtype=torch.long)
+    mask = torch.zeros(B, L_max)
+    valid = torch.zeros(B, L_max)
+
+    
+    # Helpers
+    alphabet = ''.join(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
+    nTokens = len(alphabet) - 1
     mask = torch.zeros(B, L_max, dtype=torch.float32)
-    maskLoss = torch.zeros(B, L_max, dtype=torch.float32)
 
     # Build the batch
-    for i, b in enumerate(batch):
-        x = np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
+    for i, (b, l) in enumerate(zip(batch, lengths)):
+
+        # Standard features
+        coords[i, :l] = torch.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
+        seq[i, :l] = torch.LongTensor([alphabet.index(a) for a in b['seq']])
+        valid[i, :l] = 1.0
+
+        # Randomly selecet masked sequence
+        maskedSeq[i, :l], mask[i, :l] = maskBERT(seq.detach(), torch.ones(nTokens, nTokens))
+
+    return GeneralData(
+        coords=coords,
+        seq=seq,
+        valid=valid,
+        lengths=lengths,
+        maskedSeq=maskedSeq,
+        mask=mask
+    )
+
+# def featurize(batch):
+#     """ Pack and pad batch into torch tensors """
+#     alphabet = ''.join(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
+#     B = len(batch)
+#     lengths = np.array([len(b['seq']) for b in batch], dtype=np.int32)
+#     L_max = max([len(b['seq']) for b in batch])
+#     X = np.zeros([B, L_max, 4, 3])
+#     STrue = np.zeros([B, L_max], dtype=np.int32)
+#     SMasked = np.zeros([B, L_max], dtype=np.int32)
+
+#     nTokens = len(alphabet)
+#     mask = torch.zeros(B, L_max, dtype=torch.float32)
+#     maskLoss = torch.zeros(B, L_max, dtype=torch.float32)
+
+#     # Build the batch
+#     for i, b in enumerate(batch):
+#         x = np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
         
-        l = len(b['seq'])
-        x_pad = np.pad(x, [[0,L_max-l], [0,0], [0,0]], 'constant', constant_values=(np.nan, ))
-        X[i,:,:,:] = x_pad
+#         l = len(b['seq'])
+#         x_pad = np.pad(x, [[0,L_max-l], [0,0], [0,0]], 'constant', constant_values=(np.nan, ))
+#         X[i,:,:,:] = x_pad
 
-        # Convert to labels
-        indices = np.asarray([alphabet.index(a) for a in b['seq']], dtype=np.int32)
-        STrue[i, :l] = indices
+#         # Convert to labels
+#         indices = np.asarray([alphabet.index(a) for a in b['seq']], dtype=np.int32)
+#         STrue[i, :l] = indices
 
-        print(np.max(indices))
+#         print(np.max(indices))
 
-        mask[i, :l] = 1.0
-        indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long).detach(), torch.ones(nTokens, nTokens))
-        maskLoss[i, :l] = maskWithBert
-        indices = indicesBert.detach().cpu().numpy()
+#         mask[i, :l] = 1.0
+#         indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long).detach(), torch.ones(nTokens, nTokens))
+#         maskLoss[i, :l] = maskWithBert
+#         indices = indicesBert.detach().cpu().numpy()
 
-        SMasked[i, :l] = indices
+#         SMasked[i, :l] = indices
 
-    # Mask
-    isnan = np.isnan(X)
-    X[isnan] = 0.
+#     # Mask
+#     isnan = np.isnan(X)
+#     X[isnan] = 0.
 
-    # Conversion
-    STrue = torch.from_numpy(STrue)
-    SMasked = torch.from_numpy(SMasked)
-    X = torch.from_numpy(X)
-    lengths = torch.from_numpy(lengths)
+#     # Conversion
+#     STrue = torch.from_numpy(STrue)
+#     SMasked = torch.from_numpy(SMasked)
+#     X = torch.from_numpy(X)
+#     lengths = torch.from_numpy(lengths)
 
-    print(torch.max(STrue))
+#     print(torch.max(STrue))
 
-    return GeneralData(coords=X.float(), seq=STrue.long(), maskedSeq=SMasked.long(), valid=mask.long(), mask=maskLoss.long(), lengths=lengths.long())
+#     return GeneralData(coords=X.float(), seq=STrue.long(), maskedSeq=SMasked.long(), valid=mask.long(), mask=maskLoss.long(), lengths=lengths.long())
 
 
 class StructureDataset():
