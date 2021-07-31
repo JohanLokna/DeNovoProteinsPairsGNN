@@ -24,9 +24,10 @@ def featurize(batch):
     nTokens = 20
 
     # Build the batch
-    for i, (b, l) in enumerate(zip(batch, lengths)):
+    for i, b in enumerate(batch):
 
         print(b)
+        l = lengths[i]
 
         # Standard features
         coords[i, :l] = torch.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
