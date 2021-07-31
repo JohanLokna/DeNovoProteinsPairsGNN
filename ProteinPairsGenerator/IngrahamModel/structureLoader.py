@@ -11,7 +11,7 @@ def featurize(batch):
 
     # Set up data
     B = len(batch)
-    lengths = [torch.numel(b["seq"]) for b in batch]
+    lengths = [len(b["seq"]) for b in batch]
     L_max = max(lengths)
     coords = torch.zeros(B, L_max, 4, 3, dtype=torch.float)
     seq = torch.zeros(B, L_max, dtype=torch.long)
@@ -24,17 +24,13 @@ def featurize(batch):
     nTokens = 20
 
     # Build the batch
-    for i, b in enumerate(batch):
-
-        print(b)
-        l = lengths[i]
-
+    for i, (b, l) in enumerate(zip(batch, lengths)):
         # Standard features
         coords[i, :l] = torch.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
         seq[i, :l] = seq_to_tensor(b["seq"], AMINO_ACIDS_MAP)
         valid[i, :l] = 1.0
 
-        # Randomly selecet masked sequence
+        # Randomly masked sequence
         maskedSeq[i, :l], mask[i, :l] = maskBERT(seq.detach(), torch.ones(nTokens, nTokens))
 
     return GeneralData(
