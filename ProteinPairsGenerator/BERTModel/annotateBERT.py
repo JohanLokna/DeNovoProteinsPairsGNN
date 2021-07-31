@@ -25,7 +25,7 @@ class Annotator(nn.Module):
 
     def __call__(self, inTensors, mask : Optional[torch.Tensor] = None):
         inTensors = self.tokenizer.AA2BERT(inTensors).to(device=self.device)
-        outTensors = self.model(inTensors, mask=mask)[0]
+        outTensors = self.model(inTensors, mask)[0]
         return self.tokenizer.BERT2AA(outTensors)
 
 
