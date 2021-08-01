@@ -34,10 +34,6 @@ def featurize(batch):
         # Randomly masked sequence
         maskedSeq[i, :l], mask[i, :l] = maskBERT(seq[i, :l].detach(), torch.ones(nTokens, nTokens))
 
-        if torch.max(seq).item() == 20:
-            print(b["seq"])
-            print("x" in b["seq"].lower())
-
     return GeneralData(
         coords=coords,
         seq=seq,
@@ -149,12 +145,13 @@ class StructureDataset():
 
 
 class StructureLoader():
-    def __init__(self, dataset : StructureDataset, batch_size : int):
+    def __init__(self, dataset : StructureDataset, batch_size : int, shuffle : bool = True):
         self.dataset = dataset
         self.size = len(dataset)
         self.lengths = [len(dataset[i]['seq']) for i in range(self.size)]
         self.batch_size = batch_size
         sorted_ix = np.argsort(self.lengths)
+        self.shuffle = shuffle
 
         # Cluster into batches of similar sizes
         clusters, batch = [], []
@@ -173,7 +170,10 @@ class StructureLoader():
         return len(self.clusters)
 
     def __iter__(self):
-        np.random.shuffle(self.clusters)
+        
+        if self.shuffle:
+            np.random.shuffle(self.clusters)
+        
         for b_idx in self.clusters:
             batch = [self.dataset[i] for i in b_idx]
             batch = featurize(batch)
