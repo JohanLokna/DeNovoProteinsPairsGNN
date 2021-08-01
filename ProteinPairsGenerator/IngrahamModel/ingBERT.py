@@ -25,7 +25,7 @@ class BERTHelperIngraham(nn.Module):
 
     def forward(self, x):
         print(x.shape)
-        x = self.tokenizer.AA2BERT(x)[0]
+        x = self.tokenizer.AA2BERT(x)
         print(x.shape)
         out = self.encode(self.model(x)[0][:, 1:-1]) # Ingraham ist batched, which Strokach is not
         print(out.shape)
