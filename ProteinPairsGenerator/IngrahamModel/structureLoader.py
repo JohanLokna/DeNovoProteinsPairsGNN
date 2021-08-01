@@ -2,11 +2,9 @@ import numpy as np
 import json, time
 
 import torch
-from torch._C import dtype
 
 from ProteinPairsGenerator.Data import GeneralData
-from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE, AMINO_ACID_NULL
-from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
+from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 
 def featurize(batch):
 
@@ -43,56 +41,6 @@ def featurize(batch):
         maskedSeq=maskedSeq,
         mask=mask
     )
-
-# def featurize(batch):
-#     """ Pack and pad batch into torch tensors """
-#     alphabet = ''.join(AMINO_ACIDS_BASE + [AMINO_ACID_NULL])
-#     B = len(batch)
-#     lengths = np.array([len(b['seq']) for b in batch], dtype=np.int32)
-#     L_max = max([len(b['seq']) for b in batch])
-#     X = np.zeros([B, L_max, 4, 3])
-#     STrue = np.zeros([B, L_max], dtype=np.int32)
-#     SMasked = np.zeros([B, L_max], dtype=np.int32)
-
-#     nTokens = len(alphabet)
-#     mask = torch.zeros(B, L_max, dtype=torch.float32)
-#     maskLoss = torch.zeros(B, L_max, dtype=torch.float32)
-
-#     # Build the batch
-#     for i, b in enumerate(batch):
-#         x = np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1)
-        
-#         l = len(b['seq'])
-#         x_pad = np.pad(x, [[0,L_max-l], [0,0], [0,0]], 'constant', constant_values=(np.nan, ))
-#         X[i,:,:,:] = x_pad
-
-#         # Convert to labels
-#         indices = np.asarray([alphabet.index(a) for a in b['seq']], dtype=np.int32)
-#         STrue[i, :l] = indices
-
-#         print(np.max(indices))
-
-#         mask[i, :l] = 1.0
-#         indicesBert, maskWithBert = maskBERT(torch.from_numpy(indices).to(dtype=torch.long).detach(), torch.ones(nTokens, nTokens))
-#         maskLoss[i, :l] = maskWithBert
-#         indices = indicesBert.detach().cpu().numpy()
-
-#         SMasked[i, :l] = indices
-
-#     # Mask
-#     isnan = np.isnan(X)
-#     X[isnan] = 0.
-
-#     # Conversion
-#     STrue = torch.from_numpy(STrue)
-#     SMasked = torch.from_numpy(SMasked)
-#     X = torch.from_numpy(X)
-#     lengths = torch.from_numpy(lengths)
-
-#     print(torch.max(STrue))
-
-#     return GeneralData(coords=X.float(), seq=STrue.long(), maskedSeq=SMasked.long(), valid=mask.long(), mask=maskLoss.long(), lengths=lengths.long())
-
 
 class StructureDataset():
     def __init__(self, jsonl_file, max_length, verbose=False, truncate=None):
