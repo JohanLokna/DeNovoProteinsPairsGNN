@@ -33,7 +33,7 @@ class Net(IngrahamModel):
         **kwargs
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.W_s = BERTHelperIngraham(kwargs["hidden_size"])
+        self.W_s = BERTHelperIngraham(self.hidden_dim)
         self.tokenizer = AdaptedTAPETokenizer()
 
     def step(self, x):
