@@ -21,6 +21,7 @@ class BERTHelperIngraham(nn.Module):
             nn.ReLU(),
             nn.LayerNorm(hidden_size)
         )
+        self.tokenizer = AdaptedTAPETokenizer()
 
     def forward(self, x):
 
@@ -37,4 +38,3 @@ class Net(IngrahamModel):
     ) -> None:
         super().__init__(*args, **kwargs)
         self.W_s = BERTHelperIngraham(self.hidden_dim)
-        self.tokenizer = AdaptedTAPETokenizer()
