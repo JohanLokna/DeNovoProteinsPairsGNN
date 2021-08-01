@@ -27,7 +27,8 @@ def featurize(batch):
     # Build the batch
     for i, (b, l) in enumerate(zip(batch, lengths)):
         # Standard features
-        coords[i, :l] = torch.nan_to_num(torch.from_numpy(np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1))).float()
+        numpyCorrds = np.nan_to_num(np.stack([b['coords'][c] for c in ['N', 'CA', 'C', 'O']], 1))
+        coords[i, :l] = torch.from_numpy(numpyCorrds).float()
         seq[i, :l] = seq_to_tensor(b["seq"], AMINO_ACIDS_MAP)
         valid[i, :l] = 1.0
 
