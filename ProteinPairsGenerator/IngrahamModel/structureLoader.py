@@ -3,6 +3,7 @@ import json, time
 
 import torch
 
+from ProteinPairsGenerator.BERTModel import maskBERT
 from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 
