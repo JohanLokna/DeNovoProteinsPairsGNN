@@ -24,11 +24,8 @@ class BERTHelperIngraham(nn.Module):
         self.tokenizer = AdaptedTAPETokenizer()
 
     def forward(self, x):
-        print(x.shape)
         x = self.tokenizer.AA2BERT(x).type_as(x)
-        print(x.shape)
         out = self.encode(self.model(x)[0][:, 1:-1]) # Ingraham ist batched, which Strokach is not
-        print(out.shape)
         return out
 
 
