@@ -23,7 +23,14 @@ class BERTHelperIngraham(nn.Module):
         )
 
     def forward(self, x):
-        return self.encode(self.model(x)[0][:, 1:-1]) # Ingraham ist batched, which Strokach is not
+
+        print(x.shape)
+
+        out = self.encode(self.model(x)[0][:, 1:-1]) # Ingraham ist batched, which Strokach is not
+
+        print(out.shape, sep="\n\n\n")
+
+        return out
 
 
 class Net(IngrahamModel):
@@ -38,4 +45,5 @@ class Net(IngrahamModel):
 
     def step(self, x):
         x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
+        print(x.seq.shape, x.maskedSeq.shape)
         return super().step(x)
