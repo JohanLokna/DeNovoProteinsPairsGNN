@@ -150,12 +150,19 @@ class StructureLoader():
         self.size = len(dataset)
         self.lengths = [len(dataset[i]['seq']) for i in range(self.size)]
         self.batch_size = batch_size
-        sorted_ix = np.argsort(self.lengths)
         self.shuffle = shuffle
+
+        self.alphabet = set(AMINO_ACIDS_BASE)
+
+        sorted_ix = np.argsort(self.lengths)
 
         # Cluster into batches of similar sizes
         clusters, batch = [], []
         for ix in sorted_ix:
+
+            if not set(dataset[ix]['seq']) <= self.alphabet:
+                continue
+
             size = self.lengths[ix]
             if size * (len(batch) + 1) <= self.batch_size:
                 batch.append(ix)
