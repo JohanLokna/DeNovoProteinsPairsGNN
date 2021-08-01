@@ -23,6 +23,8 @@ class BERTHelperIngraham(nn.Module):
         )
 
     def forward(self, x):
+
+        x = self.tokenizer.AA2BERT(x)[0]
         out = self.encode(self.model(x)[0][:, 1:-1]) # Ingraham ist batched, which Strokach is not
         return out
 
@@ -36,6 +38,3 @@ class Net(IngrahamModel):
         super().__init__(*args, **kwargs)
         self.W_s = BERTHelperIngraham(self.hidden_dim)
         self.tokenizer = AdaptedTAPETokenizer()
-
-    def forward(self, X, S, L, mask):
-        return super().step(X, self.tokenizer.AA2BERT(S)[0], L, mask)
