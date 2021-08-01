@@ -43,7 +43,5 @@ class Net(IngrahamModel):
         self.W_s = BERTHelperIngraham(self.hidden_dim)
         self.tokenizer = AdaptedTAPETokenizer()
 
-    def step(self, x):
-        x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
-        print(x.seq.shape, x.maskedSeq.shape)
-        return super().step(x)
+    def forward(self, X, S, L, mask):
+        return super().step(X, self.tokenizer.AA2BERT(S)[0], L, mask)
