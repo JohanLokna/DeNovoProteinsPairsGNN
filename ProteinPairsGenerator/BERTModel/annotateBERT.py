@@ -13,7 +13,7 @@ class Annotator(nn.Module):
         self,
         model : nn.Module,
         tokenizer,
-        device : str = "cuda:1" if torch.cuda.is_available() else "cpu"
+        device : str = "cuda:0" if torch.cuda.is_available() else "cpu"
     ) -> None:
         super().__init__()
         self.device = device

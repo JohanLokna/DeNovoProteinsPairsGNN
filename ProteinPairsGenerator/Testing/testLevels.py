@@ -19,7 +19,7 @@ class TestProteinDesign:
         self.repeats = repeats
         self.device = device
 
-    def run(self, model, dm, verbose = False) -> None:
+    def run(self, model, dm, verbose = False, addRandomKD = False) -> None:
 
         model.to(device=self.device)
 
@@ -29,6 +29,10 @@ class TestProteinDesign:
                 for x in tqdm(dm.test_dataloader()) if verbose else dm.test_dataloader():
 
                     self.remask(x, **level)
+
+                    if addRandomKD:
+                        x.teacherLabels = torch.rand(*x.seq.shape, 20).type_ax(x.coords)
+
                     x = dm.transfer_batch_to_device(x, self.device)
 
                     res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
