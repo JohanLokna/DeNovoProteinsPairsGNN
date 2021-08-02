@@ -31,7 +31,7 @@ class TestProteinDesign:
                     self.remask(x, **level)
 
                     if addRandomKD:
-                        x.teacherLabels = torch.rand(*x.seq.shape, 20).type_ax(x.coords)
+                        x.teacherLabels = torch.rand(*x.seq.shape, 20).type_as(x.coords)
 
                     x = dm.transfer_batch_to_device(x, self.device)
 
