@@ -21,7 +21,7 @@ class TestProteinDesign:
 
     def run(self, model, dm, verbose = False, addRandomKD = False) -> None:
 
-        model.to(device=self.device)
+        # model.to(device=self.device)
 
         for level in self.levels:
             stepResults = []
@@ -42,6 +42,7 @@ class TestProteinDesign:
                     del x, res
 
             self.prettyPrint(level, self.postprocess(stepResults))
+            del stepResults
 
     def postprocess(self, stepResults) -> None:
         nTotal = 0
