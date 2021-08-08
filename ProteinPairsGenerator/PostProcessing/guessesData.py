@@ -3,7 +3,7 @@ import json
 
 import torch
 
-from ProteinPairsGenerator.BERTModel import TAPETokenizer
+from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP
 
@@ -11,7 +11,7 @@ class GuessDataset(torch.utils.data.IterableDataset):
 
     def __init__(self, root : Path) -> None:
         super().__init__()
-        self.tokenizer = TAPETokenizer()
+        self.tokenizer = AdaptedTAPETokenizer()
 
         self.data = []
         for l in open(root, "r").readlines():
