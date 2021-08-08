@@ -5,7 +5,7 @@ import torch
 
 # Local imports
 from ProteinPairsGenerator.BERTModel import maskBERT
-from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE
+from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE, AMINO_ACIDS_MAP, tensor_to_seq
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
 class SampleGenerator:
@@ -46,7 +46,7 @@ class SampleGenerator:
                     x = dm.transfer_batch_to_device(x, self.device)
                     model.step(x)
 
-                    json.dump({"seq": x.seq, "guess": self.output}, self.outFile)
+                    json.dump({"seq": tensor_to_seq(x.seq, AMINO_ACIDS_MAP), "guess": tensor_to_seq(self.output, AMINO_ACIDS_MAP)}, self.outFile)
 
     def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
