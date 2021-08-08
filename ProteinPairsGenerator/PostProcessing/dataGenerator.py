@@ -21,7 +21,7 @@ class SampleGenerator:
         self.levels = levels
         self.repeats = repeats
         self.device = device
-        self.outFile = open(outPath, "a")
+        self.outFile = open(outPath, "w+")
         self.classDim = classDim
 
     def run(self, model, dm, verbose = False) -> None:
@@ -46,7 +46,9 @@ class SampleGenerator:
                     x = dm.transfer_batch_to_device(x, self.device)
                     model.step(x)
 
-                    json.dump({"seq": tensor_to_seq(x.seq, AMINO_ACIDS_MAP), "guess": tensor_to_seq(self.output, AMINO_ACIDS_MAP)}, self.outFile)
+                    d = {"seq": tensor_to_seq(x.seq, AMINO_ACIDS_MAP), "guess": tensor_to_seq(self.output, AMINO_ACIDS_MAP)}
+                    json.dump(d, self.outFile)
+                    print(d)
 
     def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
