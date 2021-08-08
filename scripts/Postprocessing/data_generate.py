@@ -11,7 +11,7 @@ from ProteinPairsGenerator.IngrahamModel import IngrahamDataModule, IngrahamMode
 root = Path("proteinNetTesting")
 subset = [root.joinpath("processed/testing")]
 device = "cuda:{}".format(sys.argv[1] if len(sys.argv) > 1 else "0")
-args = ("guesses.json", [{"maskFrac": 0.15}, {"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}, {"maskFrac": 0.95}], 1, device)
+args = ("guesses.json", [{"maskFrac": 0.15}, {"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}, {"maskFrac": 0.95}], 4, device)
 
 # Test Strokach
 testerIngraham = SampleGeneratorIngrham(*args)

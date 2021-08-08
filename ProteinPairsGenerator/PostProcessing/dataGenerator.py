@@ -24,7 +24,7 @@ class SampleGenerator:
         self.outFile = open(outPath, "a+")
         self.classDim = classDim
 
-    def run(self, model, dm, verbose = False) -> None:
+    def run(self, model, loader, transfer = lambda x: x, verbose = False) -> None:
 
         # Set up model and way to get output
 
@@ -40,10 +40,10 @@ class SampleGenerator:
         # Loop over levels
         for level in self.levels:
             for _ in range(self.repeats):
-                for x in tqdm(dm.test_dataloader()) if verbose else dm.test_dataloader():
+                for x in tqdm(loader) if verbose else loader:
 
                     self.remask(x, **level)
-                    x = dm.transfer_batch_to_device(x, self.device)
+                    x = transfer(x, self.device)
                     model.step(x)
 
                     for s, g in self.pairs(x, self.output):
