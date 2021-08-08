@@ -6,12 +6,12 @@ import torch
 from ProteinPairsGenerator.PostProcessing import SampleGeneratorStrokach, SampleGeneratorJLo, SampleGeneratorIngrham
 from ProteinPairsGenerator.JLoModel import JLoDataModule, JLoModel
 from ProteinPairsGenerator.StrokachModel import StrokachDataModule, StrokachModel
-from ProteinPairsGenerator.IngrahamModel import IngrahamDataModule, IngrahamModel
+from ProteinPairsGenerator.IngrahamModel import IngrahamDataModule, IngrahamModelBERT, IngrahamModel
 
 root = Path("proteinNetTesting")
 subset = [root.joinpath("processed/testing")]
 device = "cuda:{}".format(sys.argv[1] if len(sys.argv) > 1 else "0")
-args = ("test.json", [{"maskFrac": 0.25}], 1, device)
+args = ("guesses.json", [{"maskFrac": 0.15}, {"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}, {"maskFrac": 0.95}], 1, device)
 
 # Test Strokach
 testerIngraham = SampleGeneratorIngrham(*args)
@@ -29,17 +29,11 @@ mIalpha125.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0.12
 testerIngraham.run(mIalpha125, dmIngraham)
 del mIalpha125
 
-print("Ingraham alpha = 0.25")
-mIalpha250 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
-mIalpha250.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0.25/bestModel.ckpt"))
-testerIngraham.run(mIalpha250, dmIngraham)
-del mIalpha250
-
-print("Ingraham alpha = 0.5")
-mIalpha500 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
-mIalpha500.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0.5/bestModel.ckpt"))
-testerIngraham.run(mIalpha500, dmIngraham)
-del mIalpha500
+print("Ingraham BERT alpha = 0.000")
+mIalpha000 = IngrahamModelBERT(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
+mIalpha000.load_state_dict(torch.load("IngrahamBERT/Experiments/alpha=0/bestModel.ckpt"))
+testerIngraham.run(mIalpha000, dmIngraham)
+del mIalpha000
 
 del dmIngraham
 del testerIngraham
@@ -64,7 +58,7 @@ del testerStrokach
 
 
 # Test BERT-Strokach
-testerJLo = SampleGeneratorJLo([{"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}], 40, device)
+testerJLo = SampleGeneratorJLo(*args)
 dmJLo = JLoDataModule(root, subset, subset, subset)
 
 print("JLo alpha = 0.000")
