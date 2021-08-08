@@ -22,7 +22,7 @@ class SampleGenerator:
         self.repeats = repeats
         self.device = device
         self.outFile = open(outPath, "a")
-        self.dim = classDim
+        self.classDim = classDim
 
     def run(self, model, dm, verbose = False) -> None:
 
