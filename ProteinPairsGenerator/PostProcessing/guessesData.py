@@ -61,7 +61,6 @@ class GuessDataModule(pl.LightningDataModule):
         self.trainDataset = GuessDataset(trainSet) if trainSet else None
         self.valDataset = GuessDataset(valSet) if valSet else None
         self.testDataset = GuessDataset(testSet) if testSet else None
-        self.num_workers = num_workers
 
     def setup(self, stage=None):
         pass
