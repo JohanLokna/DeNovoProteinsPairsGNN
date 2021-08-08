@@ -46,11 +46,14 @@ class SampleGenerator:
                     x = dm.transfer_batch_to_device(x, self.device)
                     model.step(x)
 
-                    d = {"seq": tensor_to_seq(x.seq, AMINO_ACIDS_MAP), "guess": tensor_to_seq(self.output, AMINO_ACIDS_MAP)}
-                    self.outFile.write(json.dumps(d) + "\n")
-                    print(d)
+                    for s, g in self.pairs(x, self.output):
+                        d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP)}
+                        self.outFile.write(json.dumps(d) + "\n")
 
     def remask(self, x, **kwargs) -> None:
+        raise NotImplementedError
+
+    def pairs(self, x, output) -> None:
         raise NotImplementedError
 
 
@@ -66,20 +69,8 @@ class SampleGeneratorStrokach(SampleGenerator):
 
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
-
-class SampleGeneratorIngrham(SampleGenerator):
-
-    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
-        self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(outPath, levels, repeats, -1, device)
-
-    def remask(self, x, **kwargs) -> None:
-        if not "substitutionMatrix" in kwargs:
-            kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
-
-        for i in range(x.seq.shape[0]):
-            l = x.lengths[i]
-            x.maskedSeq[i, :l], x.mask[i, :l] = maskBERT(x.seq[i, :l], **kwargs)
+    def pairs(self, x, output) -> None:
+        return [x.seq, output]
 
 
 class SampleGeneratorJLo(SampleGenerator):
@@ -94,3 +85,41 @@ class SampleGeneratorJLo(SampleGenerator):
 
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
         x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
+
+
+class SampleGeneratorIngrham(SampleGenerator):
+
+    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
+        super().__init__(outPath, levels, repeats, -1, device)
+
+    def remask(self, x, **kwargs) -> None:
+        if not "substitutionMatrix" in kwargs:
+            kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
+
+        for i in range(x.seq.shape[0]):
+            l = x.lengths[i]
+            x.maskedSeq[i, :l], x.mask[i, :l] = maskBERT(x.seq[i, :l], **kwargs)
+
+    def pairs(self, x, output) -> None:
+        for i, l in enumerate(x.lengths):
+            yield x.seq[i, :l], output[i, :l]
+
+
+class SampleGeneratorIngrhamBERT(SampleGenerator):
+
+    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
+        self.tokenizer = AdaptedTAPETokenizer()
+        super().__init__(outPath, levels, repeats, -1, device)
+
+    def remask(self, x, **kwargs) -> None:
+        if not "substitutionMatrix" in kwargs:
+            kwargs["substitutionMatrix"] = torch.ones(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
+
+        for i in range(x.seq.shape[0]):
+            l = x.lengths[i]
+            x.maskedSeq[i, :l], x.mask[i, :l] = maskBERT(x.seq[i, :l], **kwargs)
+            x.maskedSeq[i, :l] = self.tokenizer.AA2BERT(x.maskedSeq[i, :l])
+
+    def pairs(self, x, output) -> None:
+        for i, l in enumerate(x.lengths):
+            yield x.seq[i, :l], output[i, :l]
