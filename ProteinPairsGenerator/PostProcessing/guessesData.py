@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
-from random import shuffle
-from typing import Union, List, Optional, Callable
+import random
+from typing import List, Optional
 
 import torch
 import pytorch_lightning as pl
@@ -43,9 +43,9 @@ class GuessLoader(torch.utils.data.DataLoader):
     def __init__(self, dataset, batch_size=1, shuffle=True):
 
         if shuffle:
-            shuffle(dataset.data)
+            random.shuffle(dataset.data)
 
-        super().__init__(dataset, batch_size, collate_fn=lambda x: x)
+        super().__init__(dataset, batch_size, collate_fn=lambda x: x[0])
 
 
 class GuessDataModule(pl.LightningDataModule):
