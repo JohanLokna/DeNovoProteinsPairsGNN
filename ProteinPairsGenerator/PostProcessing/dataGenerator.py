@@ -46,8 +46,8 @@ class SampleGenerator:
                     x = transfer(x, self.device)
                     model.step(x)
 
-                    for s, g in self.pairs(x, self.output):
-                        d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP)}
+                    for s, g, m in self.pairs(x, self.output):
+                        d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP), "mask": m.to_list()}
                         self.outFile.write(json.dumps(d) + "\n")
 
     def remask(self, x, **kwargs) -> None:
@@ -70,7 +70,7 @@ class SampleGeneratorStrokach(SampleGenerator):
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
     def pairs(self, x, output) -> None:
-        return [(x.seq, output)]
+        return [(x.seq, output, x.mask)]
 
 
 class SampleGeneratorJLo(SampleGenerator):
@@ -87,7 +87,7 @@ class SampleGeneratorJLo(SampleGenerator):
         x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
 
     def pairs(self, x, output) -> None:
-        return [(x.seq, output)]
+        return [(x.seq, output, x.mask)]
 
 
 class SampleGeneratorIngrham(SampleGenerator):
@@ -105,7 +105,7 @@ class SampleGeneratorIngrham(SampleGenerator):
 
     def pairs(self, x, output) -> None:
         for i, l in enumerate(x.lengths):
-            yield x.seq[i, :l], output[i, :l]
+            yield x.seq[i, :l], output[i, :l], x.mask[i, :l]
 
 
 class SampleGeneratorIngrhamBERT(SampleGenerator):
@@ -125,4 +125,4 @@ class SampleGeneratorIngrhamBERT(SampleGenerator):
 
     def pairs(self, x, output) -> None:
         for i, l in enumerate(x.lengths):
-            yield x.seq[i, :l], output[i, :l]
+            yield x.seq[i, :l], output[i, :l], x.mask[i, :l]
