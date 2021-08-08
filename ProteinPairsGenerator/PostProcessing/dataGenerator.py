@@ -21,7 +21,7 @@ class SampleGenerator:
         self.levels = levels
         self.repeats = repeats
         self.device = device
-        self.outFile = open(outPath, "w+")
+        self.outFile = open(outPath, "a+")
         self.classDim = classDim
 
     def run(self, model, dm, verbose = False) -> None:
