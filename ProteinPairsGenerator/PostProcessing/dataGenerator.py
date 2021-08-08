@@ -31,7 +31,7 @@ class SampleGenerator:
         model.to(device=self.device)
 
         def wrapper(*args, **kwargs):
-            baseModelOutput = type(self.baseModel).forward(*args, **kwargs)
+            baseModelOutput = type(model).forward(*args, **kwargs)
             self.output = torch.argmax(baseModelOutput.data, self.classDim)
             return baseModelOutput
 
