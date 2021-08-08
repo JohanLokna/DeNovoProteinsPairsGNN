@@ -33,9 +33,6 @@ class GuessDataset(torch.utils.data.IterableDataset):
               y = self.tokenizer.AA2BERT(y)[0],
               mask = mask
             ))
-        shuffle(self.data)
-
-
 
     def __iter__(self):
         return iter(self.data)
@@ -43,18 +40,21 @@ class GuessDataset(torch.utils.data.IterableDataset):
 
 class GuessLoader(torch.utils.data.DataLoader):
 
-    def __init__(self, dataset, batch_size=1, shuffle=True, num_workers=0):
-        super().__init__(dataset, batch_size, shuffle, num_workers, collate_fn=lambda x: x)
+    def __init__(self, dataset, batch_size=1, shuffle=True):
+
+        if shuffle:
+            shuffle(dataset.data)
+
+        super().__init__(dataset, batch_size, collate_fn=lambda x: x)
 
 
-class BERTDataModule(pl.LightningDataModule):
+class GuessDataModule(pl.LightningDataModule):
 
     def __init__(
         self,
         trainSet: Optional[List[Path]] = None,
         valSet: Optional[List[Path]] = None,
         testSet: Optional[List[Path]] = None,
-        num_workers: int = 1,
     ) -> None:
         super().__init__()
 
@@ -69,7 +69,7 @@ class BERTDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return GuessLoader(
             dataset=self.trainDataset,
-            num_workers=self.num_workers
+            shuffle=True,
         )
 
     def val_dataloader(self):
