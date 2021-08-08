@@ -47,7 +47,7 @@ class SampleGenerator:
                     model.step(x)
 
                     for s, g, m in self.pairs(x, self.output):
-                        d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP), "mask": m.to_list()}
+                        d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP), "mask": m.tolist()}
                         self.outFile.write(json.dumps(d) + "\n")
 
     def remask(self, x, **kwargs) -> None:
