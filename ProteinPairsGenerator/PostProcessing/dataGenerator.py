@@ -70,7 +70,7 @@ class SampleGeneratorStrokach(SampleGenerator):
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
 
     def pairs(self, x, output) -> None:
-        return [x.seq, output]
+        return [(x.seq, output)]
 
 
 class SampleGeneratorJLo(SampleGenerator):
@@ -85,6 +85,9 @@ class SampleGeneratorJLo(SampleGenerator):
 
         x.maskedSeq, x.mask = maskBERT(x.seq, **kwargs)
         x.maskedSeq = self.tokenizer.AA2BERT(x.maskedSeq)[0]
+
+    def pairs(self, x, output) -> None:
+        return [(x.seq, output)]
 
 
 class SampleGeneratorIngrham(SampleGenerator):
