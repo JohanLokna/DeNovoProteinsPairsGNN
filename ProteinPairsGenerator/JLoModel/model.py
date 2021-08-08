@@ -12,7 +12,7 @@ class BERTHelper(nn.Module):
 
     def __init__(self, hidden_size : int):
         super().__init__()
-        self.model = ProteinBertModel.from_pretrained('bert-base')
+        self.model = ProteinBertModel.from_pretrained("bert-base", cache_dir="/mnt/ds3lab-scratch/jlokna/bertBase")
         for param in self.model.parameters():
             param.requires_grad = False
         self.encode = nn.Sequential(
