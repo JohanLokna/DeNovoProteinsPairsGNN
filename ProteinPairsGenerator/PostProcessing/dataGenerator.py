@@ -13,12 +13,10 @@ class SampleGenerator:
     def __init__(
         self,
         outPath,
-        levels,
         repeats,
         classDim,
         device = "cpu"
     ) -> None:
-        self.levels = levels
         self.repeats = repeats
         self.device = device
         self.outFile = open(outPath, "a+")
@@ -38,17 +36,18 @@ class SampleGenerator:
         model.forward = wrapper.__get__(model, type(model))
 
         # Loop over levels
-        for level in self.levels:
-            for _ in range(self.repeats):
-                for x in tqdm(loader) if verbose else loader:
+        for _ in range(self.repeats):
+            for x in tqdm(loader) if verbose else loader:
 
-                    self.remask(x, **level)
-                    x = transfer(x, self.device)
-                    model.step(x)
+                level = {"maskFrac": torch.rand(1).item()}
 
-                    for s, g, m in self.pairs(x, self.output):
-                        d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP), "mask": m.tolist()}
-                        self.outFile.write(json.dumps(d) + "\n")
+                self.remask(x, **level)
+                x = transfer(x, self.device)
+                model.step(x)
+
+                for s, g, m in self.pairs(x, self.output):
+                    d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP), "mask": m.tolist()}
+                    self.outFile.write(json.dumps(d) + "\n")
 
     def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
