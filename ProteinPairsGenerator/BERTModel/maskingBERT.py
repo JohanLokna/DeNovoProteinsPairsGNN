@@ -37,36 +37,42 @@ def maskBERTOnehot(
     # Chose elements to mask
     n = inSeq.shape[0]
     nMask = int(maskFrac * n)
-    idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq).to(dtype=torch.long)
 
-    # Create mask
-    mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
-    mask.zero_()
-    mask.scatter_(0, idx, True)
+    if nMask > 0:
+        idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq).to(dtype=torch.long)
 
-    # Determine indecies for different masks
-    beginChange = int(keepFrac * nMask)
-    sizeSub = int(substituteFrac * nMask)
-    changeIdx = idx[beginChange:]
-    subIdx = idx[beginChange:beginChange + sizeSub]
-    nullIdx = idx[beginChange + sizeSub:]
+        # Create mask
+        mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
+        mask.zero_()
+        mask.scatter_(0, idx, True)
 
-    # Create masked sequence
-    maskedSeq = inSeq.detach().clone()
-    maskedSeq[changeIdx, :] = 0.0
+        # Determine indecies for different masks
+        beginChange = int(keepFrac * nMask)
+        sizeSub = int(substituteFrac * nMask)
+        changeIdx = idx[beginChange:]
+        subIdx = idx[beginChange:beginChange + sizeSub]
+        nullIdx = idx[beginChange + sizeSub:]
 
-    # Mask null token
-    maskedSeq[nullIdx, nullToken] = 1.0
+        # Create masked sequence
+        maskedSeq = inSeq.detach().clone()
+        maskedSeq[changeIdx, :] = 0.0
 
-    # Mask substituted tokens
-    probs = torch.matmul(inSeq[subIdx], substitutionMatrix)
-    newTokens = torch.multinomial(probs, 1, replacement=True)
-    onehotNewTokens = torch.empty_like(inSeq[subIdx])
-    onehotNewTokens.zero_()
-    onehotNewTokens.scatter_(1, newTokens, 1.0)
-    maskedSeq[subIdx] = onehotNewTokens
-    
-    return maskedSeq, mask
+        # Mask null token
+        maskedSeq[nullIdx, nullToken] = 1.0
+
+        # Mask substituted tokens
+        if sizeSub > 0:
+            probs = torch.matmul(inSeq[subIdx], substitutionMatrix)
+            newTokens = torch.multinomial(probs, 1, replacement=True)
+            onehotNewTokens = torch.empty_like(inSeq[subIdx])
+            onehotNewTokens.zero_()
+            onehotNewTokens.scatter_(1, newTokens, 1.0)
+            maskedSeq[subIdx] = onehotNewTokens
+        
+        return maskedSeq, mask
+
+    else:
+        return inSeq, torch.ones_like(inSeq).to(dtype=torch.bool)
 
 
 def maskBERT(
@@ -102,28 +108,34 @@ def maskBERT(
     # Chose elements to mask
     n = inSeq.shape[0]
     nMask = int(maskFrac * n)
-    idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq).to(dtype=torch.long)
 
-    # Create mask
-    mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
-    mask.zero_()
-    mask.scatter_(0, idx, True)
+    if nMask > 0:
+        idx = torch.multinomial(torch.ones(n), nMask, replacement=False).to(inSeq).to(dtype=torch.long)
 
-    # Determine indecies for different masks
-    beginChange = int(keepFrac * nMask)
-    sizeSub = int(substituteFrac * nMask)
-    subIdx = idx[beginChange:beginChange + sizeSub]
-    nullIdx = idx[beginChange + sizeSub:]
+        # Create mask
+        mask = torch.empty(n).to(inSeq).to(dtype=torch.bool)
+        mask.zero_()
+        mask.scatter_(0, idx, True)
 
-    # Create masked sequence
-    maskedSeq = inSeq.detach().clone()
+        # Determine indecies for different masks
+        beginChange = int(keepFrac * nMask)
+        sizeSub = int(substituteFrac * nMask)
+        subIdx = idx[beginChange:beginChange + sizeSub]
+        nullIdx = idx[beginChange + sizeSub:]
 
-    # Mask null token
-    maskedSeq[nullIdx] = nullToken
+        # Create masked sequence
+        maskedSeq = inSeq.detach().clone()
 
-    # Mask substituted tokens
-    probs = substitutionMatrix[inSeq[subIdx]].squeeze(1)
-    newTokens = torch.multinomial(probs, 1, replacement=True).squeeze(-1)
-    maskedSeq[subIdx] = newTokens
-    
-    return maskedSeq, mask
+        # Mask null token
+        maskedSeq[nullIdx] = nullToken
+
+        # Mask substituted tokens
+        if sizeSub > 0:
+            probs = substitutionMatrix[inSeq[subIdx]].squeeze(1)
+            newTokens = torch.multinomial(probs, 1, replacement=True).squeeze(-1)
+            maskedSeq[subIdx] = newTokens
+        
+        return maskedSeq, mask
+
+    else:
+        return inSeq, torch.ones_like(inSeq).to(dtype=torch.bool)
