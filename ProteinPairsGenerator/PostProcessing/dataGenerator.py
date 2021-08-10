@@ -58,9 +58,9 @@ class SampleGenerator:
 
 class SampleGeneratorStrokach(SampleGenerator):
 
-    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
+    def __init__(self, outPath, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(outPath, levels, repeats, 1, device)
+        super().__init__(outPath, repeats, 1, device)
 
     def remask(self, x, **kwargs) -> None:
         if not "substitutionMatrix" in kwargs:
@@ -74,9 +74,9 @@ class SampleGeneratorStrokach(SampleGenerator):
 
 class SampleGeneratorJLo(SampleGenerator):
 
-    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
+    def __init__(self, outPath, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(outPath, levels, repeats, 1, device)
+        super().__init__(outPath, repeats, 1, device)
 
     def remask(self, x, **kwargs) -> None:
         if not "substitutionMatrix" in kwargs:
@@ -91,8 +91,8 @@ class SampleGeneratorJLo(SampleGenerator):
 
 class SampleGeneratorIngrham(SampleGenerator):
 
-    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
-        super().__init__(outPath, levels, repeats, -1, device)
+    def __init__(self, outPath, repeats, device = "cpu") -> None:
+        super().__init__(outPath, repeats, -1, device)
 
     def remask(self, x, **kwargs) -> None:
         if not "substitutionMatrix" in kwargs:
@@ -109,9 +109,9 @@ class SampleGeneratorIngrham(SampleGenerator):
 
 class SampleGeneratorIngrhamBERT(SampleGenerator):
 
-    def __init__(self, outPath, levels, repeats, device = "cpu") -> None:
+    def __init__(self, outPath, repeats, device = "cpu") -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(outPath, levels, repeats, -1, device)
+        super().__init__(outPath, repeats, -1, device)
 
     def remask(self, x, **kwargs) -> None:
         if not "substitutionMatrix" in kwargs:
