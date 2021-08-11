@@ -33,6 +33,9 @@ class GuessDataset(torch.utils.data.IterableDataset):
     def __iter__(self):
         return iter(self.data)
 
+    def __len__(self):
+        return len(self.data)
+
 
 class GuessLoader(torch.utils.data.DataLoader):
 
