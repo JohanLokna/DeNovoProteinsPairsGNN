@@ -48,9 +48,9 @@ class GuessDataModule(pl.LightningDataModule):
 
     def __init__(
         self,
-        trainSet: Optional[Path] = None,
-        valSet: Optional[Path] = None,
-        testSet: Optional[Path] = None,
+        trainSet: Optional[str] = None,
+        valSet: Optional[str] = None,
+        testSet: Optional[str] = None,
     ) -> None:
         super().__init__()
 
