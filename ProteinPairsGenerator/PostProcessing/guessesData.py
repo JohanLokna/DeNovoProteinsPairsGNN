@@ -12,7 +12,7 @@ from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP
 
 class GuessDataset(torch.utils.data.IterableDataset):
 
-    def __init__(self, root : Path, xToken : str = "seq", yToken : str = "guess", maskToken = "mask") -> None:
+    def __init__(self, root : str, xToken : str = "seq", yToken : str = "guess", maskToken = "mask") -> None:
         super().__init__()
         self.tokenizer = AdaptedTAPETokenizer()
         self.xToken = xToken
