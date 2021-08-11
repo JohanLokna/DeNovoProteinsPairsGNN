@@ -24,14 +24,10 @@ class GuessDataset(torch.utils.data.IterableDataset):
 
             jsonDict = json.loads(l)
 
-            x = seq_to_tensor(jsonDict[self.xToken], AMINO_ACIDS_MAP)
-            y = seq_to_tensor(jsonDict[self.yToken], AMINO_ACIDS_MAP)
-            mask = torch.BoolTensor(jsonDict[self.maskToken])
-
             self.data.append(GeneralData(
-              x = self.tokenizer.AA2BERT(x)[0],
-              y = self.tokenizer.AA2BERT(y)[0],
-              mask = mask
+              x = seq_to_tensor(jsonDict[self.xToken], AMINO_ACIDS_MAP),
+              y = seq_to_tensor(jsonDict[self.yToken], AMINO_ACIDS_MAP),
+              mask = torch.BoolTensor(jsonDict[self.maskToken])
             ))
 
     def __iter__(self):
@@ -52,9 +48,9 @@ class GuessDataModule(pl.LightningDataModule):
 
     def __init__(
         self,
-        trainSet: Optional[List[Path]] = None,
-        valSet: Optional[List[Path]] = None,
-        testSet: Optional[List[Path]] = None,
+        trainSet: Optional[Path] = None,
+        valSet: Optional[Path] = None,
+        testSet: Optional[Path] = None,
     ) -> None:
         super().__init__()
 
