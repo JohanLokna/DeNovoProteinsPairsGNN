@@ -72,12 +72,12 @@ class GuessDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return GuessLoader(
-            dataset=self.trainDataset
+            dataset=self.valDataset
         )
 
     def test_dataloader(self):
         return GuessLoader(
-            dataset=self.trainDataset
+            dataset=self.testDataset
         )
 
     def transfer_batch_to_device(self, x, device):
