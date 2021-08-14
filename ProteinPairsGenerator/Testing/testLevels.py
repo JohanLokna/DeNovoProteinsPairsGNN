@@ -28,10 +28,10 @@ class TestProteinDesign:
 
             def wrapper(*args, **kwargs):
                 baseModelOutput = type(model).forward(*args, **kwargs)
-
-                print(baseModelOutput.shape)
-
                 self.output = torch.argmax(baseModelOutput.data, classDim)
+
+                print(((self.out == self.x.seq) * self.x.mask).sum())
+
                 return baseModelOutput
 
             model.forward = wrapper.__get__(model, type(model))
@@ -49,6 +49,7 @@ class TestProteinDesign:
 
                     x = dm.transfer_batch_to_device(x, self.device)
 
+                    self.x = x
                     res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
                     # Add corrector
