@@ -121,21 +121,14 @@ class TestProteinDesignIngrham(TestProteinDesign):
     def analyzeCorrector(self, x, output, corrector):
 
         nCorrect = 0
-        n = 0
 
         for i, l in enumerate(x.lengths):
-            
             yTrue = x.seq[i, :l]
-            
             corrOut = corrector(output[i, :l])[0]
-
             yPred = torch.argmax(corrOut.data, -1)
-
             nCorrect = ((yPred == yTrue) * x.mask[i, :l]).sum()
-            n += x.mask[i, :l].sum().item()
         
-        print(x.lengths)
-        return {"nCorrectCorrector": nCorrect.item(), "n": n}
+        return {"nCorrectCorrector": nCorrect.item()}
 
 
 class TestProteinDesignJLo(TestProteinDesign):
