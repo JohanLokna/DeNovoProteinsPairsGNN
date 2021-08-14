@@ -125,13 +125,13 @@ class TestProteinDesignIngrham(TestProteinDesign):
 
         for i, l in enumerate(x.lengths):
             
-            yTrue = x.seq[i][x.mask[i]]
+            yTrue = x.seq[i]
             
             corrOut = corrector(output[i, :l])[0]
 
-            yPred = torch.argmax(corrOut.data, -1)[x.mask[i]]
+            yPred = torch.argmax(corrOut.data, -1)
 
-            nCorrect = (yPred == yTrue).sum()
+            nCorrect = ((yPred == x.seq) * x.mask[i]).sum()
             n += torch.numel(yPred)
         
         print(x.lengths)
