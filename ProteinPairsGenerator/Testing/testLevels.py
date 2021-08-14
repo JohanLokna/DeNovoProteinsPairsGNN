@@ -47,6 +47,8 @@ class TestProteinDesign:
 
                     stepResults.append(res)
 
+                    print(res)
+
                     del x, res
 
             self.prettyPrint(level, self.postprocess(stepResults, not (corrector is None)))
