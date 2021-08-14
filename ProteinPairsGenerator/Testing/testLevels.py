@@ -126,6 +126,8 @@ class TestProteinDesignIngrham(TestProteinDesign):
 
         nCorrect = 0
 
+        print(((self.output == self.x.seq) * self.x.mask).sum())
+
         for i, l in enumerate(x.lengths):
             yTrue = x.seq[i, :l]
             # corrOut = corrector(output[i, :l])[0]
