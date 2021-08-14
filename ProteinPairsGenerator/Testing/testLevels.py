@@ -135,7 +135,7 @@ class TestProteinDesignIngrham(TestProteinDesign):
             n += x.mask[i, :l].sum().item()
         
         print(x.lengths)
-        return {"nCorrectCorrector": nCorrect.item(), "n": sum(x.lengths)}
+        return {"nCorrectCorrector": nCorrect.item(), "n": n}
 
 
 class TestProteinDesignJLo(TestProteinDesign):
