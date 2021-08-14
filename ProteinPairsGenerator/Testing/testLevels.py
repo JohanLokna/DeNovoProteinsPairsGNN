@@ -27,7 +27,7 @@ class TestProteinDesign:
             corrector.to(device=self.device)
 
             def wrapper(*args, **kwargs):
-                baseModelOutput = type(self.model).forward(*args, **kwargs)
+                baseModelOutput = type(model).forward(*args, **kwargs)
                 self.output = torch.argmax(baseModelOutput.data, classDim)
                 return baseModelOutput
 
