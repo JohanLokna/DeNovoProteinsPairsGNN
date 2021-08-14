@@ -131,6 +131,7 @@ class TestProteinDesignIngrham(TestProteinDesign):
 
             nCorrect = (yPred == yTrue).sum()
         
+        print(x.lengths)
         return {"nCorrectCorrector": nCorrect.item(), "n": sum(x.lengths)}
 
 
