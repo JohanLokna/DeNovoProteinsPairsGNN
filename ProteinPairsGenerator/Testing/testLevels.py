@@ -19,12 +19,20 @@ class TestProteinDesign:
         self.repeats = repeats
         self.device = device
 
-    def run(self, model, dm, verbose = False, addRandomKD = False, corrector = None) -> None:
+    def run(self, model, dm, verbose = False, addRandomKD = False, corrector = None, classDim = None) -> None:
 
         model.to(device=self.device)
 
         if corrector:
             corrector.to(device=self.device)
+
+            def wrapper(*args, **kwargs):
+                baseModelOutput = type(self.model).forward(*args, **kwargs)
+                self.output = torch.argmax(baseModelOutput.data, classDim)
+                return baseModelOutput
+
+            model.forward = wrapper.__get__(model, type(model))
+
 
         for level in self.levels:
             stepResults = []
@@ -42,7 +50,7 @@ class TestProteinDesign:
 
                     # Add corrector
                     if corrector:
-                        outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(x))
+                        outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(self.output))
                         res.update(outCorrector)
 
                     stepResults.append(res)
