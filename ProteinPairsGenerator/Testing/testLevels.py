@@ -132,7 +132,7 @@ class TestProteinDesignIngrham(TestProteinDesign):
             yPred = torch.argmax(corrOut.data, -1)
 
             nCorrect = ((yPred == yTrue) * x.mask[i, :l]).sum()
-            n += torch.numel(x.mask[i, :l].sum().item())
+            n += x.mask[i, :l].sum().item()
         
         print(x.lengths)
         return {"nCorrectCorrector": nCorrect.item(), "n": sum(x.lengths)}
