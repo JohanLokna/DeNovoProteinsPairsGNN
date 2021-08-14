@@ -30,7 +30,7 @@ class TestProteinDesign:
                 baseModelOutput = type(model).forward(*args, **kwargs)
                 self.output = torch.argmax(baseModelOutput.data, classDim)
 
-                print(((self.out == self.x.seq) * self.x.mask).sum())
+                print(((self.output == self.x.seq) * self.x.mask).sum())
 
                 return baseModelOutput
 
