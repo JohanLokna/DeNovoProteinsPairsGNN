@@ -29,9 +29,6 @@ class TestProteinDesign:
             def wrapper(*args, **kwargs):
                 baseModelOutput = type(model).forward(*args, **kwargs)
                 self.output = torch.argmax(baseModelOutput.data, classDim)
-
-                print(((self.output == self.x.seq) * self.x.mask).sum())
-
                 return baseModelOutput
 
             model.forward = wrapper.__get__(model, type(model))
@@ -126,14 +123,14 @@ class TestProteinDesignIngrham(TestProteinDesign):
 
         nCorrect = 0
 
-        print(((self.output == self.x.seq) * self.x.mask).sum())
+        # print(((self.output == self.x.seq) * self.x.mask).sum())
 
         for i, l in enumerate(x.lengths):
-            yTrue = x.seq[i]
-            # corrOut = corrector(output[i, :l])[0]
-            yPred = output[i]
-            # yPred = torch.argmax(corrOut.data, -1)
-            nCorrect = ((yPred == yTrue) * x.mask[i]).sum()
+            yTrue = x.seq[i, :l]
+            corrOut = corrector(output[i, :l])[0]
+            # yPred = output[i]
+            yPred = torch.argmax(corrOut.data, -1)
+            nCorrect += ((yPred == yTrue) * x.mask[i, :l]).sum()
         
         return {"nCorrectCorrector": nCorrect.item()}
 
