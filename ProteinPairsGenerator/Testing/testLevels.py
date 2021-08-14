@@ -46,12 +46,13 @@ class TestProteinDesign:
 
                     x = dm.transfer_batch_to_device(x, self.device)
 
+                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
+
                     # Add corrector
                     if corrector:
                         outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(self.output)[0])
                         res.update(outCorrector)
-
-                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
+                        assert res["n"] == res["nTotal"]
 
                     stepResults.append(res)
 
@@ -66,7 +67,7 @@ class TestProteinDesign:
     def analyzeCorrector(self, yTrue, output):
         yPred = torch.argmax(output.data, -1)
         nCorrect = (yPred == yTrue).sum()
-        return {"nCorrectCorrector": nCorrect}
+        return {"nCorrectCorrector": nCorrect.item(), "n": torch.numel(yPred)}
 
 
     def postprocess(self, stepResults, useCorrector = False) -> None:
@@ -75,6 +76,7 @@ class TestProteinDesign:
         nCorrect = 0
         loss = 0
         nCorrectCorrector = 0
+        n = 0
 
         for step in stepResults:
             nTotal += step["nTotal"]
