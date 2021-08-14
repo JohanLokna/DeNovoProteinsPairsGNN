@@ -28,6 +28,9 @@ class TestProteinDesign:
 
             def wrapper(*args, **kwargs):
                 baseModelOutput = type(model).forward(*args, **kwargs)
+
+                print(baseModelOutput.shape)
+
                 self.output = torch.argmax(baseModelOutput.data, classDim)
                 return baseModelOutput
 
