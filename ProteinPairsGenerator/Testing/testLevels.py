@@ -50,9 +50,9 @@ class TestProteinDesign:
 
                     # Add corrector
                     if corrector:
-                        outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(self.output)[0])
-                        res.update(outCorrector)
+                        res.update(self.analyzeCorrector(x, self.output))
                         assert res["n"] == res["nTotal"]
+                        print(res)
 
                     stepResults.append(res)
 
@@ -61,13 +61,8 @@ class TestProteinDesign:
             self.prettyPrint(level, self.postprocess(stepResults, not (corrector is None)))
             del stepResults
 
-    def getSeq(self, x):
-        return x.seq
-
-    def analyzeCorrector(self, yTrue, output):
-        yPred = torch.argmax(output.data, -1)
-        nCorrect = (yPred == yTrue).sum()
-        return {"nCorrectCorrector": nCorrect.item(), "n": torch.numel(yPred)}
+    def analyzeCorrector(self, x, output, corrector):
+        raise NotImplementedError
 
 
     def postprocess(self, stepResults, useCorrector = False) -> None:
@@ -122,6 +117,21 @@ class TestProteinDesignIngrham(TestProteinDesign):
         for i in range(x.seq.shape[0]):
             l = x.lengths[i]
             x.maskedSeq[i, :l], x.mask[i, :l] = maskBERT(x.seq[i, :l], **kwargs)
+
+    def analyzeCorrector(self, x, output, corrector):
+
+        nCorrect = 0
+
+        for seq, out, l in zip(torch.unbind(x.seq), torch.unbind(output), x.lengths):
+            
+            yTrue = seq[:l]
+            
+            corrOut = corrector(out[:l])
+            yPred = torch.argmax(corrOut.data, -1)
+
+            nCorrect = (yPred == yTrue).sum()
+        
+        return {"nCorrectCorrector": nCorrect.item(), "n": torch.numel(yPred)}
 
 
 class TestProteinDesignJLo(TestProteinDesign):
