@@ -131,7 +131,7 @@ class TestProteinDesignIngrham(TestProteinDesign):
 
             nCorrect = (yPred == yTrue).sum()
         
-        return {"nCorrectCorrector": nCorrect.item(), "n": torch.numel(yPred)}
+        return {"nCorrectCorrector": nCorrect.item(), "n": sum(x.lengths)}
 
 
 class TestProteinDesignJLo(TestProteinDesign):
