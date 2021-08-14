@@ -126,7 +126,7 @@ class TestProteinDesignIngrham(TestProteinDesign):
             
             yTrue = seq[:l]
             
-            corrOut = corrector(out[:l])
+            corrOut = corrector(out[:l])[0]
             yPred = torch.argmax(corrOut.data, -1)
 
             nCorrect = (yPred == yTrue).sum()
