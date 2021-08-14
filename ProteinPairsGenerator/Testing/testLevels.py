@@ -50,7 +50,7 @@ class TestProteinDesign:
 
                     # Add corrector
                     if corrector:
-                        outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(self.output))
+                        outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(self.output)[0])
                         res.update(outCorrector)
 
                     stepResults.append(res)
