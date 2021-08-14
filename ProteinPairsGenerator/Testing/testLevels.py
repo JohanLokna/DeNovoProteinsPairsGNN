@@ -19,9 +19,12 @@ class TestProteinDesign:
         self.repeats = repeats
         self.device = device
 
-    def run(self, model, dm, verbose = False, addRandomKD = False) -> None:
+    def run(self, model, dm, verbose = False, addRandomKD = False, corrector = None) -> None:
 
         model.to(device=self.device)
+
+        if corrector:
+            corrector.to(device=self.device)
 
         for level in self.levels:
             stepResults = []
@@ -37,22 +40,49 @@ class TestProteinDesign:
 
                     res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
+                    # Add corrector
+                    if corrector:
+                        outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(x))
+                        res.update(outCorrector)
+
                     stepResults.append(res)
 
                     del x, res
 
-            self.prettyPrint(level, self.postprocess(stepResults))
+            self.prettyPrint(level, self.postprocess(stepResults, not (corrector is None)))
             del stepResults
 
-    def postprocess(self, stepResults) -> None:
+    def getSeq(self, x):
+        return x.seq
+
+    def analyzeCorrector(self, yTrue, output):
+        yPred = torch.argmax(output.data, -1)
+        nCorrect = (yPred == yTrue).sum()
+        return {"nCorrectCorrector": nCorrect}
+
+
+    def postprocess(self, stepResults, useCorrector = False) -> None:
+        
         nTotal = 0
         nCorrect = 0
         loss = 0
+        nCorrectCorrector = 0
+
         for step in stepResults:
             nTotal += step["nTotal"]
             nCorrect += step["nCorrect"]
             loss += step["loss"]
-        return {"Accuracy": nCorrect / nTotal, "Loss": loss / len(stepResults)}
+
+            if useCorrector:
+                nCorrectCorrector += step["nCorrectCorrector"]
+
+        out = {"Accuracy": nCorrect / nTotal, "Loss": loss / len(stepResults)}
+
+        if useCorrector:
+            out.update({"Accuracy Corrector": nCorrectCorrector / nTotal})
+        
+        return out
+
 
     def prettyPrint(self, level, results):
         print("-" * 20)
