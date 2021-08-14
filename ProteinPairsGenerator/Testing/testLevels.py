@@ -46,12 +46,12 @@ class TestProteinDesign:
 
                     x = dm.transfer_batch_to_device(x, self.device)
 
-                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
-
                     # Add corrector
                     if corrector:
                         outCorrector = self.analyzeCorrector(self.getSeq(x), corrector(self.output)[0])
                         res.update(outCorrector)
+
+                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
 
                     stepResults.append(res)
 
