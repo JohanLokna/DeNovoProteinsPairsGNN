@@ -28,11 +28,10 @@ class TAPEWrapper(BERTModel):
     # Simple step as no training is performed
     def step(self, x):      
         output = self(x.seq)
-        mask = x.mask.reshape(output.shape[:-1])
 
         # Only keep masked fraction
-        output = output[mask]
-        yTrue = x.seq[mask]
+        output = output[x.mask.reshape(output.shape[:-1])]
+        yTrue = x.seq[x.mask]
 
         loss = self.criterion(output, yTrue)
 
