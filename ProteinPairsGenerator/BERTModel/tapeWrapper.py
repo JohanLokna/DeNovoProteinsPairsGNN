@@ -17,13 +17,10 @@ class TAPEWrapper(BERTModel):
     def forward(self, seq):
 
         # Change to BERT representaion
-        seq = self.tokenizer.AA2BERT(seq)
-
-        print(seq.device)
-        print(self.model.device)
+        seq_bert = self.tokenizer.AA2BERT(seq).type_as(seq)
 
         # Compute using bert
-        out = self.model(seq)[0]
+        out = self.model(seq_bert)[0]
 
         # Return in AA representation
         return self.tokenizer.BERT2AA(out)
@@ -44,8 +41,3 @@ class TAPEWrapper(BERTModel):
             "nCorrect" : nCorrect,
             "nTotal" : nTotal
         }
-
-    def to(self, device):
-        print("OK")
-        self.tokenizer.device = device
-        self.model.to(device)
