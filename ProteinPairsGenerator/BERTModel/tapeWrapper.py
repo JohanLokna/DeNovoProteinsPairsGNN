@@ -27,7 +27,7 @@ class TAPEWrapper(BERTModel):
 
     # Simple step as no training is performed
     def step(self, x):      
-        output = self(x.seq)
+        output = self(x.maskedSeq)
 
         # Only keep masked fraction
         output = output[x.mask.reshape(output.shape[:-1])]
@@ -35,7 +35,7 @@ class TAPEWrapper(BERTModel):
 
         loss = self.criterion(output, yTrue)
 
-        yPred = torch.argmax(output.data, 1)
+        yPred = torch.argmax(output.data, -1)
         nCorrect = (yPred == yTrue).sum()
         nTotal = torch.numel(yPred)
 
