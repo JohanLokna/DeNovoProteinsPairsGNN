@@ -26,9 +26,13 @@ class TAPEWrapper(BERTModel):
         return self.tokenizer.BERT2AA(out)
 
     # Simple step as no training is performed
-    def step(self, x):
-        output = self(x.seq)[x.mask]
-        yTrue = x.seq[x.mask]
+    def step(self, x):      
+        output = self(x.seq)
+        mask = x.mask.reshape(output.shape[:-1])
+
+        # Only keep masked fraction
+        output = output[mask]
+        yTrue = x.seq[mask]
 
         loss = self.criterion(output, yTrue)
 
