@@ -46,5 +46,6 @@ class TAPEWrapper(BERTModel):
         }
 
     def to(self, device):
+        print("OK")
         self.tokenizer.device = device
         self.model.to(device)
