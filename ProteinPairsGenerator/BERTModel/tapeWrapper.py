@@ -19,6 +19,9 @@ class TAPEWrapper(BERTModel):
         # Change to BERT representaion
         seq = self.tokenizer.AA2BERT(seq)
 
+        print(seq.device)
+        print(self.model.device)
+
         # Compute using bert
         out = self.model(seq)[0]
 
