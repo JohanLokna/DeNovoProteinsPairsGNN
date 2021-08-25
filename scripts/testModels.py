@@ -12,38 +12,38 @@ from ProteinPairsGenerator.BERTModel import TAPEWrapper
 root = Path("proteinNetTesting")
 subset = [root.joinpath("processed/testing")]
 device = "cuda:{}".format(sys.argv[1] if len(sys.argv) > 1 else "0")
-nSteps = 4
-args = ([{"maskFrac": x / nSteps} for x in range(nSteps)], 100, device, True, Path("results.json"))
+nSteps = 25
+args = ([{"maskFrac": x / nSteps} for x in range(nSteps)], 100, device, [1,3, 5], True, Path("results.json"))
 
-# # Test Seq2Seq
-# testerIngraham = TestProteinDesignIngrham(*args)
-# dmIngraham = IngrahamDataModule(root, subset, subset, subset)
+# Test Seq2Seq
+testerIngraham = TestProteinDesignIngrham(*args)
+dmIngraham = IngrahamDataModule(root, subset, subset, subset)
 
-# print("Ingraham alpha = 0.000")
-# mIalpha000 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
-# mIalpha000.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0/bestModel.ckpt", map_location=device))
-# testerIngraham.run(mIalpha000, dmIngraham, name="struct2seq")
-# del mIalpha000
+print("Ingraham alpha = 0.000")
+mIalpha000 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
+mIalpha000.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0/bestModel.ckpt", map_location=device))
+testerIngraham.run(mIalpha000, dmIngraham, name="struct2seq")
+del mIalpha000
 
-# print("Ingraham alpha = 0.125")
-# mIalpha125 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
-# mIalpha125.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0.125/bestModel.ckpt", map_location=device))
-# testerIngraham.run(mIalpha125, dmIngraham, name="struct2seq_KD")
-# del mIalpha125
+print("Ingraham alpha = 0.125")
+mIalpha125 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
+mIalpha125.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0.125/bestModel.ckpt", map_location=device))
+testerIngraham.run(mIalpha125, dmIngraham, name="struct2seq_KD")
+del mIalpha125
 
-# print("Ingraham BERT alpha = 0.000")
-# mIalpha000 = IngrahamModelBERT(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
-# mIalpha000.load_state_dict(torch.load("/mnt/ds3lab-scratch/jlokna/IngrahamBERT/Experiments/alpha=0/bestModel.ckpt", map_location=device))
-# testerIngraham.run(mIalpha000, dmIngraham, name="struct2seq_BERT")
-# del mIalpha000
+print("Ingraham BERT alpha = 0.000")
+mIalpha000 = IngrahamModelBERT(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
+mIalpha000.load_state_dict(torch.load("/mnt/ds3lab-scratch/jlokna/IngrahamBERT/Experiments/alpha=0/bestModel.ckpt", map_location=device))
+testerIngraham.run(mIalpha000, dmIngraham, name="struct2seq_BERT")
+del mIalpha000
 
-# testerIngraham.save_history()
-# del dmIngraham
-# del testerIngraham
+testerIngraham.save_history()
+del dmIngraham
+del testerIngraham
 
 
 # Test Protein Solver
-testerStrokach = TestProteinDesignStrokach([{"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}], 40, device)
+testerStrokach = TestProteinDesignStrokach(*args)
 dmStrokach = StrokachDataModule(root, subset, subset, subset)
 
 print("TAPE LM")
@@ -61,12 +61,13 @@ mSalpha125 = StrokachModel.load_from_checkpoint("StrokachExperiments/Experiments
 testerStrokach.run(mSalpha125, dmStrokach, name="proteinsolver_KD")
 del mSalpha125
 
+testerStrokach.save_history()
 del dmStrokach
 del testerStrokach
 
 
 # Test Protein Solver with BERT
-testerJLo = TestProteinDesignJLo([{"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}], 40, device)
+testerJLo = TestProteinDesignJLo(*args)
 dmJLo = JLoDataModule(root, subset, subset, subset)
 
 print("JLo alpha = 0.000")
@@ -79,5 +80,6 @@ mJalpha125 = JLoModel.load_from_checkpoint("StrokachJLo/Experiments/hidden_size=
 testerJLo.run(mJalpha125, dmJLo, name="proteinsolver_BERT_KD")
 del mJalpha125
 
+testerJLo.save_history()
 del testerJLo
 del dmJLo

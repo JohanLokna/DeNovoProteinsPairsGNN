@@ -166,9 +166,16 @@ class TestProteinDesignIngrham(TestProteinDesign):
 
 class TestProteinDesignJLo(TestProteinDesign):
 
-    def __init__(self, levels, repeats, device = "cpu") -> None:
+    def __init__( 
+        self,
+        levels,
+        repeats,
+        device = "cpu",
+        kAccuracy : List[int] = [1, 3, 5],
+        store_history = False,
+        out_path : Optional[Path] = None) -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(levels, repeats, device)
+        super().__init__(self, levels, repeats, device, kAccuracy, store_history, out_path)
 
     def remask(self, x, **kwargs) -> None:
         if not "substitutionMatrix" in kwargs:
