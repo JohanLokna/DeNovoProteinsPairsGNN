@@ -250,7 +250,7 @@ class Struct2Seq(BERTModel):
         
         for k in self.kAccuracy:
             yPred_k = torch.topk(output.data, -1).indices
-            nCorrect_k = ((x.seq = yPred_k) * x.mask).sum()
+            nCorrect_k = ((x.seq == yPred_k) * x.mask).sum()
             out.update({"nCorrect_{}".format(k): nCorrect_k})
 
         return out
