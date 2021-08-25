@@ -244,9 +244,6 @@ class Struct2Seq(BERTModel):
             "loss" : loss,
             "nTotal" : nTotal
         }
-
-        yPred = torch.argmax(output.data, -1)
-        nCorrect = ((yPred == x.seq) * x.mask).sum()
         
         for k in self.kAccuracy:
             yPred_k = torch.topk(output.data, k, -1).indices

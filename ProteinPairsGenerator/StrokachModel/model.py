@@ -101,15 +101,18 @@ class Net(BERTModel):
 
         loss = self.criterion(output, yTrue)
 
-        yPred = torch.argmax(output.data, 1)
-        nCorrect = (yPred == yTrue).sum()
-        nTotal = torch.numel(yPred)
-
-        return {
+        nTotal = torch.numel(yTrue)
+        out = {
             "loss" : loss,
-            "nCorrect" : nCorrect,
             "nTotal" : nTotal
         }
+        
+        for k in self.kAccuracy:
+            yPred_k = torch.topk(output.data, k, 1).indices
+            nCorrect_k = (yTrue.unsqueeze(-1) == yPred_k).sum()
+            out.update({"nCorrect_{}".format(k): nCorrect_k})
+
+        return out
 
     def to(self, device):
         super().to(device)
