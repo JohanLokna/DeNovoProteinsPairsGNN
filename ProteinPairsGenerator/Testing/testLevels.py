@@ -71,6 +71,9 @@ class TestProteinDesign:
                     del x, res
 
             out = self.postprocess(stepResults, not (corrector is None))
+            if name:
+                out.update({"name": name})
+            
             self.prettyPrint(level, out)
 
             if self.store_history:
@@ -116,7 +119,7 @@ class TestProteinDesign:
         raise NotImplementedError
 
     def __exit__(self, exc_type, exc_value, traceback):
-        with open(self.out_path, 'w') as f:
+        with open(self.out_path, "a") as f:
             json.dump(self.history, f)
 
 
