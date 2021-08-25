@@ -118,7 +118,7 @@ class TestProteinDesign:
     def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
 
-    def __del__(self):
+    def save_history(self):
         with open(self.out_path, "a") as f:
             json.dump(self.history, f)
 

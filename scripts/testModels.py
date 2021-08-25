@@ -36,9 +36,11 @@ del mIalpha000
 # testerIngraham.run(mIalpha000, dmIngraham)
 # del mIalpha000
 
+testerIngraham.save_history()
+
 
 # del dmIngraham
-# del testerIngraham
+del testerIngraham
 
 
 # # Test Strokach
