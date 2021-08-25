@@ -1,4 +1,7 @@
 from tqdm import tqdm
+from pathlib import Path
+from typing import Optional
+import json
 
 import torch
 
@@ -13,13 +16,23 @@ class TestProteinDesign:
         self,
         levels,
         repeats,
-        device = "cpu"
+        device = "cpu",
+        store_history = False,
+        out_path : Optional[Path] = None
     ) -> None:
         self.levels = levels
         self.repeats = repeats
         self.device = device
 
-    def run(self, model, dm, verbose = False, addRandomKD = False, corrector = None, classDim = None) -> None:
+        # Set up storing of history
+        self.store_history = store_history
+        
+        if self.store_history:
+            self.history = []
+            assert isinstance(out_path, Path)
+            self.out_path = out_path
+
+    def run(self, model, dm, verbose = False, addRandomKD = False, corrector = None, classDim = None, name = False) -> None:
 
         model.to(device=self.device)
 
@@ -57,8 +70,13 @@ class TestProteinDesign:
 
                     del x, res
 
-            self.prettyPrint(level, self.postprocess(stepResults, not (corrector is None)))
-            del stepResults
+            out = self.postprocess(stepResults, not (corrector is None))
+            self.prettyPrint(level, out)
+
+            if self.store_history:
+                self.history.append(out)
+
+            del stepResults, out
 
     def analyzeCorrector(self, x, output, corrector):
         raise NotImplementedError
@@ -96,6 +114,10 @@ class TestProteinDesign:
 
     def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        with open(self.out_path, 'w') as f:
+            json.dump(self.history, f)
 
 
 class TestProteinDesignStrokach(TestProteinDesign):
