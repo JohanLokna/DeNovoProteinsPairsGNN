@@ -12,16 +12,17 @@ from ProteinPairsGenerator.BERTModel import TAPEWrapper
 root = Path("proteinNetTesting")
 subset = [root.joinpath("processed/testing")]
 device = "cuda:{}".format(sys.argv[1] if len(sys.argv) > 1 else "0")
+args = ([{"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}], 40, device, True, Path("results.json"))
 
-# # Test Strokach
-# testerIngraham = TestProteinDesignIngrham([{"maskFrac": 0.25}, {"maskFrac": 0.50}, {"maskFrac": 0.75}], 40, device)
-# dmIngraham = IngrahamDataModule(root, subset, subset, subset)
+# Test Strokach
+testerIngraham = TestProteinDesignIngrham(*args)
+dmIngraham = IngrahamDataModule(root, subset, subset, subset)
 
-# print("Ingraham alpha = 0.000")
-# mIalpha000 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
-# mIalpha000.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0/bestModel.ckpt", map_location=device))
-# testerIngraham.run(mIalpha000, dmIngraham)
-# del mIalpha000
+print("Ingraham alpha = 0.000")
+mIalpha000 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
+mIalpha000.load_state_dict(torch.load("IngrahamStructural/Experiments/alpha=0/bestModel.ckpt", map_location=device))
+testerIngraham.run(mIalpha000, dmIngraham)
+del mIalpha000
 
 # print("Ingraham alpha = 0.125")
 # mIalpha125 = IngrahamModel(vocab_input=21, node_features=128, edge_features=128, hidden_dim=128, num_encoder_layers=3, num_decoder_layers=3, vocab_output=20)
