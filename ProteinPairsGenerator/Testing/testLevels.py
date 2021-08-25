@@ -1,6 +1,6 @@
 from tqdm import tqdm
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 import json
 
 import torch
@@ -17,12 +17,14 @@ class TestProteinDesign:
         levels,
         repeats,
         device = "cpu",
+        kAccuracy : List[int] = [1, 3, 5],
         store_history = False,
         out_path : Optional[Path] = None
     ) -> None:
         self.levels = levels
         self.repeats = repeats
         self.device = device
+        self.kAccuracy = kAccuracy
 
         # Set up storing of history
         self.store_history = store_history
@@ -88,20 +90,24 @@ class TestProteinDesign:
     def postprocess(self, stepResults, useCorrector = False) -> None:
         
         nTotal = 0
-        nCorrect = 0
+        nCorrect = [0 for _ in self.kAccuracy]
         loss = 0
         nCorrectCorrector = 0
         n = 0
 
         for step in stepResults:
             nTotal += step["nTotal"]
-            nCorrect += step["nCorrect"]
             loss += step["loss"]
+
+            for i, k in enumerate(self.kAccuracy):
+                nCorrect[i] += step["nCorrect_{}".format(k)]
 
             if useCorrector:
                 nCorrectCorrector += step["nCorrectCorrector"]
 
-        out = {"Accuracy": nCorrect / nTotal, "Loss": loss / len(stepResults)}
+        out = {"Loss": loss / len(stepResults)}
+        for i, k in enumerate(self.kAccuracy):
+                out.update({"Accuracy_{}".format(k): nCorrect[i] / nTotal})
 
         if useCorrector:
             out.update({"Accuracy Corrector": nCorrectCorrector / nTotal})

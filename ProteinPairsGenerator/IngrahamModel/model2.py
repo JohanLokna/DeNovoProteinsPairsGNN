@@ -238,15 +238,22 @@ class Struct2Seq(BERTModel):
         output = self(x.coords, x.maskedSeq, x.lengths, x.valid)
         _, loss = loss_smoothed(x.seq, output, x.mask, self.vocab_output)
 
-        yPred = torch.argmax(output.data, -1)
-        nCorrect = ((yPred == x.seq) * x.mask).sum()
         nTotal = torch.sum(x.mask)
 
-        return {
+        out = {
             "loss" : loss,
-            "nCorrect" : nCorrect,
             "nTotal" : nTotal
         }
+
+        yPred = torch.argmax(output.data, -1)
+        nCorrect = ((yPred == x.seq) * x.mask).sum()
+        
+        for k in self.kAccuracy:
+            yPred_k = torch.topk(output.data, -1).indices
+            nCorrect_k = ((x.seq = yPred_k) * x.mask).sum()
+            out.update({"nCorrect_{}".format(k): nCorrect_k})
+
+        return out
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-4)

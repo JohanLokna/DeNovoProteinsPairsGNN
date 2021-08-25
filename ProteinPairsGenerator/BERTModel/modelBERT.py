@@ -6,9 +6,10 @@ import pytorch_lightning as pl
 
 
 class BERTModel(pl.LightningModule):
-    def __init__(self, extraLogging : List[tuple] = []) -> None:
+    def __init__(self, extraLogging : List[tuple] = [], kAccuracy : List[int] = [1, 3, 5]) -> None:
         super().__init__()
         self.extraLogging = extraLogging
+        self.kAccuracy = kAccuracy
     
     def configure_optimizers(self):
         raise NotImplementedError
@@ -17,11 +18,13 @@ class BERTModel(pl.LightningModule):
         raise NotImplementedError
 
     def epoch_end(self, phase : str, outputs):
-        nCorrect = sum([o["nCorrect"] for o in outputs])
         nTotal = sum([o["nTotal"]  for o in outputs])
         loss = sum([o["loss"] * o["nTotal"] for o in outputs]) / nTotal
         self.log(phase + "Loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        self.log(phase + "Acc", nCorrect / nTotal, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+
+        for k in self.kAccuracy:
+            nCorrect = sum([o["nCorrect_{}".format(k)] for o in outputs])
+            self.log(phase + "Acc_{}".format(k), nCorrect / nTotal, on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
         for name, f in self.extraLogging:
             self.log(phase + name, f(outputs), 
