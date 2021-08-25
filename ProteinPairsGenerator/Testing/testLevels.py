@@ -175,7 +175,7 @@ class TestProteinDesignJLo(TestProteinDesign):
         store_history = False,
         out_path : Optional[Path] = None) -> None:
         self.tokenizer = AdaptedTAPETokenizer()
-        super().__init__(self, levels, repeats, device, kAccuracy, store_history, out_path)
+        super().__init__(levels, repeats, device, kAccuracy, store_history, out_path)
 
     def remask(self, x, **kwargs) -> None:
         if not "substitutionMatrix" in kwargs:
