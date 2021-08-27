@@ -13,7 +13,8 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
     while not mask.any():
 
         # Predict based on current predictions
-        output = net(kw_seq = in_seq, **kwargs)
+        kwargs[kw_seq] = in_seq
+        output = net(**kwargs)
 
         # Normalize predictions
         output = torch.softmax(output, dim=dim)
