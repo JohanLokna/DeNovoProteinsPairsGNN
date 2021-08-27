@@ -22,7 +22,7 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
         # Get per residue max prediction
         # Set already predictions to by -1 in order not to change them again 
         max_pred, max_index = output.max(dim=dim)
-        max_pred[~mask] = -1
+        max_pred[mask] = -1
         _, max_residue = max_pred.max(dim=0)
 
         # Update with max prediction
