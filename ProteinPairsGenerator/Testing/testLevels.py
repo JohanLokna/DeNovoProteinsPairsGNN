@@ -148,8 +148,6 @@ class TestProteinDesignIngrham(TestProteinDesign):
             l = x.lengths[i]
             x.maskedSeq[i, :l], x.mask[i, :l] = maskBERT(x.seq[i, :l], **kwargs)
 
-        print(x.maskedSeq)
-
     def analyzeCorrector(self, x, output, corrector):
 
         nCorrect = 0
