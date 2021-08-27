@@ -10,7 +10,7 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
     # Mask initially
     mask = in_seq != AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
-    while not mask.any():
+    while not mask.all():
 
         # Predict based on current predictions
         kwargs[kw_seq] = in_seq
