@@ -2,7 +2,7 @@ import torch
 from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
 @torch.no_grad()
-def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwargs):
+def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, unsqueeze : bool, **kwargs):
     
     # Can only design a single protein at the time
     assert len(in_seq.shape) == 1
@@ -13,7 +13,7 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
     while not mask.all():
 
         # Predict based on current predictions
-        kwargs[kw_seq] = in_seq
+        kwargs[kw_seq] = in_seq.unsqueeze(0) if unsqueeze else in_seq
         output = net(**kwargs)
 
         # Normalize predictions
