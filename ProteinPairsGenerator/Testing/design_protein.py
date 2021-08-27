@@ -27,6 +27,6 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
 
         # Update with max prediction
         in_seq[max_residue] = max_index[max_residue]
-        mask[max_residue] = False
+        mask[max_residue] = True
     
     return in_seq
