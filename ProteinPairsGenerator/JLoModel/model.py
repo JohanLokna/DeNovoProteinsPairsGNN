@@ -27,10 +27,8 @@ class BERTHelper(nn.Module):
     def forward(self, x):
 
         if self.tokenizer:
-            print(x.shape)
             x = self.tokenizer.AA2BERT(x).type_as(x)
             out = self.encode(self.model(x)[0][0, 1:-1])
-            print(out.shape)
             return out
             
 
