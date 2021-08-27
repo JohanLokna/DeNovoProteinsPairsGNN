@@ -8,7 +8,7 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
     assert len(in_seq.shape) == 1
 
     # Mask initially
-    mask = in_seq == AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+    mask = in_seq != AMINO_ACIDS_MAP[AMINO_ACID_NULL]
 
     while not mask.any():
 
@@ -25,7 +25,7 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, **kwar
         _, max_residue = max_pred.max(dim=0)
 
         # Update with max prediction
-        in_seq = max_index[max_residue]
+        in_seq[max_residue] = max_index[max_residue]
         mask[max_residue] = False
     
     return in_seq
