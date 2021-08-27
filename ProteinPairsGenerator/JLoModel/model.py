@@ -37,11 +37,12 @@ class BERTHelper(nn.Module):
 class Net(StrokachModel):
     def __init__(
         self,
+        use_tokenizer = False,
         *args,
         **kwargs
     ) -> None:
         super().__init__(*args, **kwargs)
-        self.embed_x = BERTHelper(kwargs["hidden_size"])
+        self.embed_x = BERTHelper(kwargs["hidden_size"], use_tokenizer)
 
     # def load_state_dict(self, state_dict, *args, **kwargs):
     #     state_dict["embed_x.encode.2.weight"] = state_dict.pop("embed_x.encode.1.weight")
