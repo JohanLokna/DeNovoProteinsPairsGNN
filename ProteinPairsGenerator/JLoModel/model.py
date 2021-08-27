@@ -6,11 +6,12 @@ from torch import nn
 
 # Local imports
 from ProteinPairsGenerator.StrokachModel import StrokachModel
+from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
 
 class BERTHelper(nn.Module):
 
-    def __init__(self, hidden_size : int):
+    def __init__(self, hidden_size : int, use_tokenizer = False):
         super().__init__()
         self.model = ProteinBertModel.from_pretrained("bert-base", cache_dir="/mnt/ds3lab-scratch/jlokna/bertBase")
         for param in self.model.parameters():
@@ -20,9 +21,17 @@ class BERTHelper(nn.Module):
             nn.ReLU(),
             nn.LayerNorm(hidden_size)
         )
+        if use_tokenizer:
+            self.tokenizer = AdaptedTAPETokenizer()
 
     def forward(self, x):
-        return self.encode(self.model(x.unsqueeze(0))[0][0, 1:-1])
+
+        if self.tokenizer:
+            x = self.tokenizer.AA2BERT(x).type_as(x)
+            return self.encode(self.model(x)[0][:, 1:-1])
+
+        else:
+            return self.encode(self.model(x.unsqueeze(0))[0][0, 1:-1])
 
 
 class Net(StrokachModel):

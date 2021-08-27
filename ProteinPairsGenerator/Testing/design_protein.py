@@ -2,7 +2,7 @@ import torch
 from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
 @torch.no_grad()
-def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, unsqueeze : bool, **kwargs):
+def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool, **kwargs):
     
     # Can only design a single protein at the time
     assert len(in_seq.shape) == 1
@@ -20,11 +20,11 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, unsque
             output = output.squeeze(0)
 
         # Normalize predictions
-        output = torch.softmax(output, dim=dim)
+        output = torch.softmax(output, dim=-1)
 
         # Get per residue max prediction
         # Set already predictions to by -1 in order not to change them again 
-        max_pred, max_index = output.max(dim=dim)
+        max_pred, max_index = output.max(dim=-1)
         max_pred[mask] = -1
         _, max_residue = max_pred.max(dim=0)
 
@@ -36,7 +36,7 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, unsque
 
 @torch.no_grad()
 def designProteinHybrid(net1 : torch.nn.Module, net2 : torch.nn.Module, alpha : float,
-                        kw_seq : str, in_seq, dim : int, unsqueeze : bool, **kwargs):
+                        kw_seq : str, in_seq, unsqueeze : bool, **kwargs):
     
     # Can only design a single protein at the time
     assert len(in_seq.shape) == 1
@@ -56,11 +56,11 @@ def designProteinHybrid(net1 : torch.nn.Module, net2 : torch.nn.Module, alpha : 
             output = output.squeeze(0)
 
         # Normalize predictions
-        output = torch.softmax(output, dim=dim)
+        output = torch.softmax(output, dim=-1)
 
         # Get per residue max prediction
         # Set already predictions to by -1 in order not to change them again 
-        max_pred, max_index = output.max(dim=dim)
+        max_pred, max_index = output.max(dim=-1)
         max_pred[mask] = -1
         _, max_residue = max_pred.max(dim=0)
 
