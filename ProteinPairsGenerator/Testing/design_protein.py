@@ -16,6 +16,9 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, dim : int, unsque
         kwargs[kw_seq] = in_seq.unsqueeze(0) if unsqueeze else in_seq
         output = net(**kwargs)
 
+        if unsqueeze:
+            output = output.squeeze(0)
+
         # Normalize predictions
         output = torch.softmax(output, dim=dim)
 
