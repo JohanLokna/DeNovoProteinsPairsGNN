@@ -28,12 +28,8 @@ class BERTHelper(nn.Module):
 
         if self.tokenizer:
             x = self.tokenizer.AA2BERT(x).type_as(x)
-            out = self.encode(self.model(x)[0][0, 1:-1])
-            return out
             
-
-        else:
-            return self.encode(self.model(x.unsqueeze(0))[0][0, 1:-1])
+        return self.encode(self.model(x.unsqueeze(0))[0][0, 1:-1])
 
 
 class Net(StrokachModel):
