@@ -17,6 +17,9 @@ class BERTModel(pl.LightningModule):
     def step(self, batch):
         raise NotImplementedError
 
+    def recursive_step(self, x):
+        raise NotImplementedError
+
     def epoch_end(self, phase : str, outputs):
         nTotal = sum([o["nTotal"]  for o in outputs])
         loss = sum([o["loss"] * o["nTotal"] for o in outputs]) / nTotal

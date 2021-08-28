@@ -5,6 +5,8 @@ import torch.nn.functional as F
 from .self_attention import *
 from .protein_features import ProteinFeatures
 from ProteinPairsGenerator.BERTModel import BERTModel
+from ProteinPairsGenerator.Testing import designProtein
+from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
 
 def loss_smoothed(S, log_probs, mask, vocab_size, weight=0.1):
@@ -249,6 +251,22 @@ class Struct2Seq(BERTModel):
             yPred_k = torch.topk(output.data, k, -1).indices
             nCorrect_k = (torch.any(x.seq.unsqueeze(-1) == yPred_k, dim=-1) * x.mask).sum()
             out.update({"nCorrect_{}".format(k): nCorrect_k})
+
+        return out
+
+    def recursive_step(self, x):
+        
+        out = torch.zeros_like(x.seq)
+        
+        for j in range(x.seq.shape[0]):
+
+            l = x.lengths[j]
+
+            seq = torch.empty_like(x.seq[j, :l])
+            seq.fill_(AMINO_ACIDS_MAP[AMINO_ACID_NULL])
+
+            out[j, :l] = designProtein(self, "S", in_seq = seq, unsqueeze=True, 
+                                       X=x.coords[j, :l].unsqueeze(0), L=[l], mask=x.valid[j, :l].unsqueeze(0))
 
         return out
 

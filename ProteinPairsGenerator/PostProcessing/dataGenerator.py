@@ -22,7 +22,7 @@ class SampleGenerator:
         self.outFile = open(outPath, "a+")
         self.classDim = classDim
 
-    def run(self, model, loader, transfer = lambda x: x, verbose = False, forcedMaskKwargs : dict = {}) -> None:
+    def run(self, model, loader, transfer = lambda x: x, verbose = False, forcedMaskKwargs : dict = {}, recursive = False) -> None:
 
         # Set up model and way to get output
 
@@ -46,12 +46,16 @@ class SampleGenerator:
 
                 self.remask(x, **level)
                 x = transfer(x, self.device)
-                model.step(x)
+                
+                if not recursive:
+                    model.step(x)
+                else:
+                    self.output = model.recursive_step(x)
 
                 for s, g, m in self.pairs(x, self.output):
                     d = {"seq": tensor_to_seq(s, AMINO_ACIDS_MAP), "guess": tensor_to_seq(g, AMINO_ACIDS_MAP), "mask": m.tolist()}
                     self.outFile.write(json.dumps(d) + "\n")
-
+    
     def remask(self, x, **kwargs) -> None:
         raise NotImplementedError
 

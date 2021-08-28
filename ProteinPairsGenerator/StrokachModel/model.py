@@ -11,6 +11,8 @@ from torch.nn.modules.container import ModuleList
 # Local imports
 from ProteinPairsGenerator.StrokachModel.edge_conv_mod import EdgeConvBatch, EdgeConvMod
 from ProteinPairsGenerator.BERTModel import BERTModel
+from ProteinPairsGenerator.Testing import designProtein
+from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
 
 def _get_clones(module, N):
@@ -113,6 +115,14 @@ class Net(BERTModel):
             out.update({"nCorrect_{}".format(k): nCorrect_k})
 
         return out
+
+    def recursive_step(self, x):
+
+        seq = torch.empty_like(x.seq)
+        seq.fill_(AMINO_ACIDS_MAP[AMINO_ACID_NULL])
+
+        return designProtein(self, "x", in_seq = seq, unsqueeze=False, edge_index = x.edge_index, edge_attr = x.edge_attr)
+
 
     def to(self, device):
         super().to(device)
