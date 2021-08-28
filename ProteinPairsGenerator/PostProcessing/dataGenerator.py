@@ -22,7 +22,7 @@ class SampleGenerator:
         self.outFile = open(outPath, "a+")
         self.classDim = classDim
 
-    def run(self, model, loader, transfer = lambda x: x, verbose = False) -> None:
+    def run(self, model, loader, transfer = lambda x: x, verbose = False, forcedMaskKwargs : dict = {}) -> None:
 
         # Set up model and way to get output
 
@@ -40,6 +40,9 @@ class SampleGenerator:
             for x in tqdm(loader) if verbose else loader:
 
                 level = {"maskFrac": torch.rand(1).item()}
+
+                # Add provided args
+                level.update(forcedMaskKwargs)
 
                 self.remask(x, **level)
                 x = transfer(x, self.device)
