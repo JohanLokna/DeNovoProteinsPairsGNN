@@ -29,4 +29,4 @@ class ScoreBLOSUM(torch.nn.Module):
             return torch.dot(torch.sum(b_scores * pred_scores, -1), mask.flatten())
 
     def to(self, device):
-        self.B.to(device)
+        self.B = self.B.to(device)
