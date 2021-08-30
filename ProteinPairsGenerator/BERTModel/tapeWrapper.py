@@ -26,7 +26,7 @@ class TAPEWrapper(BERTModel):
         return self.tokenizer.BERT2AA(out)
 
     # Simple step as no training is performed
-    def step(self, x):      
+    def step(self, x, extra_out={}):      
         output = self(x.maskedSeq)
 
         # Only keep masked fraction
@@ -45,5 +45,9 @@ class TAPEWrapper(BERTModel):
             yPred_k = torch.topk(output.data, k, -1).indices
             nCorrect_k = (yTrue.unsqueeze(-1) == yPred_k).sum()
             out.update({"nCorrect_{}".format(k): nCorrect_k})
+
+
+        for key, f in extra_out.items():
+            out[key] = f(output=output, seq=x.seq, mask=x.mask)
 
         return out
