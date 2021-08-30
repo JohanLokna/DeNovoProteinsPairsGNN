@@ -7,7 +7,7 @@ class ScoreBLOSUM(torch.nn.Module):
 
     def __init__(
         self, 
-        B : torch.Tensor = torch.from_numpy(pd.read_csv(open(".BLOSUM/blosum62.csv", "r")).data)
+        B : torch.Tensor = torch.from_numpy(pd.read_csv(open("./BLOSUM/blosum62.csv", "r")).data)
     ) -> None:
         super().__init__()
         self.B = torch.transpose(B, 0, 1)
