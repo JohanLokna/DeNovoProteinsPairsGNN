@@ -1,3 +1,4 @@
+from numpy.core.defchararray import array
 from tqdm import tqdm
 from pathlib import Path
 from typing import Optional, List
@@ -100,7 +101,7 @@ class TestProteinDesign:
     def prettyPrint(self, level, results):
         print("-" * 20)
         print(", ".join([k + " = " + str(v) for k, v in level.items()]))
-        print(*[k + " = "  + str(v) for k, v in results.items()], sep="\n")
+        print(*[k + " = "  + str(v) for k, v if not isinstance(v, np.array) in results.items()], sep="\n")
         print("-" * 20)
 
     def remask(self, x, **kwargs) -> None:
