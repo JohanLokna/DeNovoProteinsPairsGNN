@@ -48,7 +48,7 @@ class TestProteinDesign:
                     x = dm.transfer_batch_to_device(x, self.device)
 
                     self.x = x
-                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x, extra_out).items()}
+                    res = {k: v.cpu() if isinstance(v, torch.Tensor) else v for k, v in model.step(x, extra_out).items()}
 
                     stepResults.append(res)
 
