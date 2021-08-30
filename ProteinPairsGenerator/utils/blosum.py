@@ -10,9 +10,7 @@ class ScoreBLOSUM(torch.nn.Module):
         B : torch.Tensor = torch.from_numpy(pd.read_csv(open(".BLOSUM/blosum62.csv", "r")).data)
     ) -> None:
         super().__init__()
-        self.B = B
+        self.B = torch.transpose(B, 0, 1)
 
     def forward(self, y_true : torch.Tensor, y_pred : torch.Tensor, mask : Optional[torch.Tensor] = None) -> torch.Tensor:
-        
-        y_true = y_true.flatten()
-        y_pred = y_pred
+        return torch.sum(self.B[y_true.flatten(), :] * y_pred.reshape((-1, y_pred.shape[-1])))
