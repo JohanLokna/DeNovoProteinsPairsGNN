@@ -21,7 +21,7 @@ class ScoreBLOSUM(torch.nn.Module):
         b_scores = self.B[y_true.flatten(), :]
         pred_scores = y_pred.reshape((-1, y_pred.shape[-1]))
 
-        print(b_scores.device, pred_scores.device, mask.device)
+        print(self.B.device, b_scores.device, pred_scores.device, mask.device)
 
         if mask is None:
             return torch.sum(b_scores * pred_scores)
