@@ -101,7 +101,7 @@ class TestProteinDesign:
     def prettyPrint(self, level, results):
         print("-" * 20)
         print(", ".join([k + " = " + str(v) for k, v in level.items()]))
-        print(*[k + " = "  + str(v) for k, v in results.items() if not isinstance(v, np.array)], sep="\n")
+        print(*[k + " = "  + str(v) for k, v in results.items() if not isinstance(v, (np.ndarray, torch.Tensor))], sep="\n")
         print("-" * 20)
 
     def remask(self, x, **kwargs) -> None:
