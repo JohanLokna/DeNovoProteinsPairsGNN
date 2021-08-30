@@ -11,11 +11,9 @@ class ScoreBLOSUM(torch.nn.Module):
 
     def __init__(
         self,
+        B : torch.Tensor = torch.from_numpy(pd.read_csv(open(blosumPath, "r"), index_col=0).values)
     ) -> None:
-        super().__init__()
-        a = pd.read_csv(open(blosumPath, "r"), index_col=0)
-        print(a)
-        B : torch.Tensor = torch.from_numpy(a.values)
+        super().__init__()        
         self.B = torch.transpose(B, 0, 1)
 
     def forward(self, y_true : torch.Tensor, y_pred : torch.Tensor, mask : Optional[torch.Tensor] = None) -> torch.Tensor:
