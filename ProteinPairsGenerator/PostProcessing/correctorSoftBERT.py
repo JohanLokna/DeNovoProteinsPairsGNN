@@ -71,7 +71,7 @@ class CorrectorSoftBERT(BERTModel):
            'monitor': 'valLoss'
        }
     
-    def step(self, input):
+    def step(self, input, extra_out={}):
 
         # Get results and use mask
         yHat, p = self(input.x)
@@ -93,7 +93,7 @@ class CorrectorSoftBERT(BERTModel):
         w2r = ((x != y) & (yPred == y)).sum()
         w2w = ((x != y) & (yPred != y)).sum()
 
-        return {
+        out = {
             "loss" : loss,
             "nCorrect" : nCorrect,
             "nTotal" : nTotal,
@@ -102,6 +102,11 @@ class CorrectorSoftBERT(BERTModel):
             "W2R" : w2r,
             "W2W" : w2w
         }
+
+        for key, f in extra_out.items():
+            out[key] = f(yTrue=y, yPred=yPred)
+
+        return out
 
 
 class CorrectorFullSoftBERT(CorrectorSoftBERT):
