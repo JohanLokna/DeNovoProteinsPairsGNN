@@ -19,8 +19,8 @@ blosum_scorer = ScoreBLOSUM()
 blosum_scorer.to(device)
 
 extra_out = {
-  "blosum": lambda yTrue, yPred : blosum_scorer(yTrue, yPred),
-  "confusion_matrix": lambda yTrue, yPred, mask=None : \
+  "blosum": lambda yTrue, yHat, yPred: blosum_scorer(yTrue, yHat),
+  "confusion_matrix": lambda yTrue, yHat, yPred, mask=None : \
       confusion_matrix(yTrue.flatten().cpu().numpy(), 
                        yPred.flatten().cpu().numpy(), 
                        labels=np.arange(len(AMINO_ACIDS_BASE)))

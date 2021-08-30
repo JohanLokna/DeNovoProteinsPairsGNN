@@ -104,7 +104,7 @@ class CorrectorSoftBERT(BERTModel):
         }
 
         for key, f in extra_out.items():
-            out[key] = f(yTrue=y, yPred=yPred)
+            out[key] = f(yTrue=y, yHat=yHat, yPred=yPred)
 
         return out
 
