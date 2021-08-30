@@ -48,7 +48,7 @@ class TestProteinDesign:
                     x = dm.transfer_batch_to_device(x, self.device)
 
                     self.x = x
-                    res = {k: v.cpu() if isinstance(v, torch.Tensor) else v for k, v in model.step(x, extra_out).items()}
+                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x, extra_out).items()}
 
                     stepResults.append(res)
 
@@ -85,7 +85,7 @@ class TestProteinDesign:
                 nCorrect[i] += step["nCorrect_{}".format(k)]
 
             blosum_score += step["blosum"]
-            confusion_matrix += step["confusion_matrix"].cpu()
+            confusion_matrix += step["confusion_matrix"]
 
         out = {"Loss": loss / len(stepResults)}
         for i, k in enumerate(self.kAccuracy):
