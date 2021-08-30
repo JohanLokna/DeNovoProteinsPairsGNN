@@ -1,6 +1,7 @@
 from .amino_acids import *
 from .cdr import *
 from .bayesianHP import *
+from .blosum import *
 
 from warnings import warn
 
