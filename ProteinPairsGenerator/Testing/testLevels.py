@@ -34,20 +34,9 @@ class TestProteinDesign:
             assert isinstance(out_path, Path)
             self.out_path = out_path
 
-    def run(self, model, dm, verbose = False, addRandomKD = False, corrector = None, classDim = None, name = False) -> None:
+    def run(self, model, dm, verbose = False, name = False, extra_out = {}) -> None:
 
         model.to(device=self.device)
-
-        if corrector:
-            corrector.to(device=self.device)
-
-            def wrapper(*args, **kwargs):
-                baseModelOutput = type(model).forward(*args, **kwargs)
-                self.output = torch.argmax(baseModelOutput.data, classDim)
-                return baseModelOutput
-
-            model.forward = wrapper.__get__(model, type(model))
-
 
         for level in self.levels:
             stepResults = []
@@ -56,23 +45,16 @@ class TestProteinDesign:
 
                     self.remask(x, **level)
 
-                    if addRandomKD:
-                        x.teacherLabels = torch.rand(*x.seq.shape, 20).type_as(x.coords)
-
                     x = dm.transfer_batch_to_device(x, self.device)
 
                     self.x = x
-                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x).items()}
-
-                    # Add corrector
-                    if corrector:
-                        res.update(self.analyzeCorrector(x, self.output, corrector))
+                    res = {k: v.item() if isinstance(v, torch.Tensor) else v for k, v in model.step(x, extra_out).items()}
 
                     stepResults.append(res)
 
                     del x, res
 
-            out = self.postprocess(stepResults, not (corrector is None))
+            out = self.postprocess(stepResults)
             if name:
                 out.update({"name": name})
             
@@ -87,13 +69,13 @@ class TestProteinDesign:
         raise NotImplementedError
 
 
-    def postprocess(self, stepResults, useCorrector = False) -> None:
+    def postprocess(self, stepResults) -> None:
         
         nTotal = 0
         nCorrect = [0 for _ in self.kAccuracy]
         loss = 0
-        nCorrectCorrector = 0
-        n = 0
+        blosum_score = 0
+        confusion_matrix = torch.zeros(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
         for step in stepResults:
             nTotal += step["nTotal"]
@@ -102,16 +84,16 @@ class TestProteinDesign:
             for i, k in enumerate(self.kAccuracy):
                 nCorrect[i] += step["nCorrect_{}".format(k)]
 
-            if useCorrector:
-                nCorrectCorrector += step["nCorrectCorrector"]
+            blosum_score += step["blosum"]
+            confusion_matrix += step["confusion_matrix"].cpu()
 
         out = {"Loss": loss / len(stepResults)}
         for i, k in enumerate(self.kAccuracy):
                 out.update({"Accuracy_{}".format(k): nCorrect[i] / nTotal})
-
-        if useCorrector:
-            out.update({"Accuracy Corrector": nCorrectCorrector / nTotal})
         
+        out.update({"BLOSUM SCORE": blosum_score / nTotal})
+        out.update({"Confusion Matrix": confusion_matrix})
+
         return out
 
 

@@ -235,7 +235,7 @@ class Struct2Seq(BERTModel):
         
         return S
 
-    def step(self, x):
+    def step(self, x, extra_out = {}):
 
         output = self(x.coords, x.maskedSeq, x.lengths, x.valid)
         _, loss = loss_smoothed(x.seq, output, x.mask, self.vocab_output)
@@ -251,6 +251,9 @@ class Struct2Seq(BERTModel):
             yPred_k = torch.topk(output.data, k, -1).indices
             nCorrect_k = (torch.any(x.seq.unsqueeze(-1) == yPred_k, dim=-1) * x.mask).sum()
             out.update({"nCorrect_{}".format(k): nCorrect_k})
+
+        for key, f in extra_out.items():
+            out[key] = f(output=output, seq=x.seq, mask=x.mask)
 
         return out
 
