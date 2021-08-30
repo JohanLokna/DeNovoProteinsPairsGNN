@@ -48,6 +48,6 @@ class TAPEWrapper(BERTModel):
 
 
         for key, f in extra_out.items():
-            out[key] = f(output=output, seq=x.seq, mask=x.mask)
+            out[key] = f(output=output, seq=yTrue)
 
         return out
