@@ -20,4 +20,4 @@ class ScoreBLOSUM(torch.nn.Module):
         if mask is None:
             return torch.sum(self.B[y_true.flatten(), :] * y_pred.reshape((-1, y_pred.shape[-1])))
         else:
-            return torch.sum(self.B[y_true.flatten(), :] * y_pred.reshape((-1, y_pred.shape[-1])) * mask)
+            return torch.dot(torch.sum(self.B[y_true.flatten(), :] * y_pred.reshape((-1, y_pred.shape[-1])), -1), mask.flatten())
