@@ -10,10 +10,12 @@ blosumPath = Path(os.path.dirname(os.path.realpath(__file__))).joinpath("BLOSUM/
 class ScoreBLOSUM(torch.nn.Module):
 
     def __init__(
-        self, 
-        B : torch.Tensor = torch.from_numpy(pd.read_csv(open(blosumPath, "r")).values)
+        self,
     ) -> None:
         super().__init__()
+        a = pd.read_csv(open(blosumPath, "r"))
+        print(a)
+        B : torch.Tensor = torch.from_numpy(a.values)
         self.B = torch.transpose(B, 0, 1)
 
     def forward(self, y_true : torch.Tensor, y_pred : torch.Tensor, mask : Optional[torch.Tensor] = None) -> torch.Tensor:
