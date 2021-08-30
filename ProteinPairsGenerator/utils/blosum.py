@@ -19,7 +19,7 @@ class ScoreBLOSUM(torch.nn.Module):
     def forward(self, y_true : torch.Tensor, y_pred : torch.Tensor, mask : Optional[torch.Tensor] = None) -> torch.Tensor:
 
         b_scores = self.B[y_true.flatten(), :]
-        pred_scores = y_pred.reshape((-1, y_pred.shape[-1]))
+        pred_scores = torch.softmax(y_pred.reshape((-1, y_pred.shape[-1])), -1)
 
         if mask is None:
             return torch.sum(b_scores * pred_scores)
