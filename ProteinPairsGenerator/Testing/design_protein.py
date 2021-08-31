@@ -1,14 +1,18 @@
+from DeNovoProteinsPairsGNN.ProteinPairsGenerator.utils.amino_acids import AMINO_ACIDS_BASE
 import torch
 from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
 @torch.no_grad()
-def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool, **kwargs):
+def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool, return_confidence : bool = False, **kwargs):
     
     # Can only design a single protein at the time
     assert len(in_seq.shape) == 1
 
     # Mask initially
     mask = in_seq != AMINO_ACIDS_MAP[AMINO_ACID_NULL]
+
+    if return_confidence:
+        confidence = torch.empty(in_seq.shape[0], len(AMINO_ACIDS_BASE), device=in_seq.device, dtype=torch.float)
 
     while not mask.all():
 
@@ -31,8 +35,14 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool,
         # Update with max prediction
         in_seq[max_residue] = max_index[max_residue]
         mask[max_residue] = True
+
+        if return_confidence:
+            confidence[max_residue] = output[max_residue, :]
     
-    return in_seq
+    if return_confidence:
+        return in_seq, confidence
+    else:
+        return in_seq
 
 @torch.no_grad()
 def designProteinHybrid(net1 : torch.nn.Module, net2 : torch.nn.Module, alpha : float,
