@@ -1,6 +1,5 @@
-from DeNovoProteinsPairsGNN.ProteinPairsGenerator.utils.amino_acids import AMINO_ACIDS_BASE
 import torch
-from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
+from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 
 @torch.no_grad()
 def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool, return_confidence : bool = False, **kwargs):
