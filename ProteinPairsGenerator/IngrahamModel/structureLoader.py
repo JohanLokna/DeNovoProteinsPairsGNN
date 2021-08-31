@@ -7,6 +7,9 @@ from ProteinPairsGenerator.BERTModel import maskBERT
 from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 
+"""
+    Helper function extracting the features for the Ingraham model
+"""
 def featurize(batch):
 
     # Set up data
@@ -43,6 +46,14 @@ def featurize(batch):
         mask=mask
     )
 
+"""
+    Dataset specially used by Ingraham model data
+    I am afraid my attempts of fitting the dataset into the format given in the data section 
+    might have had a slight bug. This format, which was given in the paper, proved much better.
+    When I tried to test, I found that both datasets contained the same information.
+    It did not seem fruitful to try to debug the other format anymore when this worked;
+    I gave up on that project after having struggled quite a few couple days.
+"""
 class StructureDataset():
     def __init__(self, jsonl_file, max_length, verbose=False, truncate=None):
         
@@ -94,6 +105,9 @@ class StructureDataset():
         return self.data[idx]
 
 
+"""
+    Loader used by Ingraham model
+"""
 class StructureLoader():
     def __init__(self, dataset : StructureDataset, batch_size : int, shuffle : bool = True):
         self.dataset = dataset

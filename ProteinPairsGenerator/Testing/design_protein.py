@@ -1,6 +1,9 @@
 import torch
 from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 
+"""
+    Function for recursive protein design
+"""
 @torch.no_grad()
 def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool, return_confidence : bool = False, **kwargs):
     
@@ -43,6 +46,9 @@ def designProtein(net : torch.nn.Module, kw_seq : str, in_seq, unsqueeze : bool,
     else:
         return in_seq
 
+"""
+    Function for recursive protein design combining two different models; one for the first part, the other for the last part
+"""
 @torch.no_grad()
 def designProteinHybrid(net1 : torch.nn.Module, net2 : torch.nn.Module, alpha : float,
                         kw_seq : str, in_seq, unsqueeze : bool, **kwargs):

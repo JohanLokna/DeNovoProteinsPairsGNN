@@ -8,6 +8,9 @@ from ProteinPairsGenerator.BERTModel import maskBERT
 from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE, AMINO_ACIDS_MAP, tensor_to_seq
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
+"""
+    Class for generating set of sequences from a desing model which then can be refined by the corrector
+"""
 class SampleGenerator:
 
     def __init__(
@@ -62,7 +65,9 @@ class SampleGenerator:
     def pairs(self, x, output) -> None:
         raise NotImplementedError
 
-
+"""
+    Specialization of class for Strockach (Protein Solver)
+"""
 class SampleGeneratorStrokach(SampleGenerator):
 
     def __init__(self, outPath, repeats, device = "cpu") -> None:
@@ -78,7 +83,9 @@ class SampleGeneratorStrokach(SampleGenerator):
     def pairs(self, x, output) -> None:
         return [(x.seq, output, x.mask)]
 
-
+"""
+    Specialization of class for Strockach with TAPE embedding (Protein Solver BERT)
+"""
 class SampleGeneratorJLo(SampleGenerator):
 
     def __init__(self, outPath, repeats, device = "cpu") -> None:
@@ -95,7 +102,9 @@ class SampleGeneratorJLo(SampleGenerator):
     def pairs(self, x, output) -> None:
         return [(x.seq, output, x.mask)]
 
-
+"""
+    Specialization of class for Ingraham (Struct2Seq)
+"""
 class SampleGeneratorIngrham(SampleGenerator):
 
     def __init__(self, outPath, repeats, device = "cpu") -> None:
@@ -113,7 +122,9 @@ class SampleGeneratorIngrham(SampleGenerator):
         for i, l in enumerate(x.lengths):
             yield x.seq[i, :l], output[i, :l], x.mask[i, :l]
 
-
+"""
+    Specialization of class for Ingraham with TAPE embedding (Struct2Seq BERT)
+"""
 class SampleGeneratorIngrhamBERT(SampleGenerator):
 
     def __init__(self, outPath, repeats, device = "cpu") -> None:

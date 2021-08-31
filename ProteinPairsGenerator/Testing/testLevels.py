@@ -11,6 +11,9 @@ from ProteinPairsGenerator.BERTModel import maskBERT
 from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
+"""
+    Helper class for running tests
+"""
 class TestProteinDesign:
 
     def __init__(

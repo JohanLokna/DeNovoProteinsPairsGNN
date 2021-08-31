@@ -11,6 +11,9 @@ import torch
 from ProteinPairsGenerator.Data import BaseDataset
 from ProteinPairsGenerator.PreProcessing import *
 
+"""
+    Dataset downloading and processing PDB data directly
+"""
 class PDBDataset(BaseDataset):
 
     def __init__(

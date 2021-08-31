@@ -6,6 +6,9 @@ from typing import Union, List
 from ProteinPairsGenerator.Data import BERTDataModule
 from .loader import JLoLoader
 
+"""
+    Datamodule for loading data into Strokach model (Protein Solver) with TAPE-embedding as part of the input
+"""
 class JLoDataModule(BERTDataModule):
 
     def __init__(

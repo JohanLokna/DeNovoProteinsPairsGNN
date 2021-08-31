@@ -8,6 +8,9 @@ from torch.utils.data import Subset
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 from ProteinPairsGenerator.StrokachModel import StrokachLoader
 
+"""
+    Dataloader for Strokach model (Protein Solver) with TAPE-embedding as part of the input
+"""
 class JLoLoader(StrokachLoader):
 
     def __init__(self, dataset: Subset, teacher: Union[str, None], *args, **kwargs) -> None:

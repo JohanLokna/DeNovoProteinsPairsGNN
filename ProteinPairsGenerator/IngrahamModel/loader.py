@@ -10,7 +10,9 @@ from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import AMINO_ACIDS_BASE
 from ProteinPairsGenerator.Data import BERTLoader
 
-
+""""
+    Loader for the Ingrham (Struct2Seq) model
+"""
 class IngrahamLoader(BERTLoader):
 
     def __init__(

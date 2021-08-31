@@ -11,6 +11,10 @@ from ProteinPairsGenerator.utils.amino_acids import seq_to_tensor, AMINO_ACIDS_M
 from ProteinPairsGenerator.BERTModel import maskBERT, TAPEAnnotator
 from ProteinPairsGenerator.PreProcessing.proteinNetParser import readPotein
 
+
+"""
+    Base class for feature generation
+"""
 class FeatureModule:
 
     def __init__(

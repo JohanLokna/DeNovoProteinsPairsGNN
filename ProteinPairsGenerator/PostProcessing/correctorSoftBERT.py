@@ -11,6 +11,9 @@ from torch import optim
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer, BERTModel
 from ProteinPairsGenerator.utils import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
+"""
+    Base model class for soft masked bert corrector
+"""
 class CorrectorSoftBERT(BERTModel):
 
     def __init__(
@@ -109,6 +112,9 @@ class CorrectorSoftBERT(BERTModel):
         return out
 
 
+"""
+    Specialization of corrector as used in thesis. Uses TAPE embedding and MLM head
+"""
 class CorrectorFullSoftBERT(CorrectorSoftBERT):
 
     def __init__(

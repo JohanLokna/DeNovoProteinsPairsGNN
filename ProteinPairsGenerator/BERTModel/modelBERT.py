@@ -4,7 +4,10 @@ from typing import List
 # Pytorch imports
 import pytorch_lightning as pl
 
-
+"""
+    Base model class for all models
+    Contains some helper functionality which is shared among for all models
+"""
 class BERTModel(pl.LightningModule):
     def __init__(self, extraLogging : List[tuple] = [], kAccuracy : List[int] = [1, 3, 5]) -> None:
         super().__init__()

@@ -24,6 +24,7 @@ AMINO_ACIDS_BASE = [
     "H",
 ]
 
+# Transform matrix into csv
 full_matrix = pd.read_csv(open("blosum62.txt", "r"), delimiter="\s*", index_col=0)
 relevant_matrix = full_matrix[AMINO_ACIDS_BASE].loc[AMINO_ACIDS_BASE]
 relevant_matrix.to_csv("blosum62.csv")

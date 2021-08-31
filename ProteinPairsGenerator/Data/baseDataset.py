@@ -14,6 +14,9 @@ from torch_geometric.data import Dataset
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
 
+"""
+    Base class for the dataset used in the project
+"""
 class BaseDataset(Dataset):
 
     # Lenght og name used for storing batched files

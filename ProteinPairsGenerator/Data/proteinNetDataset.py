@@ -16,6 +16,9 @@ from torch_geometric.data import Dataset
 # Local imports
 from ProteinPairsGenerator.PreProcessing import *
 
+"""
+    CASP dataset specialized for ProteinNet
+"""
 class ProteinNetDataset(Dataset):
 
     def __init__(

@@ -6,7 +6,9 @@ from torch import nn
 
 from .utilsTAPE import AdaptedTAPETokenizer
 
-
+"""
+    Base class for annotating proteins with a teacher model's soft labels in order to use knowledge distillation
+"""
 class Annotator(nn.Module):
 
     def __init__(
@@ -32,7 +34,9 @@ class Annotator(nn.Module):
         outTensors = self.model(inTensors, input_mask=mask)[0]
         return self.tokenizer.BERT2AA(outTensors)
 
-
+"""
+    Specific anotator used in the thesis which employes the TAPE embedding
+"""
 class TAPEAnnotator(Annotator):
     
     def __init__(self, *args, **kwargs):

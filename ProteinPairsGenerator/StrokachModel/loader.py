@@ -9,6 +9,9 @@ from torch.utils.data import Subset
 # Local imports
 from ProteinPairsGenerator.Data import BERTLoader
 
+"""
+    Data loader for Strokach model (Protein Solver)
+"""
 class StrokachLoader(BERTLoader):
 
     def __init__(

@@ -6,6 +6,9 @@ import torch
 from ProteinPairsGenerator.utils import tensor_to_seq, AMINO_ACID_NULL, AMINO_ACIDS_MAP, AMINO_ACIDS_BASE
 from tape.tokenizers import TAPETokenizer, IUPAC_VOCAB
 
+"""
+    Helper class for annotating sequences with the teacher model's soft labels
+"""
 class AdaptedTAPETokenizer(TAPETokenizer):
 
     AAColsBERT = [IUPAC_VOCAB[aa] for aa in AMINO_ACIDS_BASE]

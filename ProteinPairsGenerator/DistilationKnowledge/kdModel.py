@@ -4,7 +4,9 @@ import torch.nn as nn
 from torch.nn.functional import softmax, log_softmax
 import pytorch_lightning as pl
 
-
+"""
+    Function which creates a wrapper class from the base model which can be used to train with knowledge distillation
+"""
 def getKDModel(baseModel : pl.LightningModule, classDim : int):
 
     class KDModel(baseModel):

@@ -8,7 +8,9 @@ from torch import nn
 from ProteinPairsGenerator.StrokachModel import StrokachModel
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
-
+"""
+    Wrapper module for the TAPE embedding which is used in order to integrate the TAPE embedding as part of the input
+"""
 class BERTHelper(nn.Module):
 
     def __init__(self, hidden_size : int, use_tokenizer = False):
@@ -31,7 +33,9 @@ class BERTHelper(nn.Module):
         
         return self.encode(self.model(x.unsqueeze(0))[0][0, 1:-1])
 
-
+"""
+    Strokach model (Protein Solver) with TAPE-embedding as part of the input
+"""
 class Net(StrokachModel):
     def __init__(
         self,

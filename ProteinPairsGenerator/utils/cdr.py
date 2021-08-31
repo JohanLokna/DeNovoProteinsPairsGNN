@@ -1,6 +1,9 @@
 from anarci import run_anarci
 from typing import List
 
+"""
+    Not in use anymore!
+"""
 
 def getLightCDR(seq : str, scheme : str = "chothia", hmmerpath : str = "/usr/bin/"):
 

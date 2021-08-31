@@ -8,7 +8,9 @@ from torch import nn
 from ProteinPairsGenerator.IngrahamModel import IngrahamModel
 from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 
-
+"""
+    Wrapper module for the TAPE embedding which is used in order to integrate the TAPE embedding as part of the input
+"""
 class BERTHelperIngraham(nn.Module):
 
     def __init__(self, hidden_size : int):
@@ -28,7 +30,9 @@ class BERTHelperIngraham(nn.Module):
         out = self.encode(self.model(x)[0][:, 1:-1]) # Ingraham ist batched, which Strokach is not
         return out
 
-
+"""
+    Specialization of Ingraham model (Struct2Seq) which includes the TAPE-embedding as part of the input
+"""
 class Net(IngrahamModel):
     def __init__(
         self,

@@ -12,6 +12,9 @@ if "get_ipython" in dir(os):
 else:
   from tqdm import tqdm
 
+"""
+    Helper class for generating data points
+"""
 class DataGenerator:
 
     def __init__(
@@ -47,7 +50,9 @@ class DataGenerator:
     def __call__(self, *args, **kwargs ):
         raise NotImplementedError
 
-
+"""
+    Helper class for generating data points from a list
+"""
 class DataGeneratorList(DataGenerator):
     
     def __init__(
@@ -74,6 +79,9 @@ class DataGeneratorList(DataGenerator):
             yield dataList
 
 
+"""
+    Helper class for generating data points from a file
+"""
 class DataGeneratorFile(DataGenerator):
     
     def __init__(

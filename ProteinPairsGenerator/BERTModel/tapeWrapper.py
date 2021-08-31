@@ -5,6 +5,9 @@ import torch
 from .modelBERT import BERTModel
 from .utilsTAPE import AdaptedTAPETokenizer
 
+"""
+    Wrapper for the TAPE LM model in order to fit in the framwork used for the other models
+"""
 class TAPEWrapper(BERTModel):
 
     def __init__(self) -> None:

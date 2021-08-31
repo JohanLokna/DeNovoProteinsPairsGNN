@@ -4,7 +4,9 @@ import torch
 
 from ProteinPairsGenerator.utils.amino_acids import AMINO_ACID_NULL, AMINO_ACIDS_MAP
 
-
+"""
+    Mask a sequence in one hot format
+"""
 def maskBERTOnehot(
     inSeq : torch.Tensor,
     substitutionMatrix : torch.Tensor,
@@ -74,7 +76,9 @@ def maskBERTOnehot(
     else:
         return inSeq, torch.ones_like(inSeq).to(dtype=torch.bool)
 
-
+"""
+    Mask a sequence in normal format
+"""
 def maskBERT(
     inSeq : torch.Tensor,
     substitutionMatrix : torch.Tensor,

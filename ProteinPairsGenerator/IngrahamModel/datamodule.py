@@ -31,7 +31,9 @@ def batchAccordingToSize(subset : Subset, cutoffSize : int = 1500):
 
     return Subset(subset.dataset, newIndices)
 
-
+"""
+    Data loader for the Ingraham model (Struct2Seq)
+"""
 class IngrahamDataModule(BERTDataModule):
 
     def __init__(

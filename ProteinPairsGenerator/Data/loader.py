@@ -2,7 +2,9 @@
 from torch.utils.data import DataLoader, Subset
 from torch.utils.data.distributed import DistributedSampler
 
-
+"""
+    Base class dataloader which is specialized for the different models
+"""
 class BERTLoader(DataLoader):
 
     def __init__(

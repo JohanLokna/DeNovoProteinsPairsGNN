@@ -9,7 +9,11 @@ from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import List
 
-
+"""
+    Runner function for handeling Baysian optimization
+    It starts a training procedure and extracts the results
+    and logs them - using locks to ensure no race conditions
+"""
 def runBayesianHP(
     pbounds: dict,
     wrapper,

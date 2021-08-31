@@ -21,7 +21,9 @@ def loss_smoothed(S, log_probs, mask, vocab_size, weight=0.1):
     loss_av = torch.sum(loss * mask) / torch.sum(mask)
     return loss, loss_av
 
-
+"""
+    Ingraham model (Struct2Seq) as given in the original paper, slightly adapted in order to fit the training framework
+"""
 class Struct2Seq(BERTModel):
     def __init__(self, 
         vocab_output : int,

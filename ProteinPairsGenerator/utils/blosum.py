@@ -7,6 +7,9 @@ import torch
 
 blosumPath = Path(os.path.dirname(os.path.realpath(__file__))).joinpath("BLOSUM/blosum62.csv")
 
+"""
+    Helper class for computing BLOSUM-scores
+"""
 class ScoreBLOSUM(torch.nn.Module):
 
     def __init__(

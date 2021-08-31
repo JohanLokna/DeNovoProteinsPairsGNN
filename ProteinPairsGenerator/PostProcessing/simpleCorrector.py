@@ -11,7 +11,10 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 
-
+"""
+    First attempt at performing corrction of sequences using the TAPE LM model
+    Function creating a wrapper class which generates a pipeline of the design model and the corrector
+"""
 def getCorrectorModel(baseModel : pl.LightningModule):
 
     class CorrectorModel(baseModel):

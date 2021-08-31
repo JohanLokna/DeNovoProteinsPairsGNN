@@ -10,6 +10,10 @@ from ProteinPairsGenerator.BERTModel import AdaptedTAPETokenizer
 from ProteinPairsGenerator.Data import GeneralData
 from ProteinPairsGenerator.utils import seq_to_tensor, AMINO_ACIDS_MAP
 
+
+"""
+    Dataset for corrector
+"""
 class GuessDataset(torch.utils.data.IterableDataset):
 
     def __init__(self, root : str, xToken : str = "seq", yToken : str = "guess", maskToken = "mask") -> None:
@@ -37,6 +41,9 @@ class GuessDataset(torch.utils.data.IterableDataset):
         return len(self.data)
 
 
+"""
+    Data loader for corrector
+"""
 class GuessLoader(torch.utils.data.DataLoader):
 
     def __init__(self, dataset, batch_size=1, shuffle=True):
@@ -47,6 +54,9 @@ class GuessLoader(torch.utils.data.DataLoader):
         super().__init__(dataset, batch_size, collate_fn=lambda x: x[0])
 
 
+"""
+    Data module for corrector
+"""
 class GuessDataModule(pl.LightningDataModule):
 
     def __init__(

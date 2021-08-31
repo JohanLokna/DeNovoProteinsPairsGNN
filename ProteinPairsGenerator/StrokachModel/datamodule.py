@@ -6,6 +6,9 @@ from typing import Union, List
 from ProteinPairsGenerator.Data import BERTDataModule
 from .loader import StrokachLoader
 
+"""
+    Data module for Storkach (Protein Solver)
+"""
 class StrokachDataModule(BERTDataModule):
 
     def __init__(

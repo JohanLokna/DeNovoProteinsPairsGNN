@@ -27,6 +27,11 @@ def getFreeGPU(itrWait : float = 3e1, maxWait : float = 4.32e4):
 
     return None
 
+"""
+    Runner function used during the training of the models
+    It handeles selecting an available CUDA device and waits all are occupied (sometimes buggy)
+    It extracts validation metric and also builds the folder structure
+"""
 def setupRun(
         configFile : Path = Path("config.yaml"),
         runFile : Path = Path("../../../run.py"),

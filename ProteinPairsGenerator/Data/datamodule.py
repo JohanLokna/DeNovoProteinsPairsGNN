@@ -9,7 +9,9 @@ import pytorch_lightning as pl
 # Local imports
 from .proteinNetDataset import ProteinNetDataset
 
-
+"""
+    Base class datamodule which is specialized for the different models
+"""
 class BERTDataModule(pl.LightningDataModule):
 
     def __init__(

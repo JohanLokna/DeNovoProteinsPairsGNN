@@ -10,7 +10,9 @@ import pytorch_lightning as pl
 # Local imports
 from ProteinPairsGenerator.Data import GeneralData
 
-
+"""
+    Wrapper class for combining design model and corrector.
+"""
 def getCorrectorPipeline(corrector : pl.LightningModule):
 
     class CorrectorPipeline(corrector):

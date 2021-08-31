@@ -30,6 +30,9 @@ def get_graph_conv_layer(input_size, hidden_size, output_size):
     return graph_conv
 
 
+"""
+    Strokach Model (Protein Solver) as given in the paper with small modifications to fit in the framework
+"""
 class Net(BERTModel):
     def __init__(
         self, 

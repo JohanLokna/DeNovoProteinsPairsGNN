@@ -1,5 +1,8 @@
 from torch_geometric.data import Data
 
+"""
+    General data wrapper
+"""
 class GeneralData(Data):
 
       def __init__(
