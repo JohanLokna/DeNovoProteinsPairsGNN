@@ -38,7 +38,7 @@ class TestProteinDesign:
             assert isinstance(out_path, Path)
             self.out_path = out_path
 
-    def run(self, model, dm, verbose = False, name = False, extra_out = {}) -> None:
+    def run(self, model, dm, verbose = False, name = False, extra_out = {}, save_all = []) -> None:
 
         model.to(device=self.device)
 
@@ -58,7 +58,7 @@ class TestProteinDesign:
 
                     del x, res
 
-            out = self.postprocess(stepResults)
+            out = self.postprocess(stepResults, save_all)
             if name:
                 out.update({"name": name})
             
@@ -73,13 +73,15 @@ class TestProteinDesign:
         raise NotImplementedError
 
 
-    def postprocess(self, stepResults) -> None:
+    def postprocess(self, stepResults, save_all) -> None:
         
         nTotal = 0
         nCorrect = [0 for _ in self.kAccuracy]
         loss = 0
         blosum_score = 0
         confusion_matrix = torch.zeros(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
+
+        out = {"{}_all".format(k): [] for k in save_all}
 
         for step in stepResults:
             nTotal += step["nTotal"]
@@ -88,10 +90,13 @@ class TestProteinDesign:
             for i, k in enumerate(self.kAccuracy):
                 nCorrect[i] += step["nCorrect_{}".format(k)]
 
+            for k in save_all:
+                out["{}_all".format(k)].append(step[k])
+
             blosum_score += step["blosum"]
             confusion_matrix += step["confusion_matrix"]
 
-        out = {"Loss": loss / len(stepResults)}
+        out.update({"Loss": loss / len(stepResults)})
         for i, k in enumerate(self.kAccuracy):
                 out.update({"Accuracy_{}".format(k): nCorrect[i] / nTotal})
         
