@@ -81,7 +81,8 @@ class TestProteinDesign:
         blosum_score = 0
         confusion_matrix = torch.zeros(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
 
-        out = {"acc_all": [], "blosum_all": []}
+        acc_all = []
+        blosum_all = []
 
         for step in stepResults:
             nTotal += step["nTotal"]
@@ -90,18 +91,29 @@ class TestProteinDesign:
             for i, k in enumerate(self.kAccuracy):
                 nCorrect[i] += step["nCorrect_{}".format(k)]
 
-            out["acc_all"].append(step["nCorrect_1"] / step["nTotal"])
-            out["blosum_all"].append(step["blosum"] / step["nTotal"])
+            if "nCorrect_1" in step.keys():
+                acc_all.append(step["nCorrect_1"] / step["nTotal"])
 
-            blosum_score += step["blosum"]
-            confusion_matrix += step["confusion_matrix"]
+            if "blosum" in step.keys():
+                blosum_all.append(step["blosum"] / step["nTotal"])
+                blosum_score += step["blosum"]
 
-        out.update({"Loss": loss / len(stepResults)})
+            if "confusion_matrix" in step.keys():
+                confusion_matrix += step["confusion_matrix"]
+
+        out = {"Loss": loss / len(stepResults)}
         for i, k in enumerate(self.kAccuracy):
                 out.update({"Accuracy_{}".format(k): nCorrect[i] / nTotal})
         
-        out.update({"BLOSUM SCORE": blosum_score / nTotal})
-        out.update({"Confusion Matrix": confusion_matrix.tolist()})
+        if "nCorrect_1" in step.keys():
+            out.update({"acc_all": acc_all})
+
+        if "blosum" in step.keys():
+            out.update({"blosum_all": blosum_all})
+            out.update({"BLOSUM SCORE": blosum_score / nTotal})
+
+        if "confusion_matrix" in step.keys():
+            out.update({"Confusion Matrix": confusion_matrix.tolist()})
 
         return out
 
