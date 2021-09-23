@@ -72,9 +72,11 @@ class FeatureModule:
             return True
 
         if not self.preFilter(*args, **kwargs):
+            print("Not OK")
             return False
 
         if not self.runDependencies(*args, **kwargs):
+            print("Not OK")
             return False
 
         self.data = self.forward(*args, **kwargs)
@@ -277,8 +279,8 @@ class CartesianDistances(FeatureModule):
         return torch.cdist(coords, coords).squeeze(0)
 
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return [d.preFilter(*args, **kwargs) for d  in self.dependencies]
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return [d.preFilter(*args, **kwargs) for d in self.dependencies]
 
 
 class SequenceDistances(FeatureModule):
@@ -290,9 +292,7 @@ class SequenceDistances(FeatureModule):
     ) -> None:
 
         # Set up dependecies
-        if len(dependencies) == 0:
-            dependencies = [Sequence()]
-        elif len(dependencies) != 1:
+        if len(dependencies) != 1:
             warnings.warn("Dependencies in SequenceDistances might be errornous!", UserWarning)
 
         super().__init__(featureName, dependencies=dependencies)
@@ -308,8 +308,8 @@ class SequenceDistances(FeatureModule):
         x = torch.arange(size).view(-1, 1).expand(size, 2)
         return x[:, 0] - x[:, 1].view(-1, 1)
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class CloseNeighbours(FeatureModule):
@@ -337,8 +337,8 @@ class CloseNeighbours(FeatureModule):
     ) -> torch.Tensor:
         return self.dependencies[0].data < self.threshold
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class EdgeIndecies(FeatureModule):
@@ -361,8 +361,8 @@ class EdgeIndecies(FeatureModule):
     ) -> torch.Tensor:
         return torch.stack(torch.where(self.dependencies[0].data), dim=0)
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class EdgeAttributes(FeatureModule):
@@ -393,8 +393,8 @@ class EdgeAttributes(FeatureModule):
     ) -> torch.Tensor:
         return self.attributes[self.mask]
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class StackedFeatures(FeatureModule):
@@ -419,8 +419,8 @@ class StackedFeatures(FeatureModule):
     ) -> torch.Tensor:
         return torch.stack([d.data for d in self.dependencies], dim=self.dim)
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class Title(FeatureModule):
@@ -471,8 +471,8 @@ class ProteinNetField(FeatureModule):
     ) -> torch.Tensor:
         return self.dependencies[0].data[self.fieldName]
 
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 from copy import copy
 
@@ -559,8 +559,8 @@ class Normalize(FeatureModule):
     ) -> torch.Tensor:
         return (self.dependencies[0].data - self.bias) / self.scale
         
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class MaskBERT(FeatureModule):
@@ -587,8 +587,8 @@ class MaskBERT(FeatureModule):
     ) -> torch.Tensor:
         return [maskBERT(self.dependencies[0].data, self.subMatrix) for _ in range(self.nMasks)]
         
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
 
 
 class TAPEFeatures(FeatureModule):
@@ -614,5 +614,5 @@ class TAPEFeatures(FeatureModule):
     ) -> torch.Tensor:
         return [self.annotator([seq])[0] for seq, _ in self.dependencies[0].data]
         
-    def preFilter(self, *args, **kwargs) -> bool:
-        return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
+    # def preFilter(self, *args, **kwargs) -> bool:
+    #     return all([d.preFilter(*args, **kwargs) for d  in self.dependencies])
