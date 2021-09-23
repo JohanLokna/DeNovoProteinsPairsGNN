@@ -42,10 +42,12 @@ class DataGenerator:
         # Ensure that no errors        
         for f in self.features:
             if not f(*args, **kwargs):
+                print("NOT OK")
                 return
 
         # Append correctly computed features
         dataList.append(GeneralData(**{f.featureName: f.data for f in self.features if f.save}))
+        print(dataList[-1])
 
     def __call__(self, *args, **kwargs ):
         raise NotImplementedError

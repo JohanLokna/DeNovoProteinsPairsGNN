@@ -72,11 +72,9 @@ class FeatureModule:
             return True
 
         if not self.preFilter(*args, **kwargs):
-            print("Not OK")
             return False
 
         if not self.runDependencies(*args, **kwargs):
-            print("Not OK")
             return False
 
         self.data = self.forward(*args, **kwargs)
