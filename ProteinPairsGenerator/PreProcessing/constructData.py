@@ -46,7 +46,7 @@ class DataGenerator:
 
         # Append correctly computed features
         dataList.append(GeneralData(**{f.featureName: f.data for f in self.features if f.save}))
-        print(dataList[-1])
+        print(dataList[-1].title)
 
     def __call__(self, *args, **kwargs ):
         raise NotImplementedError
