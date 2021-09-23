@@ -42,7 +42,6 @@ class DataGenerator:
         # Ensure that no errors        
         for f in self.features:
             if not f(*args, **kwargs):
-                print("NOT OK")
                 return
 
         # Append correctly computed features
@@ -110,7 +109,7 @@ class DataGeneratorFile(DataGenerator):
             except EOFError:
                 break
 
-            if count % 1 == 0:
+            if count % 1000 == 0:
                 print("Completed {} samples".format(str(count)))
 
             if (not self.batchSize is None) and (len(dataList) >= self.batchSize):
