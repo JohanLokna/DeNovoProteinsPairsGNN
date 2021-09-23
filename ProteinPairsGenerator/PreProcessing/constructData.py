@@ -108,7 +108,7 @@ class DataGeneratorFile(DataGenerator):
             except EOFError:
                 break
 
-            if count % 1000 == 0:
+            if count % 1 == 0:
                 print("Completed {} samples".format(str(count)))
 
             if (not self.batchSize is None) and (len(dataList) >= self.batchSize):

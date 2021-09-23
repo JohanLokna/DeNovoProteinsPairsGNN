@@ -28,6 +28,7 @@ extra_out = {
 
 accum = {"nCorrect": 0, "nTotal": 0, "R2R": 0, "R2W": 0, "W2R":0, "W2W":0, "blosum":0}
 acc = 0
+acc2 = 0
 cm_base = np.zeros((len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE)))
 cm_corr = np.zeros((len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE)))
 
@@ -38,10 +39,12 @@ for x in dm.test_dataloader():
         accum[k] += (res[k].item() if isinstance(res[k], torch.Tensor) else res[k])
     
     acc += res["nCorrect"] / res["nTotal"]
+    acc2 += (res["nCorrect"] / res["nTotal"]) ** 2
     cm_corr += res["confusion_matrix"]
     cm_base += confusion_matrix(x.y.cpu().numpy(), x.x.cpu().numpy(), labels=np.arange(len(AMINO_ACIDS_BASE)))
 
-accum.update({"avg_acc": acc / len(dm.test_dataloader()), 
+accum.update({"avg_acc": acc / len(dm.test_dataloader()),
+              "avg_acc2": acc2 / len(dm.test_dataloader()),
               "confusion_matrix_corr": cm_corr.tolist(), 
               "confusion_matrix_base": cm_base.tolist()})
 print(accum)

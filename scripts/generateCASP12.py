@@ -22,4 +22,3 @@ ProteinNetDataset(
 t1 = time.time()
 
 print("Finished constructing proteinNet{} in {} seconds".format(str(nCasp), str(t1 - t0)))
-
