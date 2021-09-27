@@ -204,7 +204,7 @@ class ProdySequence(FeatureModule):
     ) -> torch.Tensor:
         
         # Get sequence
-        print(not (self.dependencies[0].data is None))
+        print((not (self.dependencies[0].data is None)) and super().preFilter(*args, **kwargs))
         return seq_to_tensor(self.dependencies[0].data.getSequence(), mapping=AMINO_ACIDS_MAP)
 
     # def preFilter(self, *args, **kwargs) -> bool:
