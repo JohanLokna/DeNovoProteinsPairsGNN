@@ -204,7 +204,6 @@ class ProdySequence(FeatureModule):
     ) -> torch.Tensor:
         
         # Get sequence
-        print((not (self.dependencies[0].data is None)) and super().preFilter(*args, **kwargs))
         return seq_to_tensor(self.dependencies[0].data.getSequence(), mapping=AMINO_ACIDS_MAP)
 
     def preFilter(self, *args, **kwargs) -> bool:
@@ -258,6 +257,25 @@ class ProdyTitle(FeatureModule):
 
         # Get Cartesian coordinates
         return self.dependencies[0].data.getTitle()
+
+
+class Chain(FeatureModule): 
+
+    def __init__(
+        self,
+        featureName : str = "chain"
+    ) -> None:
+        super().__init__(featureName)
+    
+    def forward(
+        self,
+        chain,
+        *args,
+        **kwargs
+    ) -> str:
+
+        # Get Chain Name
+        return chain
 
 
 class CartesianDistances(FeatureModule):

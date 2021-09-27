@@ -124,6 +124,7 @@ class PDBDataset(BaseDataset):
 
         # Get title for reference
         title = ProdyTitle("title", dependencies=[pdb])
+        chain = Chain("chain")
 
         # Restrict sequence lenght
         constraintMaxSize = Constraint(
@@ -144,4 +145,4 @@ class PDBDataset(BaseDataset):
             device = device
         )
 
-        return [nodeAttr, edgeAttr, edgeIdx, title, mask, tape, coordsScaled, constraintMaxSize]
+        return [nodeAttr, edgeAttr, edgeIdx, title, chain, mask, tape, coordsScaled, constraintMaxSize]
