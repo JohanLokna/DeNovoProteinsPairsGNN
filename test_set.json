@@ -1,10 +1,7 @@
 {
   "testing": [
-    {"pdb": "5jzr", "chains": ["A"]},
     {"pdb": "5fjl", "chains": ["A"]},
     {"pdb": "5j5v", "chains": ["A", "B", "C"]},
-    {"pdb": "5sy1", "chains": ["A", "C"]},
-    {"pdb": "5d9g", "chains": ["A"]},
     {"pdb": "2n64", "chains": ["A"]},
     {"pdb": "5uw2", "chains": ["A"]},
     {"pdb": "5j4a", "chains": ["A", "B"]},
@@ -15,7 +12,6 @@
     {"pdb": "5jmu", "chains": ["A"]},
     {"pdb": "5g3q", "chains": ["A", "B"]},
     {"pdb": "5t87", "chains": ["A", "E", "F"]},
-    {"pdb": "5fhy", "chains": ["A"]},
     {"pdb": "5jo9", "chains": ["A"]},
     {"pdb": "4ymp", "chains": ["A", "C"]},
     {"pdb": "5nv4", "chains": ["A"]},
