@@ -178,6 +178,9 @@ class ProdyBackboneCoords(FeatureModule):
         # Atm ordering in atomDim is: N, CA, C, O
         return torch.from_numpy(coords).reshape((-1, 4, 3)).float()
 
+    def preFilter(self, *args, **kwargs) -> bool:
+        return len(self.dependencies[0].data.backbone) % 4 == 0 and super().preFilter(*args, **kwargs)
+
 
 class ProdySequence(FeatureModule):
 

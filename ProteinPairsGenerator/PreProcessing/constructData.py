@@ -69,7 +69,6 @@ class DataGeneratorList(DataGenerator):
 
         dataList = []
         for kwargs in tqdm(kwargsList):
-            print(kwargs["pdb"])
             self.addDataPoint(dataList=dataList, **kwargs)
 
             if not self.batchSize is None and len(dataList) >= self.batchSize:
