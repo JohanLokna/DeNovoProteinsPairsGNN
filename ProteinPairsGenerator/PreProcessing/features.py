@@ -207,8 +207,8 @@ class ProdySequence(FeatureModule):
         print((not (self.dependencies[0].data is None)) and super().preFilter(*args, **kwargs))
         return seq_to_tensor(self.dependencies[0].data.getSequence(), mapping=AMINO_ACIDS_MAP)
 
-    # def preFilter(self, *args, **kwargs) -> bool:
-    #     return (not (self.dependencies[0].data is None)) and super().preFilter(*args, **kwargs)
+    def preFilter(self, *args, **kwargs) -> bool:
+        return (not (self.dependencies[0].data is None)) and super().preFilter(*args, **kwargs)
 
 
 class ProdyCartesianCoordinates(FeatureModule): 
