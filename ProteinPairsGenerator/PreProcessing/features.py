@@ -208,6 +208,7 @@ class ProdySequence(FeatureModule):
         return seq_to_tensor(self.dependencies[0].data.getSequence(), mapping=AMINO_ACIDS_MAP)
 
     def preFilter(self, *args, **kwargs) -> bool:
+        self.runDependencies(*args, **kwargs)
         return (not (self.dependencies[0].data is None)) and super().preFilter(*args, **kwargs)
 
 
