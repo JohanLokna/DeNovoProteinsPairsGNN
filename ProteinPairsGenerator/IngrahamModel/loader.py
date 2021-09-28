@@ -19,6 +19,7 @@ class IngrahamLoader(BERTLoader):
         self,
         dataset : Subset,
         teacher : Union[str, None] = None,
+        struct_ids : bool = False,
         *args,
         **kwargs
     ) -> None:
@@ -66,7 +67,8 @@ class IngrahamLoader(BERTLoader):
                 lengths=lengths,
                 maskedSeq=maskedSeq,
                 mask=mask,
-                **({"teacherLabels": teacherLabels} if self.teacher else {})
+                **({"teacherLabels": teacherLabels} if self.teacher else {}),
+                **({"struct_ids": ["{}_{}".format(x.title, x.chain) for x in batch]} if self.teacher else {})
             )
 
         # Ensure correct kwargs

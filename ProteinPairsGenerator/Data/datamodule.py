@@ -66,20 +66,22 @@ class BERTDataModule(pl.LightningDataModule):
     def setup(self, stage=None):
         pass
 
-    def train_dataloader(self):
+    def train_dataloader(self, *args, **kwargs):
         return self.loaderClass(
             dataset=self.train_indices,
             teacher=self.teacher,
             num_workers=self.num_workers,
             prefetch_factor=self.prefetch_factor,
-            batch_size=self.batch_size
+            batch_size=self.batch_size,
+            *args,
+            **kwargs
         )
 
-    def val_dataloader(self):
-        return self.loaderClass(dataset=self.val_indices, teacher=self.teacher)
+    def val_dataloader(self, *args, **kwargs):
+        return self.loaderClass(dataset=self.val_indices, teacher=self.teacher, *args, **kwargs)
 
-    def test_dataloader(self):
-        return self.loaderClass(dataset=self.test_indices, teacher=self.teacher)
+    def test_dataloader(self, *args, **kwargs):
+        return self.loaderClass(dataset=self.test_indices, teacher=self.teacher, *args, **kwargs)
 
     def transfer_batch_to_device(self, x, device):
         x.__dict__.update((k, v.to(device=device)) for k, v in x.__dict__.items() if isinstance(v, torch.Tensor))
