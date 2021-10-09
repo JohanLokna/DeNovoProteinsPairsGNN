@@ -75,45 +75,35 @@ class TestProteinDesign:
 
     def postprocess(self, stepResults) -> None:
         
-        nTotal = 0
-        nCorrect = [0 for _ in self.kAccuracy]
-        loss = 0
-        blosum_score = 0
-        confusion_matrix = torch.zeros(len(AMINO_ACIDS_BASE), len(AMINO_ACIDS_BASE))
-
-        acc_all = []
-        blosum_all = []
+        nCorrect = [[] for _ in self.kAccuracy]
+        blosum = []
+        confusion_matrix = []
+        lengths = []
+        loss = []
 
         for step in stepResults:
-            nTotal += step["nTotal"]
-            loss += step["loss"]
+
+            loss.append(step["loss"])
+            lengths.append(step["nTotal"])
 
             for i, k in enumerate(self.kAccuracy):
-                nCorrect[i] += step["nCorrect_{}".format(k)]
-
-            if "nCorrect_1" in step.keys():
-                acc_all.append(step["nCorrect_1"] / step["nTotal"])
+                nCorrect[i].append(step["nCorrect_{}".format(k)])
 
             if "blosum" in step.keys():
-                blosum_all.append(step["blosum"] / step["nTotal"])
-                blosum_score += step["blosum"]
+                blosum.append(step["blosum"])
 
             if "confusion_matrix" in step.keys():
-                confusion_matrix += step["confusion_matrix"]
+                confusion_matrix.append(step["confusion_matrix"].tolist())
 
-        out = {"Loss": loss / len(stepResults)}
+        out = {"loss": loss, "lengths": lengths}
         for i, k in enumerate(self.kAccuracy):
-                out.update({"Accuracy_{}".format(k): nCorrect[i] / nTotal})
-        
-        if "nCorrect_1" in step.keys():
-            out.update({"acc_all": acc_all})
+            out.update({"nCorrect_{}".format(k): nCorrect[i]})
 
         if "blosum" in step.keys():
-            out.update({"blosum_all": blosum_all})
-            out.update({"BLOSUM SCORE": blosum_score / nTotal})
+            out.update({"blosum": blosum})
 
         if "confusion_matrix" in step.keys():
-            out.update({"Confusion Matrix": confusion_matrix.tolist()})
+            out.update({"confusion_matrix": confusion_matrix})
 
         return out
 

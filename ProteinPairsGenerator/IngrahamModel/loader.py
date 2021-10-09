@@ -19,14 +19,12 @@ class IngrahamLoader(BERTLoader):
         self,
         dataset : Subset,
         teacher : Union[str, None] = None,
-        struct_ids : bool = False,
         *args,
         **kwargs
     ) -> None:
 
         self.nTokens = len(AMINO_ACIDS_BASE)
         self.teacher = teacher
-        self.struct_ids = struct_ids
 
         def featurize(batch):
 
@@ -68,8 +66,7 @@ class IngrahamLoader(BERTLoader):
                 lengths=lengths,
                 maskedSeq=maskedSeq,
                 mask=mask,
-                **({"teacherLabels": teacherLabels} if self.teacher else {}),
-                **({"struct_ids": ["{}_{}".format(x.title, x.chain) for x in batch]} if self.struct_ids else {})
+                **({"teacherLabels": teacherLabels} if self.teacher else {})
             )
 
         # Ensure correct kwargs
