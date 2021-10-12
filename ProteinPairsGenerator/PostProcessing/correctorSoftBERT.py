@@ -33,7 +33,7 @@ class CorrectorSoftBERT(BERTModel):
           ("W2W", lambda outputs: sum([o["W2W"]  for o in outputs]) / sum([o["nTotal"]  for o in outputs]))
         ]
 
-        super().__init__(extraLogging=extraLogging)
+        super().__init__(extraLogging=extraLogging, kAccuracy=[])
 
         self.lrInitial = lr
 
