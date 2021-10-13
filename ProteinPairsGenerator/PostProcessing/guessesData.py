@@ -90,12 +90,12 @@ class GuessDataset(torch.utils.data.IterableDataset):
 """
 class GuessLoader(torch.utils.data.DataLoader):
 
-    def __init__(self, dataset, batch_size=1, shuffle=True):
+    def __init__(self, dataset, num_workers=0, shuffle=True):
 
         if shuffle:
             random.shuffle(dataset.data)
 
-        super().__init__(dataset, batch_size, collate_fn=lambda x: x[0])
+        super().__init__(dataset, num_workers=num_workers, collate_fn=lambda x: x[0])
 
 
 """
@@ -108,13 +108,16 @@ class GuessDataModule(pl.LightningDataModule):
         trainSet: Optional[str] = None,
         valSet: Optional[str] = None,
         testSet: Optional[str] = None,
-        batch_size = 0
+        batch_size = 0,
+        num_workers=0
     ) -> None:
         super().__init__()
 
         self.trainDataset = GuessDataset(trainSet, batch_size) if trainSet else None
         self.valDataset = GuessDataset(valSet, batch_size) if valSet else None
         self.testDataset = GuessDataset(testSet, batch_size) if testSet else None
+
+        self.num_workers = num_workers
 
     def setup(self, stage=None):
         pass
@@ -123,16 +126,15 @@ class GuessDataModule(pl.LightningDataModule):
         return GuessLoader(
             dataset=self.trainDataset,
             shuffle=True,
+            num_workers=self.num_workers
         )
 
     def val_dataloader(self):
-        print("OK")
         return GuessLoader(
             dataset=self.valDataset
         )
 
     def test_dataloader(self):
-        print("NOT OK")
         return GuessLoader(
             dataset=self.testDataset
         )
