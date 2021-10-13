@@ -136,6 +136,7 @@ class GuessDataModule(pl.LightningDataModule):
         )
 
     def test_dataloader(self):
+        print("NOT OK")
         return GuessLoader(
             dataset=self.testDataset
         )
