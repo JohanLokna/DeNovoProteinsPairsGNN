@@ -116,6 +116,10 @@ class GuessDataModule(pl.LightningDataModule):
         self.valDataset = GuessDataset(valSet, batch_size) if valSet else None
         self.testDataset = GuessDataset(testSet, batch_size) if testSet else None
 
+        print(valSet)
+        print(self.valDataset)
+        print(self.valDataset.data)
+
     def setup(self, stage=None):
         pass
 
@@ -126,6 +130,7 @@ class GuessDataModule(pl.LightningDataModule):
         )
 
     def val_dataloader(self):
+        print("OK")
         return GuessLoader(
             dataset=self.valDataset
         )
