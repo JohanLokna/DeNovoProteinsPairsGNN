@@ -63,7 +63,9 @@ def setupRun(
     device = getFreeGPU()
 
     # Run
-    os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out 2>&1".format(device.id, str(root), str(runFile)))
+    # os.system("export CUDA_VISIBLE_DEVICES={} ; cd {} ; python3 {} --config config.yaml >> out.out 2>&1".format(device.id, str(root), str(runFile)))
+    os.system("cd {} ; python3 {} --config config.yaml >> out.out 2>&1".format(device.id, str(root), str(runFile)))
+
 
     # Release lock on device
     locks[int(device.id)].release()
